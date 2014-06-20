@@ -1,6 +1,5 @@
 package org.cri.redmetrics.dao;
 
-import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.j256.ormlite.support.ConnectionSource;
 import org.cri.redmetrics.model.Player;
@@ -22,6 +21,7 @@ public class PlayerDao extends EntityDao<Player> {
 
     public Player findByEmail(String email) {
         try {
+            if (email == null) return null;
             List<Player> players = orm.queryForEq("email", email);
             assert players.size() <= 1; // email should be unique
             if (players.isEmpty()) return null;

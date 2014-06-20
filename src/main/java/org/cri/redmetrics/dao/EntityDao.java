@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public abstract class EntityDao<E extends Entity> {
 
@@ -39,6 +40,14 @@ public abstract class EntityDao<E extends Entity> {
     public E read(int id) throws DbException {
         try {
             return orm.queryForId(id);
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
+
+    public List<E> list() throws DbException {
+        try {
+            return orm.queryForAll();
         } catch (SQLException e) {
             throw new DbException(e);
         }

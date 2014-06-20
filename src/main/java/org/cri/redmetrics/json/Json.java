@@ -7,6 +7,4 @@ public interface Json<E extends Entity> extends ResponseTransformer {
 
     E parse(String json);
 
-    String stringify(E entity);
-
 }

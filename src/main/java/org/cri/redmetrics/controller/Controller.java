@@ -1,9 +1,11 @@
 package org.cri.redmetrics.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.cri.redmetrics.json.Json;
 import org.cri.redmetrics.dao.EntityDao;
+import org.cri.redmetrics.json.Json;
 import org.cri.redmetrics.model.Entity;
+
+import java.util.List;
 
 import static spark.Spark.*;
 
@@ -19,7 +21,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         publishSpecific();
     }
 
-    private final void publishGeneric() {
+    private void publishGeneric() {
 
         post(path + "/", "application/json", (request, response) -> {
             E entity = json.parse(request.body());
@@ -33,6 +35,9 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             if (entity == null) halt(404);
             return entity;
         }, json);
+
+        get(path + "/", (request, response) -> list()
+        , json);
     }
 
     protected E create(E entity) {
@@ -41,6 +46,10 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
     protected E read(int id) {
         return dao.read(id);
+    }
+
+    protected List<E> list() {
+        return dao.list();
     }
 
     protected void publishSpecific() {

@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.cri.redmetrics.model.Event;
+import org.cri.redmetrics.model.EventType;
 import org.cri.redmetrics.model.Game;
 import org.cri.redmetrics.model.Player;
 
@@ -21,12 +22,6 @@ public class EventJson extends EntityJson<Event> {
     public Event parse(String json) {
         Event event = super.parse(json);
         JsonObject jsonObject = jsonParser.parse(json).getAsJsonObject();
-
-        // DATA
-        JsonElement data = jsonObject.get("data");
-        if (data != null) {
-            event.setData(data.toString()); // Make data a String so it can be persisted in SQL Database
-        }
 
         // GAME
         JsonElement gameId = jsonObject.get("game");
@@ -44,11 +39,22 @@ public class EventJson extends EntityJson<Event> {
             event.setPlayer(player);
         }
 
+        // TYPE
+        String type = jsonObject.get("type").getAsString();
+        type = type.trim().toUpperCase();
+        event.setType(EventType.valueOf(type));
+
+        // DATA
+        JsonElement data = jsonObject.get("data");
+        if (data != null) {
+            event.setData(data.toString()); // Make data a String so it can be persisted in SQL Database
+        }
+
         return event;
     }
 
     @Override
-    public String stringify(Event event) {
+    public JsonElement toJsonElement(Event event) {
         JsonObject eventJson = gson.toJsonTree(event).getAsJsonObject();
 
         // GAME
@@ -57,13 +63,17 @@ public class EventJson extends EntityJson<Event> {
         // PLAYER
         eventJson.addProperty("player", event.getPlayer().getId());
 
+        // TYPE
+        if (event.getType() != null)
+            eventJson.addProperty("type", event.getType().toString());
+
         // DATA
         if (event.getData() != null) {
             JsonElement dataJson = jsonParser.parse(event.getData()); // Transform saved data field back to its original form
             eventJson.add("data", dataJson);
         }
 
-        return gson.toJson(eventJson);
+        return eventJson;
     }
 
 }

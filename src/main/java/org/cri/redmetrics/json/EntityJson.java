@@ -1,9 +1,13 @@
 package org.cri.redmetrics.json;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import org.cri.redmetrics.model.Entity;
+
+import java.util.Collection;
 
 @RequiredArgsConstructor
 abstract class EntityJson<E extends Entity> implements Json<E> {
@@ -17,14 +21,29 @@ abstract class EntityJson<E extends Entity> implements Json<E> {
         return gson.fromJson(json, entityType);
     }
 
-    @Override
-    public String stringify(E entity) {
-        return gson.toJson(entity);
+    public JsonElement toJsonElement(E entity) {
+        return gson.toJsonTree(entity);
+    }
+
+    public final String stringify(E entity) {
+        return gson.toJson(toJsonElement(entity));
     }
 
     @Override
     public final String render(Object model) {
-        return stringify((E) model);
+        if (model instanceof Collection) {
+            return stringifyCollection((Collection<E>) model);
+        } else {
+            return stringify((E) model);
+        }
+    }
+
+    private String stringifyCollection(Collection<E> collection) {
+        JsonArray jsonArray = new JsonArray();
+        for (E entity : collection) {
+            jsonArray.add(toJsonElement(entity));
+        }
+        return gson.toJson(jsonArray);
     }
 
 }

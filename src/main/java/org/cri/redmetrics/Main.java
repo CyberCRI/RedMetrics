@@ -21,7 +21,7 @@ public class Main {
         Injector injector = Guice.createInjector(new MainModule());
 
         Class[] controllers = {GameController.class, PlayerController.class, EventController.class};
-        for (Class<Controller> controllerClass : controllers) {
+        for (Class<Controller> controllerClass : (Class<Controller>[]) controllers) {
             Controller controller = injector.getInstance(controllerClass);
             controller.publish();
         }
@@ -33,8 +33,16 @@ public class Main {
 
         exception(DbException.class, (e, request, response) -> {
             response.status(500);
-            DbException exception = (DbException) e;
-            response.body("Server Error : " + exception.getSqlException().getCause().getMessage());
+            SQLException exception = ((DbException) e).getSqlException();
+            Throwable cause = exception.getCause();
+            String message;
+            if (cause != null) {
+                message = cause.getMessage();
+            } else {
+                message = exception.getMessage();
+            }
+            e.printStackTrace();
+            response.body("Server Error : " + message);
         });
 
         exception(NumberFormatException.class, (e, request, response) -> {
