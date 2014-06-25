@@ -18,19 +18,18 @@ import java.io.IOException;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrown;
 
-public class SimpleTest {
+public class GameBackendTest extends HttpBackendTest<TestGame> {
 
     static final String GAME_NAME = "Asteroids";
     static final String UPDATED_GAME_NAME = "Gasteroids";
 
-    Server server = new Server();
-    HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory((request) -> request.setParser(new JsonObjectParser(new GsonFactory())));
-
     TestGame createdGame;
 
-    @BeforeClass
-    public void setUp() throws IOException {
-        server.start();
+    public GameBackendTest() {
+        super("game/", TestGame.class);
+    }
+
+    public void init() throws IOException {
         resetCreatedGame();
     }
 
@@ -38,11 +37,6 @@ public class SimpleTest {
         TestGame game = new TestGame();
         game.setName(GAME_NAME);
         createdGame = post(game);
-    }
-
-    @AfterClass
-    public void tearDown() {
-        server.clearAllRoutes();
     }
 
     // CREATE
@@ -94,7 +88,7 @@ public class SimpleTest {
     @Test
     public void shouldFailWhenUpdatingWithUrlIdDifferentThanContentId() throws IOException {
         try {
-            put("game/" + randomId(), createdGame, TestGame.class);
+            put(path + randomId(), createdGame);
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(400);
@@ -106,7 +100,7 @@ public class SimpleTest {
         try {
             int id = -1;
             createdGame.setId(id);
-            TestGame updatedGame = put("game/" + id, createdGame, TestGame.class);
+            TestGame updatedGame = put(path + id, createdGame);
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(400);
@@ -127,48 +121,5 @@ public class SimpleTest {
         }
     }
 
-    // TEST UTIL
-
-    TestGame get(int id) throws IOException {
-        return get("game/" + id, TestGame.class);
-    }
-
-    TestGame post(TestGame game) throws IOException {
-        return post("game/", game, TestGame.class);
-    }
-
-    TestGame put(TestGame game) throws IOException {
-        return put("game/" + game.getId(), game, TestGame.class);
-    }
-
-    TestGame delete(int id) throws IOException {
-        return delete("game/" + id, TestGame.class);
-    }
-
-    <T> T get(String path, Class<T> type) throws IOException {
-        return requestFactory.buildGetRequest(url(path)).execute().parseAs(type);
-    }
-
-    <T> T post(String path, GenericJson json, Class<T> type) throws IOException {
-        HttpContent content = new JsonHttpContent(new GsonFactory(), json);
-        return requestFactory.buildPostRequest(url(path), content).execute().parseAs(type);
-    }
-
-    <T> T put(String path, GenericJson json, Class<T> type) throws IOException {
-        HttpContent content = new JsonHttpContent(new GsonFactory(), json);
-        return requestFactory.buildPutRequest(url(path), content).execute().parseAs(type);
-    }
-
-    <T> T delete(String path, Class<T> type) throws IOException {
-        return requestFactory.buildDeleteRequest(url(path)).execute().parseAs(type);
-    }
-
-    GenericUrl url(String path) {
-        return new GenericUrl("http://localhost:4567/" + path);
-    }
-
-    int randomId() {
-        return (int) Math.round(Math.random() * 1000000000) + 1000000000;
-    }
 
 }

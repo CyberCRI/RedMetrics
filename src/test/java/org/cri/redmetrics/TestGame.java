@@ -6,7 +6,7 @@ import com.google.api.client.util.Key;
 import lombok.Data;
 
 @Data
-public class TestGame extends GenericJson {
+public class TestGame extends GenericJson implements TestEntity {
 
     @Key
     private int id;
