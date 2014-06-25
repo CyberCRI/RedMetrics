@@ -11,12 +11,7 @@ public class PlayerDao extends EntityDao<Player> {
 
     @Inject
     public PlayerDao(ConnectionSource connectionSource) throws SQLException {
-        super(connectionSource);
-    }
-
-    @Override
-    protected Class<Player> getEntityType() {
-        return Player.class;
+        super(connectionSource, Player.class);
     }
 
     public Player findByEmail(String email) {

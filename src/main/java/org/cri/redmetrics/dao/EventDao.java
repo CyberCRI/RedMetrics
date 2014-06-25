@@ -10,12 +10,7 @@ public class EventDao extends EntityDao<Event> {
 
     @Inject
     public EventDao(ConnectionSource connectionSource) throws SQLException {
-        super(connectionSource);
-    }
-
-    @Override
-    protected Class<Event> getEntityType() {
-        return Event.class;
+        super(connectionSource, Event.class);
     }
 
 }

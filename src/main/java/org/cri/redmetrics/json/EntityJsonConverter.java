@@ -10,7 +10,7 @@ import org.cri.redmetrics.model.Entity;
 import java.util.Collection;
 
 @RequiredArgsConstructor
-abstract class EntityJson<E extends Entity> implements Json<E> {
+abstract class EntityJsonConverter<E extends Entity> implements JsonConverter<E> {
 
     protected final Class<E> entityType;
     protected final Gson gson;

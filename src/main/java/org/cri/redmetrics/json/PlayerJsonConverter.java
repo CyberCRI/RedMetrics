@@ -5,10 +5,10 @@ import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import org.cri.redmetrics.model.Player;
 
-public class PlayerJson extends EntityJson<Player> {
+public class PlayerJsonConverter extends EntityJsonConverter<Player> {
 
     @Inject
-    PlayerJson(Gson gson, JsonParser jsonParser) {
+    PlayerJsonConverter(Gson gson, JsonParser jsonParser) {
         super(Player.class, gson, jsonParser);
     }
 

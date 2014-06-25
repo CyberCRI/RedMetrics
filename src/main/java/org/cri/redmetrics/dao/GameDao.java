@@ -11,12 +11,7 @@ public class GameDao extends EntityDao<Game> {
 
     @Inject
     public GameDao(ConnectionSource connectionSource) throws SQLException {
-        super(connectionSource);
-    }
-
-    @Override
-    protected Class<Game> getEntityType() {
-        return Game.class;
+        super(connectionSource, Game.class);
     }
 
     @Override

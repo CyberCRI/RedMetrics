@@ -7,7 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.google.inject.Provider;
 
 
-public class EventGsonProvider implements Provider<Gson> {
+public class EventGsonConverterProvider implements Provider<Gson> {
 
     @Override
     public Gson get() {

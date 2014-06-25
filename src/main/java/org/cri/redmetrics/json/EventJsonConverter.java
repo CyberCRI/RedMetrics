@@ -11,10 +11,10 @@ import org.cri.redmetrics.model.EventType;
 import org.cri.redmetrics.model.Game;
 import org.cri.redmetrics.model.Player;
 
-public class EventJson extends EntityJson<Event> {
+public class EventJsonConverter extends EntityJsonConverter<Event> {
 
     @Inject
-    EventJson(@Named("Event") Gson gson, JsonParser jsonParser) {
+    EventJsonConverter(@Named("Event") Gson gson, JsonParser jsonParser) {
         super(Event.class, gson, jsonParser);
     }
 

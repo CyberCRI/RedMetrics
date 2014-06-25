@@ -2,8 +2,11 @@ package org.cri.redmetrics.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.cri.redmetrics.dao.EntityDao;
-import org.cri.redmetrics.json.Json;
+import org.cri.redmetrics.json.JsonConverter;
 import org.cri.redmetrics.model.Entity;
+import spark.Request;
+import spark.Response;
+import spark.Route;
 
 import java.util.List;
 
@@ -14,7 +17,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
     protected final String path;
     protected final DAO dao;
-    protected final Json<E> json;
+    protected final JsonConverter<E> jsonConverter;
 
     public final void publish() {
         publishGeneric();
@@ -23,24 +26,34 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
     private void publishGeneric() {
 
-        post(path + "/", "application/json", (request, response) -> {
-            E entity = json.parse(request.body());
+        post(path + "/", (request, response) -> {
+            E entity = jsonConverter.parse(request.body());
             create(entity);
             response.status(201); // Created
             return entity;
-        }, json);
+        }, jsonConverter);
+
+        /*post(path + "/", new Route() {
+            @Override
+            public Object handle(Request request, Response response) {
+                E entity = jsonConverter.parse(request.body());
+                create(entity);
+                response.status(201); // Created
+                return entity;
+            }
+        });*/
 
         get(path + "/:id", (request, response) -> {
             E entity = read(Integer.parseInt(request.params(":id")));
             if (entity == null) halt(404);
             return entity;
-        }, json);
+        }, jsonConverter);
 
         get(path + "/", (request, response) -> list()
-                , json);
+                , jsonConverter);
 
         put(path + "/:id", (request, response) -> {
-            E entity = json.parse(request.body());
+            E entity = jsonConverter.parse(request.body());
             int urlId = Integer.parseInt(request.params(":id"));
             if (urlId < 0) halt(400, "ID should not be negative");
             if (urlId != entity.getId()) {
@@ -49,11 +62,11 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
                 entity.setId(urlId);
             }
             return dao.update(entity);
-        }, json);
+        }, jsonConverter);
 
         delete(path + "/:id", (request, response) -> {
             return dao.delete(Integer.parseInt(request.params(":id")));
-        }, json);
+        }, jsonConverter);
 
     }
 

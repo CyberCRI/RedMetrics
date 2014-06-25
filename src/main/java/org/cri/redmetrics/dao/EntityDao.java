@@ -17,16 +17,14 @@ public abstract class EntityDao<E extends Entity> {
 
     protected final Dao<E, Integer> orm;
 
-    EntityDao(ConnectionSource connectionSource) throws SQLException {
+    EntityDao(ConnectionSource connectionSource, Class<E> type) throws SQLException {
+        this.orm = DaoManager.createDao(connectionSource, type);
         try {
-            TableUtils.createTableIfNotExists(connectionSource, getEntityType());
+            TableUtils.createTableIfNotExists(connectionSource, type);
         } catch (SQLException e) {
             logger.info("Problem when trying to create table, probably concerning unique id sequence. Shouldn't be a problem.");
         }
-        this.orm = DaoManager.createDao(connectionSource, getEntityType());
     }
-
-    protected abstract Class<E> getEntityType();
 
     public E create(E entity) {
         try {

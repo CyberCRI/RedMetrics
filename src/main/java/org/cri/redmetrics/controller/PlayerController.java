@@ -2,7 +2,7 @@ package org.cri.redmetrics.controller;
 
 import com.google.inject.Inject;
 import org.cri.redmetrics.dao.PlayerDao;
-import org.cri.redmetrics.json.PlayerJson;
+import org.cri.redmetrics.json.PlayerJsonConverter;
 import org.cri.redmetrics.model.Player;
 
 import static spark.Spark.*;
@@ -10,7 +10,7 @@ import static spark.Spark.*;
 public class PlayerController extends Controller<Player, PlayerDao> {
 
     @Inject
-    PlayerController(PlayerDao dao, PlayerJson json) {
+    PlayerController(PlayerDao dao, PlayerJsonConverter json) {
         super("/player", dao, json);
     }
 
@@ -20,7 +20,7 @@ public class PlayerController extends Controller<Player, PlayerDao> {
             Player player = dao.findByEmail(request.params(":email"));
             if (player == null) halt(404);
             return player;
-        }, json);
+        }, jsonConverter);
     }
 
     @Override

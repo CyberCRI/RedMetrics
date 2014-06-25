@@ -24,11 +24,11 @@ public class MainModule extends AbstractModule {
     protected void configure() {
 
         bind(Gson.class).toProvider(DefaultGsonProvider.class).asEagerSingleton();
-        bind(Gson.class).annotatedWith(Names.named("Event")).toProvider(EventGsonProvider.class).asEagerSingleton();
+        bind(Gson.class).annotatedWith(Names.named("Event")).toProvider(EventGsonConverterProvider.class).asEagerSingleton();
         bind(JsonParser.class).asEagerSingleton();
-        bind(GameJson.class).asEagerSingleton();
-        bind(PlayerJson.class).asEagerSingleton();
-        bind(EventJson.class).asEagerSingleton();
+        bind(GameJsonConverter.class).asEagerSingleton();
+        bind(PlayerJsonConverter.class).asEagerSingleton();
+        bind(EventJsonConverter.class).asEagerSingleton();
 
         bind(GameController.class).asEagerSingleton();
         bind(GameDao.class).asEagerSingleton();
