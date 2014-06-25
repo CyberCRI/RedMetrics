@@ -8,6 +8,7 @@ import org.cri.redmetrics.controller.EventController;
 import org.cri.redmetrics.controller.GameController;
 import org.cri.redmetrics.controller.PlayerController;
 import org.cri.redmetrics.dao.DbException;
+import org.cri.redmetrics.dao.InconsistentDataException;
 import org.cri.redmetrics.guice.MainModule;
 
 import java.sql.SQLException;
@@ -36,7 +37,7 @@ public class Server {
         });
 
         exception(DbException.class, (e, request, response) -> {
-            response.status(400);
+            response.status(500);
             SQLException exception = ((DbException) e).getSqlException();
             Throwable cause = exception.getCause();
             String message;
@@ -53,6 +54,11 @@ public class Server {
             response.status(400);
             e.printStackTrace();
             response.body("Unsupported JSON Format : A number was expected " + e.getMessage());
+        });
+
+        exception(InconsistentDataException.class, (e, request, response) -> {
+            response.status(400);
+            response.body(InconsistentDataException.class.getSimpleName() + " : " + e.getMessage());
         });
     }
 

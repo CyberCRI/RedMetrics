@@ -21,6 +21,7 @@ import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrow
 public class SimpleTest {
 
     static final String GAME_NAME = "Asteroids";
+    static final String UPDATED_GAME_NAME = "Gasteroids";
 
     Server server = new Server();
     HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory((request) -> request.setParser(new JsonObjectParser(new GsonFactory())));
@@ -30,10 +31,10 @@ public class SimpleTest {
     @BeforeClass
     public void setUp() throws IOException {
         server.start();
-        createGame();
+        resetCreatedGame();
     }
 
-    void createGame() throws IOException {
+    void resetCreatedGame() throws IOException {
         TestGame game = new TestGame();
         game.setName(GAME_NAME);
         createdGame = post(game);
@@ -44,15 +45,7 @@ public class SimpleTest {
         server.clearAllRoutes();
     }
 
-    @Test
-    public void cantCreateGameWithoutName() throws IOException {
-        try {
-            post(new TestGame());
-            failBecauseExceptionWasNotThrown(HttpResponseException.class);
-        } catch (HttpResponseException e) {
-            assertThat(e.getStatusCode()).isEqualTo(400);
-        }
-    }
+    // CREATE
 
     @Test
     public void canCreateGame() throws IOException {
@@ -62,10 +55,67 @@ public class SimpleTest {
     }
 
     @Test
+    public void shouldForbidUnnamedGameCreation() throws IOException {
+        try {
+            post(new TestGame());
+            failBecauseExceptionWasNotThrown(HttpResponseException.class);
+        } catch (HttpResponseException e) {
+            assertThat(e.getStatusCode()).isEqualTo(400);
+        }
+    }
+
+    // READ
+
+    @Test
     public void canReadGame() throws IOException {
         TestGame readGame = get(createdGame.getId());
         assertThat(readGame.getName()).isEqualTo(GAME_NAME);
     }
+
+    @Test
+    void shouldFailWhenReadingUnknownId() throws IOException {
+        try {
+            get(randomId());
+            failBecauseExceptionWasNotThrown(HttpResponseException.class);
+        } catch (HttpResponseException e) {
+            assertThat(e.getStatusCode()).isEqualTo(404);
+        }
+    }
+
+    // UPDATE
+
+    @Test
+    public void canUpdateGame() throws IOException {
+        createdGame.setName(UPDATED_GAME_NAME);
+        TestGame updatedGame = put(createdGame);
+        assertThat(updatedGame.getName()).isEqualTo(UPDATED_GAME_NAME);
+    }
+
+    @Test
+    public void shouldFailWhenUpdatingWithUrlIdDifferentThanContentId() throws IOException {
+        try {
+            put("game/" + randomId(), createdGame, TestGame.class);
+            failBecauseExceptionWasNotThrown(HttpResponseException.class);
+        } catch (HttpResponseException e) {
+            assertThat(e.getStatusCode()).isEqualTo(400);
+        }
+    }
+
+    // DELETE
+
+    @Test
+    public void canDeleteGame() throws IOException {
+        TestGame deletedGame = delete(createdGame.getId());
+        resetCreatedGame();
+        try {
+            get(deletedGame.getId());
+            failBecauseExceptionWasNotThrown(HttpResponseException.class);
+        } catch (HttpResponseException e) {
+            assertThat(e.getStatusCode()).isEqualTo(404);
+        }
+    }
+
+    // TEST UTIL
 
     TestGame get(int id) throws IOException {
         return get("game/" + id, TestGame.class);
@@ -73,6 +123,14 @@ public class SimpleTest {
 
     TestGame post(TestGame game) throws IOException {
         return post("game/", game, TestGame.class);
+    }
+
+    TestGame put(TestGame game) throws IOException {
+        return put("game/" + game.getId(), game, TestGame.class);
+    }
+
+    TestGame delete(int id) throws IOException {
+        return delete("game/" + id, TestGame.class);
     }
 
     <T> T get(String path, Class<T> type) throws IOException {
@@ -84,8 +142,21 @@ public class SimpleTest {
         return requestFactory.buildPostRequest(url(path), content).execute().parseAs(type);
     }
 
+    <T> T put(String path, GenericJson json, Class<T> type) throws IOException {
+        HttpContent content = new JsonHttpContent(new GsonFactory(), json);
+        return requestFactory.buildPutRequest(url(path), content).execute().parseAs(type);
+    }
+
+    <T> T delete(String path, Class<T> type) throws IOException {
+        return requestFactory.buildDeleteRequest(url(path)).execute().parseAs(type);
+    }
+
     GenericUrl url(String path) {
         return new GenericUrl("http://localhost:4567/" + path);
+    }
+
+    int randomId() {
+        return (int) Math.round(Math.random() * 1000000000);
     }
 
 }

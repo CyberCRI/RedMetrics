@@ -21,6 +21,8 @@ public class GameDao extends EntityDao<Game> {
 
     @Override
     public Game create(Game game) {
+        if (game.getName() == null || game.getName().isEmpty())
+            throw new InconsistentDataException("Game name is required");
         game.setApiKey(UUID.randomUUID());
         return super.create(game);
     }

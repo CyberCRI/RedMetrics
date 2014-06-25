@@ -37,7 +37,22 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         }, json);
 
         get(path + "/", (request, response) -> list()
-        , json);
+                , json);
+
+        put(path + "/:id", (request, response) -> {
+            E entity = json.parse(request.body());
+            int urlId = Integer.parseInt(request.params(":id"));
+            if (urlId != entity.getId()) {
+                halt(400, "IDs in URL and body do not match");
+            } else {
+                entity.setId(urlId);
+            }
+            return dao.update(entity);
+        }, json);
+
+        delete(path + "/:id", (request, response) -> {
+            return dao.delete(Integer.parseInt(request.params(":id")));
+        }, json);
 
     }
 

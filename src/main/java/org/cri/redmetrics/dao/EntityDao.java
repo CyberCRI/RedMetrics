@@ -28,7 +28,7 @@ public abstract class EntityDao<E extends Entity> {
 
     protected abstract Class<E> getEntityType();
 
-    public E create(E entity) throws DbException {
+    public E create(E entity) {
         try {
             orm.create(entity);
             return entity;
@@ -37,7 +37,7 @@ public abstract class EntityDao<E extends Entity> {
         }
     }
 
-    public E read(int id) throws DbException {
+    public E read(int id) {
         try {
             return orm.queryForId(id);
         } catch (SQLException e) {
@@ -45,7 +45,26 @@ public abstract class EntityDao<E extends Entity> {
         }
     }
 
-    public List<E> list() throws DbException {
+    public E update(E entity) {
+        try {
+            orm.update(entity);
+            return read(entity.getId());
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
+
+    public E delete(int id) {
+        try {
+            E entity = read(id);
+            orm.deleteById(id);
+            return entity;
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
+
+    public List<E> list() {
         try {
             return orm.queryForAll();
         } catch (SQLException e) {
