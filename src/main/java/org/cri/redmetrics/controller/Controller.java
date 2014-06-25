@@ -38,6 +38,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
         get(path + "/", (request, response) -> list()
         , json);
+
     }
 
     protected E create(E entity) {
