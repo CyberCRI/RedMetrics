@@ -42,6 +42,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         put(path + "/:id", (request, response) -> {
             E entity = json.parse(request.body());
             int urlId = Integer.parseInt(request.params(":id"));
+            if (urlId < 0) halt(400, "ID should not be negative");
             if (urlId != entity.getId()) {
                 halt(400, "IDs in URL and body do not match");
             } else {

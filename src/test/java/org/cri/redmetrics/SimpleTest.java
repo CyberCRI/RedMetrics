@@ -101,6 +101,18 @@ public class SimpleTest {
         }
     }
 
+    @Test
+    public void shouldFailWhenUpdatingNegativeId() throws IOException {
+        try {
+            int id = -1;
+            createdGame.setId(id);
+            TestGame updatedGame = put("game/" + id, createdGame, TestGame.class);
+            failBecauseExceptionWasNotThrown(HttpResponseException.class);
+        } catch (HttpResponseException e) {
+            assertThat(e.getStatusCode()).isEqualTo(400);
+        }
+    }
+
     // DELETE
 
     @Test
@@ -156,7 +168,7 @@ public class SimpleTest {
     }
 
     int randomId() {
-        return (int) Math.round(Math.random() * 1000000000);
+        return (int) Math.round(Math.random() * 1000000000) + 1000000000;
     }
 
 }
