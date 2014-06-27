@@ -11,7 +11,6 @@ import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.gson.GsonFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
 
 import java.io.IOException;
 
@@ -22,8 +21,6 @@ public abstract class HttpBackendTest<E extends TestEntity> {
 
     String path;
     Class<E> type;
-
-    TestGame createdGame;
 
     HttpBackendTest(String path, Class<E> type) {
         this.path = path;
@@ -47,12 +44,12 @@ public abstract class HttpBackendTest<E extends TestEntity> {
         return get(path + id);
     }
 
-    E post(TestGame game) throws IOException {
-        return post(path, game);
+    E post(E entity) throws IOException {
+        return post(path, entity);
     }
 
-    E put(TestGame game) throws IOException {
-        return put(path + game.getId(), game);
+    E put(E entity) throws IOException {
+        return put(path + entity.getId(), entity);
     }
 
     E delete(int id) throws IOException {
