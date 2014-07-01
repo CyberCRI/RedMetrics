@@ -38,4 +38,17 @@ public class PlayerDao extends EntityDao<Player> {
             throw new DbException(e);
         }
     }
+
+    @Override
+    public Player delete(int id) {
+        Player p = super.delete(id);
+        addrDao.delete(p.getAddress().getId());
+        return p;
+    }
+
+    @Override
+    public Player update(Player entity) {
+        return super.update(entity);
+    }
+
 }
