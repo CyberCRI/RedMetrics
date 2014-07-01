@@ -4,10 +4,10 @@ import com.google.api.client.util.Value;
 
 
 public enum Gender {
-    @Value("MALE")
+    @Value("male")
     MALE,
     
-    @Value("FEMALE")
+    @Value("female")
     FEMALE;
 
 }

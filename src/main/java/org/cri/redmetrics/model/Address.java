@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @DatabaseTable(tableName = "addresses")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Address {
+public class Address implements Entity{
 
-    @DatabaseField(id = true)
+    @DatabaseField(generatedId = true)
     private int id;
 
 //    @DatabaseField

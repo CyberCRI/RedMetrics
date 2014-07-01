@@ -8,15 +8,16 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
+import java.sql.SQLException;
 import org.cri.redmetrics.controller.EventController;
 import org.cri.redmetrics.controller.GameController;
 import org.cri.redmetrics.controller.PlayerController;
+import org.cri.redmetrics.dao.AddressDao;
 import org.cri.redmetrics.dao.EventDao;
 import org.cri.redmetrics.dao.GameDao;
 import org.cri.redmetrics.dao.PlayerDao;
 import org.cri.redmetrics.json.*;
 
-import java.sql.SQLException;
 
 public class MainModule extends AbstractModule {
 
@@ -35,7 +36,9 @@ public class MainModule extends AbstractModule {
 
         bind(PlayerController.class).asEagerSingleton();
         bind(PlayerDao.class).asEagerSingleton();
-
+        
+        bind(AddressDao.class).asEagerSingleton();
+                
         bind(EventController.class).asEagerSingleton();
         bind(EventDao.class).asEagerSingleton();
 

@@ -58,7 +58,6 @@ public class PlayerBackendTest extends HttpBackendTest<TestPlayer> {
         assertThat(createdPlayer.getGender() == GENDER);
     }
     
-    
     @Override
     TestPlayer post(String path, GenericJson json) throws IOException {
         HttpContent content = new JsonHttpContent(new GsonFactory(), json);

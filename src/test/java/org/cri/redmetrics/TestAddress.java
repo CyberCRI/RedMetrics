@@ -17,6 +17,8 @@ public class TestAddress extends TestEntity {
 
 //    @Key
 //    private String[] lines;
+    
+    @Key
     private String postalCode;
 
     @Key
