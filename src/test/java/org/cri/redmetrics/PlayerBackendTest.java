@@ -6,7 +6,6 @@ import com.google.api.client.json.GenericJson;
 import com.google.api.client.json.gson.GsonFactory;
 import java.io.IOException;
 import java.util.Date;
-import org.cri.redmetrics.model.Address;
 import org.cri.redmetrics.model.Gender;
 import static org.fest.assertions.api.Assertions.*;
 import org.testng.annotations.Test;
@@ -22,7 +21,7 @@ public class PlayerBackendTest extends HttpBackendTest<TestPlayer> {
     private static final String FNAME = "Arthur";
     private static final String LNAME = "Besnard";
     private static final Date BDATE = new Date();
-    private static final Address ADDR  = new Address(5, "77114", "France");
+    private static final TestAddress ADDR  = new TestAddress("77114", "Hermé");
     private static final Gender GENDER = Gender.MALE;
 
     public PlayerBackendTest() {

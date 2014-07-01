@@ -5,7 +5,6 @@ import com.google.api.client.util.Key;
 import java.util.Date;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.cri.redmetrics.model.Address;
 import org.cri.redmetrics.model.Gender;
 
 @Data
@@ -25,7 +24,7 @@ public class TestPlayer extends TestEntity {
     private Date birthDate;
 
     @Key
-    private Address address;
+    private TestAddress address;
 
     @Key
     private Gender gender;
