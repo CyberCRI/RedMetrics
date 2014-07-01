@@ -10,8 +10,8 @@ import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrow
 
 public class GameBackendTest extends HttpBackendTest<TestGame> {
 
-    static final String GAME_NAME = "Asteroids";
-    static final String UPDATED_GAME_NAME = "Gasteroids";
+    private static final String GAME_NAME = "Asteroids";
+    private static final String UPDATED_GAME_NAME = "Gasteroids";
 
     TestGame createdGame;
 
@@ -111,6 +111,4 @@ public class GameBackendTest extends HttpBackendTest<TestGame> {
             assertThat(e.getStatusCode()).isEqualTo(404);
         }
     }
-
-
 }

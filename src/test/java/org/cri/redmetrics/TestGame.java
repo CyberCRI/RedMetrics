@@ -3,8 +3,10 @@ package org.cri.redmetrics;
 
 import com.google.api.client.util.Key;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class TestGame extends TestEntity {
 
     @Key
