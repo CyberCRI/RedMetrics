@@ -1,7 +1,7 @@
 package org.cri.redmetrics;
 
 
-import com.google.api.client.util.Key;
+import com.google.api.client.util.*;
 import java.util.Date;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,5 +28,4 @@ public class TestPlayer extends TestEntity {
 
     @Key
     private Gender gender;
-
 }
