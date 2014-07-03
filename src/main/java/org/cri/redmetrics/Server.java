@@ -12,6 +12,7 @@ import org.cri.redmetrics.dao.InconsistentDataException;
 import org.cri.redmetrics.guice.MainModule;
 
 import java.sql.SQLException;
+import org.cri.redmetrics.controller.GroupController;
 
 import static spark.Spark.after;
 import static spark.Spark.exception;
@@ -23,7 +24,7 @@ public class Server {
 
         Injector injector = Guice.createInjector(new MainModule());
 
-        Class[] controllers = {GameController.class, PlayerController.class, EventController.class};
+        Class[] controllers = {GameController.class, PlayerController.class, EventController.class, GroupController.class};
         for (Class<Controller> controllerClass : (Class<Controller>[]) controllers) {
             Controller controller = injector.getInstance(controllerClass);
             controller.publish();

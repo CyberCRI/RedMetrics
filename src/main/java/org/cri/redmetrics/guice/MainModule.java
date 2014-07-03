@@ -11,10 +11,12 @@ import com.j256.ormlite.support.ConnectionSource;
 import java.sql.SQLException;
 import org.cri.redmetrics.controller.EventController;
 import org.cri.redmetrics.controller.GameController;
+import org.cri.redmetrics.controller.GroupController;
 import org.cri.redmetrics.controller.PlayerController;
 import org.cri.redmetrics.dao.AddressDao;
 import org.cri.redmetrics.dao.EventDao;
 import org.cri.redmetrics.dao.GameDao;
+import org.cri.redmetrics.dao.GroupDao;
 import org.cri.redmetrics.dao.PlayerDao;
 import org.cri.redmetrics.json.*;
 
@@ -30,19 +32,21 @@ public class MainModule extends AbstractModule {
         bind(GameJsonConverter.class).asEagerSingleton();
         bind(PlayerJsonConverter.class).asEagerSingleton();
         bind(EventJsonConverter.class).asEagerSingleton();
+        bind(GroupJsonConverter.class).asEagerSingleton();
 
         bind(GameController.class).asEagerSingleton();
         bind(GameDao.class).asEagerSingleton();
 
         bind(PlayerController.class).asEagerSingleton();
         bind(PlayerDao.class).asEagerSingleton();
-        
-        bind(AddressDao.class).asEagerSingleton();
                 
         bind(EventController.class).asEagerSingleton();
         bind(EventDao.class).asEagerSingleton();
-
-        bind(JsonParser.class).asEagerSingleton();
+        
+        bind(GroupController.class).asEagerSingleton();
+        bind(GroupDao.class).asEagerSingleton();
+        
+        bind(AddressDao.class).asEagerSingleton();
 
     }
 

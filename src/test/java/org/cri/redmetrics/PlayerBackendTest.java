@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.Date;
 import org.cri.redmetrics.model.Gender;
 import static org.fest.assertions.api.Assertions.*;
-import org.testng.annotations.Test;
 
 /**
  *
@@ -45,7 +44,7 @@ public class PlayerBackendTest extends HttpBackendTest<TestPlayer> {
 
     // CREATE
     
-    @Test
+
     public void canCreateGame() throws IOException {
         assertThat(createdPlayer.getId()).isNotNull().isNotEqualTo(0);
         assertThat(createdPlayer.getEmail()).isEqualTo(EMAIL);

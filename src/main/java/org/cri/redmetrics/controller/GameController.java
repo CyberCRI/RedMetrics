@@ -5,6 +5,7 @@ import org.cri.redmetrics.dao.GameDao;
 import org.cri.redmetrics.json.GameJsonConverter;
 import org.cri.redmetrics.model.Game;
 
+
 public class GameController extends Controller<Game, GameDao> {
 
     @Inject
