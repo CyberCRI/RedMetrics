@@ -4,9 +4,9 @@ import com.google.api.client.http.HttpContent;
 import com.google.api.client.http.json.JsonHttpContent;
 import com.google.api.client.json.gson.GsonFactory;
 import java.io.IOException;
-import java.util.Date;
 import org.cri.redmetrics.model.Gender;
 import static org.fest.assertions.api.Assertions.*;
+import org.testng.annotations.Test;
 
 /**
  *
@@ -18,7 +18,7 @@ public class PlayerBackendTest extends HttpBackendTest<TestPlayer> {
     private static final String EMAIL = Math.random() + "test@test.fr";
     private static final String FNAME = "Arthur";
     private static final String LNAME = "Besnard";
-    private static final Date BDATE = new Date();
+    private static final String BDATE = "1989-06-21 10:15:17";
     private static final TestAddress ADDR  = new TestAddress("77114", "Hermé");
     private static final Gender GENDER = Gender.MALE;
 
@@ -44,7 +44,7 @@ public class PlayerBackendTest extends HttpBackendTest<TestPlayer> {
 
     // CREATE
     
-
+    @Test
     public void canCreateGame() throws IOException {
         assertThat(createdPlayer.getId()).isNotNull().isNotEqualTo(0);
         assertThat(createdPlayer.getEmail()).isEqualTo(EMAIL);
