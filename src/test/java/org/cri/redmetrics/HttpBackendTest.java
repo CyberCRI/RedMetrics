@@ -4,13 +4,14 @@ package org.cri.redmetrics;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpContent;
 import com.google.api.client.http.HttpRequestFactory;
+import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.http.json.JsonHttpContent;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.gson.GsonFactory;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+
 import java.io.IOException;
+
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
@@ -19,7 +20,6 @@ public abstract class HttpBackendTest<E extends TestEntity> {
     Server server = new Server();
 
     HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory((request) -> request.setParser(new JsonObjectParser(new GsonFactory())));
-    Gson gsonInst = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
 
     String path;
     Class<E> type;
@@ -62,14 +62,26 @@ public abstract class HttpBackendTest<E extends TestEntity> {
         return requestFactory.buildGetRequest(url(path)).execute().parseAs(type);
     }
 
-    E post(String path, E json) throws IOException {
-        HttpContent content = new JsonHttpContent(new GsonFactory(), json);
-        return requestFactory.buildPostRequest(url(path), content).execute().parseAs(type);
+    HttpContent asJson(E entity) {
+        return new JsonHttpContent(new GsonFactory(), entity);
     }
 
-    E put(String path, E json) throws IOException {
-        HttpContent content = new JsonHttpContent(new GsonFactory(), json);
-        return requestFactory.buildPutRequest(url(path), content).execute().parseAs(type);
+    HttpResponse buildPostRequest(String path, E entity) throws IOException {
+        HttpContent json = asJson(entity);
+        return requestFactory.buildPostRequest(url(path), json).execute();
+    }
+
+    HttpResponse buildPostRequest(E entity) throws IOException {
+        return buildPostRequest(path, entity);
+    }
+
+    E post(String path, E entity) throws IOException {
+        return buildPostRequest(path, entity).parseAs(type);
+    }
+
+    E put(String path, E entity) throws IOException {
+        HttpContent json = asJson(entity);
+        return requestFactory.buildPutRequest(url(path), json).execute().parseAs(type);
     }
 
     E delete(String path) throws IOException {
