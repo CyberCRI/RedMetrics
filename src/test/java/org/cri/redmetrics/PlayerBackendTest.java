@@ -1,17 +1,11 @@
 package org.cri.redmetrics;
 
-import com.google.api.client.http.HttpContent;
-import com.google.api.client.http.json.JsonHttpContent;
-import com.google.api.client.json.gson.GsonFactory;
-import java.io.IOException;
 import org.cri.redmetrics.model.Gender;
-import static org.fest.assertions.api.Assertions.*;
 import org.testng.annotations.Test;
+import java.io.IOException;
 
-/**
- *
- * @author Besnard Arthur
- */
+import static org.fest.assertions.api.Assertions.assertThat;
+
 public class PlayerBackendTest extends HttpBackendTest<TestPlayer> {
 
     private static TestPlayer createdPlayer;
@@ -19,7 +13,7 @@ public class PlayerBackendTest extends HttpBackendTest<TestPlayer> {
     private static final String FNAME = "Arthur";
     private static final String LNAME = "Besnard";
     private static final String BDATE = "1989-06-21 10:15:17";
-    private static final TestAddress ADDR  = new TestAddress("77114", "Hermé");
+    private static final TestAddress ADDR = new TestAddress("77114", "Herme");
     private static final Gender GENDER = Gender.MALE;
 
     public PlayerBackendTest() {
@@ -43,7 +37,7 @@ public class PlayerBackendTest extends HttpBackendTest<TestPlayer> {
     }
 
     // CREATE
-    
+
     @Test
     public void canCreateGame() throws IOException {
         assertThat(createdPlayer.getId()).isNotNull().isNotEqualTo(0);
@@ -51,20 +45,10 @@ public class PlayerBackendTest extends HttpBackendTest<TestPlayer> {
         assertThat(createdPlayer.getFirstName()).isEqualTo(FNAME);
         assertThat(createdPlayer.getLastName()).isEqualTo(LNAME);
         assertThat(createdPlayer.getBirthDate()).isEqualTo(BDATE);
-        assertThat(createdPlayer.getAddress()).isEqualTo(ADDR);
-        assertThat(createdPlayer.getGender());
-        assertThat(createdPlayer.getGender() == GENDER);
+        assertThat(createdPlayer.getGender()).isEqualTo(GENDER);
+        // Comparing addresses
+        assertThat(createdPlayer.getAddress().getPostalCode()).isEqualTo(ADDR.getPostalCode());
+        assertThat(createdPlayer.getAddress().getCountry()).isEqualTo(ADDR.getCountry());
     }
-    
-    @Override
-    TestPlayer post(String path, TestPlayer json) throws IOException {
-        HttpContent content = new JsonHttpContent(new GsonFactory(), json);
-        return requestFactory.buildPostRequest(url(path), content).execute().parseAs(type);
-    }
-    @Override
-    TestPlayer put(String path, TestPlayer json) throws IOException {
-        HttpContent content = new JsonHttpContent(new GsonFactory(), json);
-        return requestFactory.buildPutRequest(url(path), content).execute().parseAs(type);
-    }
-    
+
 }

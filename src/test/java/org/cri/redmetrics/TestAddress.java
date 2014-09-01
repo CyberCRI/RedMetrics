@@ -5,12 +5,10 @@ import com.google.api.client.util.Key;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-/**
- *
- * @author Besnard Arthur
- */
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class TestAddress extends TestEntity {
