@@ -6,18 +6,20 @@ import com.google.api.client.http.HttpContent;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.http.json.JsonHttpContent;
-import com.google.api.client.json.GenericJson;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.io.IOException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-
-import java.io.IOException;
 
 public abstract class HttpBackendTest<E extends TestEntity> {
 
     Server server = new Server();
+
     HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory((request) -> request.setParser(new JsonObjectParser(new GsonFactory())));
+    Gson gsonInst = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
 
     String path;
     Class<E> type;
@@ -60,12 +62,12 @@ public abstract class HttpBackendTest<E extends TestEntity> {
         return requestFactory.buildGetRequest(url(path)).execute().parseAs(type);
     }
 
-    E post(String path, GenericJson json) throws IOException {
+    E post(String path, E json) throws IOException {
         HttpContent content = new JsonHttpContent(new GsonFactory(), json);
         return requestFactory.buildPostRequest(url(path), content).execute().parseAs(type);
     }
 
-    E put(String path, GenericJson json) throws IOException {
+    E put(String path, E json) throws IOException {
         HttpContent content = new JsonHttpContent(new GsonFactory(), json);
         return requestFactory.buildPutRequest(url(path), content).execute().parseAs(type);
     }

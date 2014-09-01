@@ -1,16 +1,6 @@
 package org.cri.redmetrics;
 
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpContent;
-import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponseException;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.http.json.JsonHttpContent;
-import com.google.api.client.json.GenericJson;
-import com.google.api.client.json.JsonObjectParser;
-import com.google.api.client.json.gson.GsonFactory;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -20,8 +10,8 @@ import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrow
 
 public class GameBackendTest extends HttpBackendTest<TestGame> {
 
-    static final String GAME_NAME = "Asteroids";
-    static final String UPDATED_GAME_NAME = "Gasteroids";
+    private static final String GAME_NAME = "Asteroids";
+    private static final String UPDATED_GAME_NAME = "Gasteroids";
 
     TestGame createdGame;
 
@@ -29,6 +19,7 @@ public class GameBackendTest extends HttpBackendTest<TestGame> {
         super("game/", TestGame.class);
     }
 
+    @Override
     public void init() throws IOException {
         resetCreatedGame();
     }
@@ -120,6 +111,4 @@ public class GameBackendTest extends HttpBackendTest<TestGame> {
             assertThat(e.getStatusCode()).isEqualTo(404);
         }
     }
-
-
 }

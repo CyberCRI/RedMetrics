@@ -1,14 +1,13 @@
 package org.cri.redmetrics;
 
 
-import com.google.api.client.util.Key;
+import com.google.api.client.util.*;
 import lombok.Data;
-import org.cri.redmetrics.model.Address;
+import lombok.EqualsAndHashCode;
 import org.cri.redmetrics.model.Gender;
 
-import java.util.Date;
-
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class TestPlayer extends TestEntity {
 
     @Key
@@ -21,12 +20,11 @@ public class TestPlayer extends TestEntity {
     private String lastName;
 
     @Key
-    private Date birthDate;
+    private String birthDate;
 
     @Key
-    private Address address;
+    private TestAddress address;
 
     @Key
     private Gender gender;
-
 }

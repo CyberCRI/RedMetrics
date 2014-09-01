@@ -8,7 +8,7 @@ public class DefaultGsonProvider implements Provider<Gson> {
 
     @Override
     public Gson get() {
-        return new GsonBuilder().setPrettyPrinting().create();
+        return new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").setPrettyPrinting().create();
     }
 
 }

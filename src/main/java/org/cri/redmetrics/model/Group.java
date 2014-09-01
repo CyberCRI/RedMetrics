@@ -1,3 +1,4 @@
+
 package org.cri.redmetrics.model;
 
 import com.j256.ormlite.field.DatabaseField;
@@ -6,22 +7,28 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@DatabaseTable(tableName = "addresses")
+/**
+ *
+ * @author Besnard Arthur
+ */
+@DatabaseTable(tableName = "groups")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Address implements Entity{
-
+@Data
+public class Group implements Entity{
+    
     @DatabaseField(generatedId = true)
     private int id;
-
-//    @DatabaseField
-//    private String[] lines;
-
+    
+    @DatabaseField(canBeNull = false)
+    private String name;
+    
     @DatabaseField
-    private String postalCode;
-
+    private String description;
+    
     @DatabaseField
-    private String country;
-
+    private String creator;
+    
+    @DatabaseField
+    private boolean open;
 }

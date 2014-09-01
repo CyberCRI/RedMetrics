@@ -8,10 +8,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class PlayerDao extends EntityDao<Player> {
+    
+    private final AddressDao addrDao;
 
     @Inject
-    public PlayerDao(ConnectionSource connectionSource) throws SQLException {
+    public PlayerDao(ConnectionSource connectionSource, AddressDao addrDao) throws SQLException {
         super(connectionSource, Player.class);
+        this.addrDao = addrDao;
     }
 
     public Player findByEmail(String email) {
@@ -24,6 +27,28 @@ public class PlayerDao extends EntityDao<Player> {
         } catch (SQLException e) {
             throw new DbException(e);
         }
+    }
+
+    @Override
+    public Player create(Player entity) {
+        try{
+            addrDao.orm.create(entity.getAddress());
+            return super.create(entity);
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
+
+    @Override
+    public Player delete(int id) {
+        Player p = super.delete(id);
+        addrDao.delete(p.getAddress().getId());
+        return p;
+    }
+
+    @Override
+    public Player update(Player entity) {
+        return super.update(entity);
     }
 
 }

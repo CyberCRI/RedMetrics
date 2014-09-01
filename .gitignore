@@ -1,3 +1,4 @@
 # IDE config files
 .idea
 redmetrics.iml
+/target/
