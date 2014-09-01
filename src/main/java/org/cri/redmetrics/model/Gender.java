@@ -1,14 +1,13 @@
 package org.cri.redmetrics.model;
 
-import com.google.api.client.util.Value;
-
+import com.j256.ormlite.field.DatabaseField;
 
 public enum Gender {
 
-    @Value("male")
+    @DatabaseField
     MALE,
 
-    @Value("female")
+    @DatabaseField
     FEMALE
 
 }

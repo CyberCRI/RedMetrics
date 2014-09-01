@@ -1,10 +1,9 @@
 package org.cri.redmetrics;
 
 
-import com.google.api.client.util.*;
+import com.google.api.client.util.Key;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.cri.redmetrics.model.Gender;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -26,5 +25,5 @@ public class TestPlayer extends TestEntity {
     private TestAddress address;
 
     @Key
-    private Gender gender;
+    private String gender;
 }

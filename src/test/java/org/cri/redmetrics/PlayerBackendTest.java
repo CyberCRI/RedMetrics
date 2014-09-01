@@ -14,7 +14,7 @@ public class PlayerBackendTest extends HttpBackendTest<TestPlayer> {
     private static final String LNAME = "Besnard";
     private static final String BDATE = "1989-06-21 10:15:17";
     private static final TestAddress ADDR = new TestAddress("77114", "Herme");
-    private static final Gender GENDER = Gender.MALE;
+    private static final String GENDER = Gender.MALE.name();
 
     public PlayerBackendTest() {
         super("player/", TestPlayer.class);
