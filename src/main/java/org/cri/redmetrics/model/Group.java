@@ -7,10 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- *
- * @author Besnard Arthur
- */
 @DatabaseTable(tableName = "groups")
 @NoArgsConstructor
 @AllArgsConstructor

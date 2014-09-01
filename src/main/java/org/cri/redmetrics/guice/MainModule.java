@@ -6,22 +6,20 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
-import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
-import java.sql.SQLException;
 import org.cri.redmetrics.controller.EventController;
 import org.cri.redmetrics.controller.GameController;
 import org.cri.redmetrics.controller.GroupController;
 import org.cri.redmetrics.controller.PlayerController;
-import org.cri.redmetrics.dao.AddressDao;
-import org.cri.redmetrics.dao.EventDao;
-import org.cri.redmetrics.dao.GameDao;
-import org.cri.redmetrics.dao.GroupDao;
-import org.cri.redmetrics.dao.PlayerDao;
+import org.cri.redmetrics.dao.*;
+import org.cri.redmetrics.db.Db;
 import org.cri.redmetrics.json.*;
+
+import java.sql.SQLException;
 
 
 public class MainModule extends AbstractModule {
+
 
     @Override
     protected void configure() {
@@ -39,13 +37,13 @@ public class MainModule extends AbstractModule {
 
         bind(PlayerController.class).asEagerSingleton();
         bind(PlayerDao.class).asEagerSingleton();
-                
+
         bind(EventController.class).asEagerSingleton();
         bind(EventDao.class).asEagerSingleton();
-        
+
         bind(GroupController.class).asEagerSingleton();
         bind(GroupDao.class).asEagerSingleton();
-        
+
         bind(AddressDao.class).asEagerSingleton();
 
     }
@@ -53,8 +51,7 @@ public class MainModule extends AbstractModule {
     @Provides
     @Singleton
     ConnectionSource provideConnectionSource() throws SQLException {
-        String databaseUrl = "jdbc:postgresql://localhost:5432/test";
-        return new JdbcConnectionSource(databaseUrl, "postgres", "admin");
+        return Db.newConnectionSource();
     }
 
 }
