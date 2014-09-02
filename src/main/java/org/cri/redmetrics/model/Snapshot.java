@@ -1,6 +1,5 @@
 package org.cri.redmetrics.model;
 
-import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import lombok.AllArgsConstructor;
@@ -9,10 +8,10 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Data
-@DatabaseTable(tableName = "events")
+@DatabaseTable(tableName = "snapshots")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Event implements Entity {
+public class Snapshot implements Entity {
 
     @DatabaseField(generatedId = true)
     private int id;
@@ -30,18 +29,9 @@ public class Event implements Entity {
     private Player player;
 
     @DatabaseField(canBeNull = false)
-    private String type;
-
-    @DatabaseField(canBeNull = false)
     private Date creationDate = new Date();
 
     @DatabaseField
     private String customData;
-
-    @DatabaseField(dataType = DataType.SERIALIZABLE)
-    private String[] sections;
-
-    @DatabaseField(dataType = DataType.SERIALIZABLE)
-    private long[] coordinates;
 
 }

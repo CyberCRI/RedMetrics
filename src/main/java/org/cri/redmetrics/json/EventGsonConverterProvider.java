@@ -3,16 +3,13 @@ package org.cri.redmetrics.json;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.inject.Provider;
-
 
 public class EventGsonConverterProvider implements Provider<Gson> {
 
     @Override
     public Gson get() {
-        return new GsonBuilder()
-                .setPrettyPrinting()
+        return DefaultGsonBuilder.get()
                 .addDeserializationExclusionStrategy(new DataExclusionStrategy()).create();
     }
 
@@ -21,7 +18,7 @@ public class EventGsonConverterProvider implements Provider<Gson> {
         @Override
         public boolean shouldSkipField(FieldAttributes fieldAttributes) {
             String fieldName = fieldAttributes.getName();
-            if (fieldName == "data" || fieldName == "game" || fieldName == "player")
+            if (fieldName == "customData" || fieldName == "game" || fieldName == "player")
                 return true;
             else
                 return false;

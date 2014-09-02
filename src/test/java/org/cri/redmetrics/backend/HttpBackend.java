@@ -9,21 +9,23 @@ import com.google.api.client.http.json.JsonHttpContent;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.gson.GsonFactory;
 import org.cri.redmetrics.Server;
-import org.cri.redmetrics.model.TestEntity;
 import org.cri.redmetrics.controller.Controller;
+import org.cri.redmetrics.model.TestEntity;
 
 import java.io.IOException;
 
 public class HttpBackend<E extends TestEntity> {
 
-    protected static final HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory((request) -> request.setParser(new JsonObjectParser(new GsonFactory())));
+    private static final int PORT_NUMBER = 7654;
+    private static final Server server = new Server(PORT_NUMBER);
+    private static final HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory((request) -> request.setParser(new JsonObjectParser(new GsonFactory())));
     protected String path;
     protected Class<E> type;
 
     public HttpBackend(String path, Class<E> type) {
         this.path = path;
         this.type = type;
-        Server.start();
+        server.start();
     }
 
     public E get(int id) throws IOException {
@@ -73,7 +75,7 @@ public class HttpBackend<E extends TestEntity> {
     }
 
     private GenericUrl url(String path) {
-        return new GenericUrl("http://localhost:4567/" + Controller.basePath + path);
+        return new GenericUrl("http://localhost:" + PORT_NUMBER + "/" + Controller.basePath + path);
     }
 
 }

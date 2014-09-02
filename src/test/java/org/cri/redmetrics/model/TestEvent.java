@@ -1,5 +1,6 @@
 package org.cri.redmetrics.model;
 
+import com.google.api.client.json.GenericJson;
 import com.google.api.client.util.Key;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,13 +19,13 @@ public class TestEvent extends TestEntity {
     private String type;
 
     @Key
-    private String subject;
+    private String creationDate;
 
     @Key
-    private double value;
+    private GenericJson customData;
 
     @Key
-    private String data;
+    private String[] sections;
 
     @Key
     private long[] coordinates;

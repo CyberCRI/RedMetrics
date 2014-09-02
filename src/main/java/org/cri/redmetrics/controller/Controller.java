@@ -32,6 +32,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
     private void publishGeneric() {
 
         post(path + "/", (request, response) -> {
+            // System.out.println("Request body : " + request.body());
             E entity = jsonConverter.parse(request.body());
             beforeCreation(entity, request, response);
             create(entity);

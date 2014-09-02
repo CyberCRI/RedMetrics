@@ -44,10 +44,10 @@ public class EventJsonConverter extends EntityJsonConverter<Event> {
             event.setType(type.getAsString().trim().toLowerCase());
         }
 
-        // DATA
-        JsonElement data = jsonObject.get("data");
+        // CUSTOM DATA
+        JsonElement data = jsonObject.get("customData");
         if (data != null) {
-            event.setData(data.toString()); // Make data a String so it can be persisted in SQL Database
+            event.setCustomData(data.toString()); // Make customData a String so it can be persisted in SQL Database
         }
 
         return event;
@@ -68,9 +68,9 @@ public class EventJsonConverter extends EntityJsonConverter<Event> {
             eventJson.addProperty("type", event.getType());
 
         // DATA
-        if (event.getData() != null) {
-            JsonElement dataJson = jsonParser.parse(event.getData()); // Transform saved data field back to its original form
-            eventJson.add("data", dataJson);
+        if (event.getCustomData() != null) {
+            JsonElement dataJson = jsonParser.parse(event.getCustomData()); // Transform saved customData field back to its original form
+            eventJson.add("customData", dataJson);
         }
 
         return eventJson;

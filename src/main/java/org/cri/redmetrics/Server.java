@@ -10,16 +10,28 @@ import org.cri.redmetrics.guice.MainModule;
 
 import java.sql.SQLException;
 
-import static spark.Spark.after;
-import static spark.Spark.exception;
+import static spark.Spark.*;
 
 public class Server {
 
-    private static boolean started = false;
+    private final int portNumber;
 
-    public static void start() {
+    private boolean started;
+
+    public Server() {
+        this(4567);
+    }
+
+    public Server(int portNumber) {
+        this.portNumber = portNumber;
+    }
+
+    public void start() {
 
         if (started) return;
+        started = true;
+
+        setPort(portNumber);
 
         Injector injector = Guice.createInjector(new MainModule());
 
@@ -60,8 +72,6 @@ public class Server {
             response.status(400);
             response.body(InconsistentDataException.class.getSimpleName() + " : " + e.getMessage());
         });
-
-        started = true;
 
     }
 

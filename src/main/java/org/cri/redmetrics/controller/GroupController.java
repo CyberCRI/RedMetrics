@@ -6,10 +6,6 @@ import org.cri.redmetrics.dao.GroupDao;
 import org.cri.redmetrics.json.GroupJsonConverter;
 import org.cri.redmetrics.model.Group;
 
-/**
- *
- * @author Besnard Arthur
- */
 public class GroupController extends Controller<Group, GroupDao>{
     
     @Inject
