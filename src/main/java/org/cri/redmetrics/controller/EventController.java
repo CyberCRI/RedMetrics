@@ -18,9 +18,9 @@ public class EventController extends Controller<Event, EventDao> {
 
     @Override
     protected void beforeCreation(Event entity, Request request, Response response) {
-        if (entity.getGame() == null) halt(400, "required Game ID");
-        if (entity.getPlayer() == null) halt(400, "required Player ID");
-        if (entity.getType() == null) halt(400, "required event type (START, END, WIN, FAIL, RESTART, GAIN or LOSE");
+        if (entity.getGame() == null) halt(400, "game required (integer");
+        if (entity.getPlayer() == null) halt(400, "player required (integer)");
+        if (entity.getType() == null) halt(400, "type is required (string)");
 //        String adminKey = request.params("adminKey");
 //        if (adminKey == null) halt();
     }

@@ -1,4 +1,4 @@
-package org.cri.redmetrics;
+package org.cri.redmetrics.model;
 
 
 import com.google.api.client.util.Key;

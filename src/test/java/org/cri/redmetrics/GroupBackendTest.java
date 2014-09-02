@@ -3,7 +3,8 @@ package org.cri.redmetrics;
 
 import com.google.api.client.http.HttpResponseException;
 import org.cri.redmetrics.backend.GroupBackend;
-import org.testng.annotations.BeforeClass;
+import org.cri.redmetrics.model.TestGroup;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -13,13 +14,12 @@ import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrow
 
 public class GroupBackendTest {
 
-    final GroupBackend groups = new GroupBackend();
+    static final GroupBackend groups = new GroupBackend();
 
     TestGroup original;
     TestGroup read;
 
-
-    @BeforeClass
+    @BeforeTest
     public void setUp() throws IOException {
         resetTestGroups();
     }

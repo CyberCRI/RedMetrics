@@ -2,8 +2,9 @@ package org.cri.redmetrics;
 
 import com.google.api.client.http.HttpResponseException;
 import org.cri.redmetrics.backend.GameBackend;
+import org.cri.redmetrics.model.TestGame;
 import org.cri.redmetrics.util.TestUtils;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -13,14 +14,14 @@ import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrow
 
 public class GameBackendTest {
 
-    final GameBackend games = new GameBackend();
+    static final GameBackend games = new GameBackend();
 
     static final String GAME_NAME = "Asteroids";
     static final String UPDATED_GAME_NAME = "Gasteroids";
 
     TestGame createdGame;
 
-    @BeforeClass
+    @BeforeTest
     public void setUp() throws IOException {
         resetCreatedGame();
     }

@@ -39,8 +39,10 @@ public class EventJsonConverter extends EntityJsonConverter<Event> {
         }
 
         // TYPE
-        String type = jsonObject.get("type").getAsString().trim().toLowerCase();
-        event.setType(type);
+        JsonElement type = jsonObject.get("type");
+        if (type != null) {
+            event.setType(type.getAsString().trim().toLowerCase());
+        }
 
         // DATA
         JsonElement data = jsonObject.get("data");

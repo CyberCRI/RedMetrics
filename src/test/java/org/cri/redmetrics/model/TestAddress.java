@@ -1,5 +1,5 @@
 
-package org.cri.redmetrics;
+package org.cri.redmetrics.model;
 
 import com.google.api.client.util.Key;
 import lombok.AllArgsConstructor;

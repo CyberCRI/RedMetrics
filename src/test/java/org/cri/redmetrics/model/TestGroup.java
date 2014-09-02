@@ -1,14 +1,10 @@
 
-package org.cri.redmetrics;
+package org.cri.redmetrics.model;
 
 import com.google.api.client.util.Key;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- *
- * @author Besnard Arthur
- */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class TestGroup extends TestEntity{

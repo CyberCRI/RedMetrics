@@ -3,7 +3,9 @@ package org.cri.redmetrics;
 import com.google.api.client.http.HttpResponseException;
 import org.cri.redmetrics.backend.PlayerBackend;
 import org.cri.redmetrics.model.Gender;
-import org.testng.annotations.BeforeClass;
+import org.cri.redmetrics.model.TestAddress;
+import org.cri.redmetrics.model.TestPlayer;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -25,8 +27,7 @@ public class PlayerBackendTest {
     TestPlayer createdPlayer;
     TestPlayer anotherPlayer;
 
-
-    @BeforeClass
+    @BeforeTest
     public void setUp() throws IOException {
         resetCreatedPlayer();
         createdPlayer = players.post(createdPlayer);

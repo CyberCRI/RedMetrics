@@ -1,4 +1,4 @@
-package org.cri.redmetrics;
+package org.cri.redmetrics.model;
 
 import com.google.api.client.util.Key;
 import lombok.Data;
@@ -9,10 +9,10 @@ import lombok.EqualsAndHashCode;
 public class TestEvent extends TestEntity {
 
     @Key
-    private int gameId;
+    private int game;
 
     @Key
-    private int playerId;
+    private int player;
 
     @Key
     private String type;

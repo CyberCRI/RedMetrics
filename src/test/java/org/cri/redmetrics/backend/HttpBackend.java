@@ -9,7 +9,7 @@ import com.google.api.client.http.json.JsonHttpContent;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.gson.GsonFactory;
 import org.cri.redmetrics.Server;
-import org.cri.redmetrics.TestEntity;
+import org.cri.redmetrics.model.TestEntity;
 import org.cri.redmetrics.controller.Controller;
 
 import java.io.IOException;
