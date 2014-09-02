@@ -6,8 +6,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public abstract class TestEntity extends GenericJson{
+@EqualsAndHashCode(callSuper = false)
+public abstract class TestEntity extends GenericJson {
+
     @Key
     private int id;
+
 }

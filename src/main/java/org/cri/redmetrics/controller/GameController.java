@@ -16,7 +16,7 @@ public class GameController extends Controller<Game, GameDao> {
     @Override
     protected Game read(int id) {
         Game game = super.read(id);
-        if (game != null) game.setApiKey(null);
+        if (game != null) game.setAdminKey(null);
         return game;
     }
 

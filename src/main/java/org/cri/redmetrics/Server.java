@@ -3,24 +3,23 @@ package org.cri.redmetrics;
 import com.google.gson.JsonSyntaxException;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import org.cri.redmetrics.controller.Controller;
-import org.cri.redmetrics.controller.EventController;
-import org.cri.redmetrics.controller.GameController;
-import org.cri.redmetrics.controller.PlayerController;
+import org.cri.redmetrics.controller.*;
 import org.cri.redmetrics.dao.DbException;
 import org.cri.redmetrics.dao.InconsistentDataException;
 import org.cri.redmetrics.guice.MainModule;
 
 import java.sql.SQLException;
-import org.cri.redmetrics.controller.GroupController;
 
 import static spark.Spark.after;
 import static spark.Spark.exception;
-import static spark.SparkBase.stop;
 
 public class Server {
 
-    public void start() {
+    private static boolean started = false;
+
+    public static void start() {
+
+        if (started) return;
 
         Injector injector = Guice.createInjector(new MainModule());
 
@@ -61,9 +60,9 @@ public class Server {
             response.status(400);
             response.body(InconsistentDataException.class.getSimpleName() + " : " + e.getMessage());
         });
+
+        started = true;
+
     }
 
-    public void clearAllRoutes() {
-        stop();
-    }
 }

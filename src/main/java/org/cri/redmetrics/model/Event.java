@@ -29,8 +29,8 @@ public class Event implements Entity {
             columnDefinition = "INT, FOREIGN KEY (player_id) REFERENCES players(id)")
     private Player player;
 
-    @DatabaseField
-    private EventType type;
+    @DatabaseField(canBeNull = false)
+    private String type;
 
     @DatabaseField
     private String subject;
@@ -40,6 +40,9 @@ public class Event implements Entity {
 
     @DatabaseField
     private String data;
+
+    @DatabaseField(dataType = DataType.SERIALIZABLE)
+    private String[] section;
     
     @DatabaseField(dataType = DataType.SERIALIZABLE)
     private long[] coordinates;

@@ -1,7 +1,9 @@
 package org.cri.redmetrics;
 
 import com.google.api.client.http.HttpResponseException;
+import org.cri.redmetrics.backend.PlayerBackend;
 import org.cri.redmetrics.model.Gender;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -9,34 +11,44 @@ import java.io.IOException;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrown;
 
-public class PlayerBackendTest extends HttpBackendTest<TestPlayer> {
+public class PlayerBackendTest {
 
-    private static TestPlayer createdPlayer;
-    private static final String EMAIL = Math.random() + "test@test.fr";
-    private static final String FNAME = "Arthur";
-    private static final String LNAME = "Besnard";
-    private static final String BDATE = "1989-06-21 10:15:17";
-    private static final TestAddress ADDR = new TestAddress("77114", "Herme");
-    private static final String GENDER = Gender.MALE.name();
+    final PlayerBackend players = new PlayerBackend();
 
-    public PlayerBackendTest() {
-        super("player/", TestPlayer.class);
-    }
+    static final String EMAIL = Math.random() + "test@test.fr";
+    static final String FNAME = "Arthur";
+    static final String LNAME = "Besnard";
+    static final String BDATE = "1989-06-21 10:15:17";
+    static final TestAddress ADDR = new TestAddress("77114", "Herme");
+    static final String GENDER = Gender.MALE.name();
 
-    @Override
-    void init() throws IOException {
+    TestPlayer createdPlayer;
+    TestPlayer anotherPlayer;
+
+
+    @BeforeClass
+    public void setUp() throws IOException {
         resetCreatedPlayer();
+        createdPlayer = players.post(createdPlayer);
     }
 
     void resetCreatedPlayer() throws IOException {
-        TestPlayer player = new TestPlayer();
-        player.setEmail(EMAIL);
-        player.setFirstName(FNAME);
-        player.setLastName(LNAME);
-        player.setBirthDate(BDATE);
-        player.setAddress(ADDR);
-        player.setGender(GENDER);
-        createdPlayer = post(player);
+        createdPlayer = new TestPlayer();
+        createdPlayer.setEmail(EMAIL);
+        createdPlayer.setFirstName(FNAME);
+        createdPlayer.setLastName(LNAME);
+        createdPlayer.setBirthDate(BDATE);
+        createdPlayer.setAddress(ADDR);
+        createdPlayer.setGender(GENDER);
+    }
+
+    void createAnotherPlayer() throws IOException {
+        anotherPlayer = new TestPlayer();
+        anotherPlayer.setEmail(Math.random() + "test@test.fr");
+        anotherPlayer.setFirstName("John");
+        anotherPlayer.setLastName("Snow");
+        anotherPlayer.setBirthDate("1983-07-17 00:00:00");
+        players.post(anotherPlayer);
     }
 
     // CREATE
@@ -55,10 +67,32 @@ public class PlayerBackendTest extends HttpBackendTest<TestPlayer> {
     }
 
     @Test
-    public void shouldNotAllowDuplicateEmails() throws IOException {
+    public void shouldForbidCreationWhenDuplicateEmail() throws IOException {
         createdPlayer.setId(0);
         try {
-            buildPostRequest(createdPlayer);
+            players.post(createdPlayer);
+            failBecauseExceptionWasNotThrown(HttpResponseException.class);
+        } catch (HttpResponseException e) {
+            assertThat(e.getStatusCode()).isEqualTo(400);
+        }
+    }
+
+    // READ
+
+    @Test
+    public void canFindByEmail() throws IOException {
+        TestPlayer foundPlayer = players.get("player/email/" + EMAIL);
+        assertThat(foundPlayer.getId()).isEqualTo(createdPlayer.getId());
+    }
+
+    // UPDATE
+
+    @Test
+    public void shouldForbidUpdateWhenDuplicateEmail() throws IOException {
+        createAnotherPlayer();
+        try {
+            anotherPlayer.setEmail(EMAIL);
+            players.put(createdPlayer);
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(400);

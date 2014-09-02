@@ -2,26 +2,25 @@
 package org.cri.redmetrics;
 
 import com.google.api.client.http.HttpResponseException;
-import java.io.IOException;
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrown;
+import org.cri.redmetrics.backend.GroupBackend;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-/**
- *
- * @author Besnard Arthur
- */
-public class GroupBackendTest extends HttpBackendTest<TestGroup>{
-    
+import java.io.IOException;
+
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrown;
+
+public class GroupBackendTest {
+
+    final GroupBackend groups = new GroupBackend();
+
     TestGroup original;
     TestGroup read;
-    
-    public GroupBackendTest() {
-        super("group/", TestGroup.class);
-    }
-    
-    @Override
-    void init() throws IOException {
+
+
+    @BeforeClass
+    public void setUp() throws IOException {
         resetTestGroups();
     }
 
@@ -31,11 +30,11 @@ public class GroupBackendTest extends HttpBackendTest<TestGroup>{
         original.setDescription("A test Group");
         original.setName("1337");
         original.setOpen(true);
-        read = post(original);
+        read = groups.post(original);
     }
-    
+
     //CREATE
-    
+
     @Test
     public void canCreateGroup() throws IOException {
         assertThat(read.getId()).isNotNull();
@@ -50,14 +49,14 @@ public class GroupBackendTest extends HttpBackendTest<TestGroup>{
     public void canReadGroup() throws IOException {
         resetTestGroups();
         original = read;
-        read = get(original.getId());
+        read = groups.get(original.getId());
         assertThat(read.getName()).isEqualTo(original.getName());
     }
 
     @Test
     void shouldFailWhenReadingUnknownId() throws IOException {
         try {
-            get(-1);
+            groups.get(-1);
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(404);
@@ -69,15 +68,15 @@ public class GroupBackendTest extends HttpBackendTest<TestGroup>{
     @Test
     public void canUpdateGroup() throws IOException {
         original = read;
-        original.setName(original.getName()+"_Updated");
-        read = put(original);
+        original.setName(original.getName() + "_Updated");
+        read = groups.put(original);
         assertThat(read.getName()).isEqualTo(original.getName());
     }
 
     @Test
     public void shouldFailWhenUpdatingWithUrlIdDifferentThanContentId() throws IOException {
         try {
-            put(path + 9999999, original);
+            groups.put(9999999, original);
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(400);
@@ -89,7 +88,7 @@ public class GroupBackendTest extends HttpBackendTest<TestGroup>{
         try {
             int id = -1;
             original.setId(id);
-            read = put(path + id, original);
+            read = groups.put(id, original);
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(400);
@@ -101,13 +100,13 @@ public class GroupBackendTest extends HttpBackendTest<TestGroup>{
     @Test
     public void canDeleteGame() throws IOException {
         resetTestGroups();
-        read = delete(original.getId());
+        read = groups.delete(original.getId());
         try {
-            get(original.getId());
+            groups.get(original.getId());
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(404);
         }
     }
-    
+
 }

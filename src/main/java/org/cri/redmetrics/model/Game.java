@@ -20,7 +20,7 @@ public class Game implements Entity {
     private int id;
 
     @DatabaseField(dataType = DataType.UUID)
-    private UUID apiKey;
+    private UUID adminKey;
 
     @DatabaseField(canBeNull = false)
     private String name;

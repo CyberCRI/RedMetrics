@@ -1,6 +1,9 @@
 package org.cri.redmetrics;
 
 import com.google.api.client.http.HttpResponseException;
+import org.cri.redmetrics.backend.GameBackend;
+import org.cri.redmetrics.util.TestUtils;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -8,26 +11,24 @@ import java.io.IOException;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrown;
 
-public class GameBackendTest extends HttpBackendTest<TestGame> {
+public class GameBackendTest {
 
-    private static final String GAME_NAME = "Asteroids";
-    private static final String UPDATED_GAME_NAME = "Gasteroids";
+    final GameBackend games = new GameBackend();
+
+    static final String GAME_NAME = "Asteroids";
+    static final String UPDATED_GAME_NAME = "Gasteroids";
 
     TestGame createdGame;
 
-    public GameBackendTest() {
-        super("game/", TestGame.class);
-    }
-
-    @Override
-    public void init() throws IOException {
+    @BeforeClass
+    public void setUp() throws IOException {
         resetCreatedGame();
     }
 
     void resetCreatedGame() throws IOException {
         TestGame game = new TestGame();
         game.setName(GAME_NAME);
-        createdGame = post(game);
+        createdGame = games.post(game);
     }
 
     // CREATE
@@ -35,14 +36,14 @@ public class GameBackendTest extends HttpBackendTest<TestGame> {
     @Test
     public void canCreateGame() throws IOException {
         assertThat(createdGame.getId()).isNotNull().isNotEqualTo(0);
-        assertThat(createdGame.getApiKey()).isNotNull();
+        assertThat(createdGame.getAdminKey()).isNotNull();
         assertThat(createdGame.getName()).isEqualTo(GAME_NAME);
     }
 
     @Test
     public void shouldForbidUnnamedGameCreation() throws IOException {
         try {
-            post(new TestGame());
+            games.post(new TestGame());
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(400);
@@ -53,14 +54,14 @@ public class GameBackendTest extends HttpBackendTest<TestGame> {
 
     @Test
     public void canReadGame() throws IOException {
-        TestGame readGame = get(createdGame.getId());
+        TestGame readGame = games.get(createdGame.getId());
         assertThat(readGame.getName()).isEqualTo(GAME_NAME);
     }
 
     @Test
     void shouldFailWhenReadingUnknownId() throws IOException {
         try {
-            get(randomId());
+            games.get(TestUtils.randomId());
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(404);
@@ -72,14 +73,14 @@ public class GameBackendTest extends HttpBackendTest<TestGame> {
     @Test
     public void canUpdateGame() throws IOException {
         createdGame.setName(UPDATED_GAME_NAME);
-        TestGame updatedGame = put(createdGame);
+        TestGame updatedGame = games.put(createdGame);
         assertThat(updatedGame.getName()).isEqualTo(UPDATED_GAME_NAME);
     }
 
     @Test
     public void shouldFailWhenUpdatingWithUrlIdDifferentThanContentId() throws IOException {
         try {
-            put(path + randomId(), createdGame);
+            games.put(TestUtils.randomId(), createdGame);
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(400);
@@ -91,7 +92,7 @@ public class GameBackendTest extends HttpBackendTest<TestGame> {
         try {
             int id = -1;
             createdGame.setId(id);
-            TestGame updatedGame = put(path + id, createdGame);
+            games.put(id, createdGame);
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(400);
@@ -102,10 +103,10 @@ public class GameBackendTest extends HttpBackendTest<TestGame> {
 
     @Test
     public void canDeleteGame() throws IOException {
-        TestGame deletedGame = delete(createdGame.getId());
+        TestGame deletedGame = games.delete(createdGame.getId());
         resetCreatedGame();
         try {
-            get(deletedGame.getId());
+            games.get(deletedGame.getId());
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(404);

@@ -1,20 +1,28 @@
 package org.cri.redmetrics.controller;
 
-import lombok.RequiredArgsConstructor;
 import org.cri.redmetrics.dao.EntityDao;
 import org.cri.redmetrics.json.JsonConverter;
 import org.cri.redmetrics.model.Entity;
+import spark.Request;
+import spark.Response;
 
 import java.util.List;
 
 import static spark.Spark.*;
 
-@RequiredArgsConstructor
 public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
+
+    public static final String basePath = "/v1/";
 
     protected final String path;
     protected final DAO dao;
     protected final JsonConverter<E> jsonConverter;
+
+    Controller(String path, DAO dao, JsonConverter<E> jsonConverter) {
+        this.path = basePath + path;
+        this.dao = dao;
+        this.jsonConverter = jsonConverter;
+    }
 
     public final void publish() {
         publishGeneric();
@@ -24,22 +32,12 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
     private void publishGeneric() {
 
         post(path + "/", (request, response) -> {
-            System.out.println("Request body : " + request.body());
             E entity = jsonConverter.parse(request.body());
+            beforeCreation(entity, request, response);
             create(entity);
             response.status(201); // Created
             return entity;
         }, jsonConverter);
-
-        /*post(path + "/", new Route() {
-            @Override
-            public Object handle(Request request, Response response) {
-                E entity = jsonConverter.parse(request.body());
-                create(entity);
-                response.status(201); // Created
-                return entity;
-            }
-        });*/
 
         get(path + "/:id", (request, response) -> {
             E entity = read(Integer.parseInt(request.params(":id")));
@@ -59,12 +57,10 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             } else {
                 entity.setId(urlId);
             }
-            return dao.update(entity);
+            return update(entity);
         }, jsonConverter);
 
-        delete(path + "/:id", (request, response) -> {
-            return dao.delete(Integer.parseInt(request.params(":id")));
-        }, jsonConverter);
+        delete(path + "/:id", (request, response) -> dao.delete(Integer.parseInt(request.params(":id"))), jsonConverter);
 
     }
 
@@ -76,10 +72,17 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         return dao.read(id);
     }
 
+    protected E update(E entity) {
+        return dao.update(entity);
+    }
+
     protected List<E> list() {
         return dao.list();
     }
 
     protected void publishSpecific() {
+    }
+
+    protected void beforeCreation(E entity, Request request, Response response) {
     }
 }

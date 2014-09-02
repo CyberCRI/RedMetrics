@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 public class TestGame extends TestEntity {
 
     @Key
-    private String apiKey;
+    private String adminKey;
 
     @Key
     private String name;

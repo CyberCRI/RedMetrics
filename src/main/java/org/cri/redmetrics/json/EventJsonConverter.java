@@ -7,7 +7,6 @@ import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.cri.redmetrics.model.Event;
-import org.cri.redmetrics.model.EventType;
 import org.cri.redmetrics.model.Game;
 import org.cri.redmetrics.model.Player;
 
@@ -40,9 +39,8 @@ public class EventJsonConverter extends EntityJsonConverter<Event> {
         }
 
         // TYPE
-        String type = jsonObject.get("type").getAsString();
-        type = type.trim().toUpperCase();
-        event.setType(EventType.valueOf(type));
+        String type = jsonObject.get("type").getAsString().trim().toLowerCase();
+        event.setType(type);
 
         // DATA
         JsonElement data = jsonObject.get("data");
@@ -65,7 +63,7 @@ public class EventJsonConverter extends EntityJsonConverter<Event> {
 
         // TYPE
         if (event.getType() != null)
-            eventJson.addProperty("type", event.getType().toString());
+            eventJson.addProperty("type", event.getType());
 
         // DATA
         if (event.getData() != null) {
