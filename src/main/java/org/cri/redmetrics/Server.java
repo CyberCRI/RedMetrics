@@ -35,7 +35,13 @@ public class Server {
 
         Injector injector = Guice.createInjector(new MainModule());
 
-        Class[] controllers = {GameController.class, PlayerController.class, EventController.class, GroupController.class};
+        Class[] controllers = {
+                GameController.class,
+                PlayerController.class,
+                EventController.class,
+                SnapshotController.class,
+                GroupController.class
+        };
         for (Class<Controller> controllerClass : (Class<Controller>[]) controllers) {
             Controller controller = injector.getInstance(controllerClass);
             controller.publish();

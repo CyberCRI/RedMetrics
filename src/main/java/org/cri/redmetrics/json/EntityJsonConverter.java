@@ -1,9 +1,6 @@
 package org.cri.redmetrics.json;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import lombok.RequiredArgsConstructor;
 import org.cri.redmetrics.model.Entity;
 
@@ -21,12 +18,14 @@ abstract class EntityJsonConverter<E extends Entity> implements JsonConverter<E>
         return gson.fromJson(json, entityType);
     }
 
-    public JsonElement toJsonElement(E entity) {
-        return gson.toJsonTree(entity);
+    public JsonObject toJsonObject(E entity) {
+        JsonElement element = gson.toJsonTree(entity);
+        if (element.isJsonObject()) return element.getAsJsonObject();
+        else return null;
     }
 
     public final String stringify(E entity) {
-        return gson.toJson(toJsonElement(entity));
+        return gson.toJson(toJsonObject(entity));
     }
 
     @Override
@@ -41,7 +40,7 @@ abstract class EntityJsonConverter<E extends Entity> implements JsonConverter<E>
     private String stringifyCollection(Collection<E> collection) {
         JsonArray jsonArray = new JsonArray();
         for (E entity : collection) {
-            jsonArray.add(toJsonElement(entity));
+            jsonArray.add(toJsonObject(entity));
         }
         return gson.toJson(jsonArray);
     }

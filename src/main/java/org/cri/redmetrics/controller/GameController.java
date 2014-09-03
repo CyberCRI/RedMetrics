@@ -9,8 +9,8 @@ import org.cri.redmetrics.model.Game;
 public class GameController extends Controller<Game, GameDao> {
 
     @Inject
-    GameController(GameDao dao, GameJsonConverter json) {
-        super("/game", dao, json);
+    GameController(GameDao dao, GameJsonConverter jsonConverter) {
+        super("/game", dao, jsonConverter);
     }
 
     @Override

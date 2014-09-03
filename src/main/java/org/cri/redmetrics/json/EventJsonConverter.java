@@ -7,13 +7,11 @@ import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.cri.redmetrics.model.Event;
-import org.cri.redmetrics.model.Game;
-import org.cri.redmetrics.model.Player;
 
-public class EventJsonConverter extends EntityJsonConverter<Event> {
+public class EventJsonConverter extends ProgressDataJsonConverter<Event> {
 
     @Inject
-    EventJsonConverter(@Named("Event") Gson gson, JsonParser jsonParser) {
+    EventJsonConverter(@Named("ProgressData") Gson gson, JsonParser jsonParser) {
         super(Event.class, gson, jsonParser);
     }
 
@@ -22,56 +20,22 @@ public class EventJsonConverter extends EntityJsonConverter<Event> {
         Event event = super.parse(json);
         JsonObject jsonObject = jsonParser.parse(json).getAsJsonObject();
 
-        // GAME
-        JsonElement gameId = jsonObject.get("game");
-        if (gameId != null) {
-            Game game = new Game();
-            game.setId(gameId.getAsInt());
-            event.setGame(game);
-        }
-
-        // PLAYER
-        JsonElement playerId = jsonObject.get("player");
-        if (playerId != null) {
-            Player player = new Player();
-            player.setId(playerId.getAsInt());
-            event.setPlayer(player);
-        }
-
         // TYPE
         JsonElement type = jsonObject.get("type");
         if (type != null) {
             event.setType(type.getAsString().trim().toLowerCase());
         }
 
-        // CUSTOM DATA
-        JsonElement data = jsonObject.get("customData");
-        if (data != null) {
-            event.setCustomData(data.toString()); // Make customData a String so it can be persisted in SQL Database
-        }
-
         return event;
     }
 
     @Override
-    public JsonElement toJsonElement(Event event) {
-        JsonObject eventJson = gson.toJsonTree(event).getAsJsonObject();
-
-        // GAME
-        eventJson.addProperty("game", event.getGame().getId());
-
-        // PLAYER
-        eventJson.addProperty("player", event.getPlayer().getId());
+    public JsonObject toJsonObject(Event event) {
+        JsonObject eventJson = super.toJsonObject(event);
 
         // TYPE
         if (event.getType() != null)
             eventJson.addProperty("type", event.getType());
-
-        // DATA
-        if (event.getCustomData() != null) {
-            JsonElement dataJson = jsonParser.parse(event.getCustomData()); // Transform saved customData field back to its original form
-            eventJson.add("customData", dataJson);
-        }
 
         return eventJson;
     }

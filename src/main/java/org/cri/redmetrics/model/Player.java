@@ -4,6 +4,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
@@ -12,10 +13,8 @@ import java.util.Date;
 @DatabaseTable(tableName = "players")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Player implements Entity {
-
-    @DatabaseField(generatedId = true)
-    private int id;
+@EqualsAndHashCode(callSuper = true)
+public class Player extends Entity {
 
     @DatabaseField(index = true, unique = true)
     private String email;

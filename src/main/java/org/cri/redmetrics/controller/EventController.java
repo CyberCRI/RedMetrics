@@ -7,21 +7,18 @@ import org.cri.redmetrics.model.Event;
 import spark.Request;
 import spark.Response;
 
-import static spark.Spark.*;
+import static spark.Spark.halt;
 
-public class EventController extends Controller<Event, EventDao> {
+public class EventController extends ProgressDataController<Event, EventDao> {
 
     @Inject
-    EventController(EventDao dao, EventJsonConverter json) {
-        super("/event", dao, json);
+    EventController(EventDao dao, EventJsonConverter jsonConverter) {
+        super("/event", dao, jsonConverter);
     }
 
     @Override
-    protected void beforeCreation(Event entity, Request request, Response response) {
-        if (entity.getGame() == null) halt(400, "game required (integer");
-        if (entity.getPlayer() == null) halt(400, "player required (integer)");
-        if (entity.getType() == null) halt(400, "type is required (string)");
-//        String adminKey = request.params("adminKey");
-//        if (adminKey == null) halt();
+    protected void beforeCreation(Event event, Request request, Response response) {
+        super.beforeCreation(event, request, response);
+        if (event.getType() == null) halt(400, "type is required (string)");
     }
 }

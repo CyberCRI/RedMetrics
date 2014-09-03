@@ -5,23 +5,20 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.inject.Provider;
 
-public class EventGsonConverterProvider implements Provider<Gson> {
+public class ProgressDataGsonProvider implements Provider<Gson> {
 
     @Override
     public Gson get() {
         return DefaultGsonBuilder.get()
-                .addDeserializationExclusionStrategy(new DataExclusionStrategy()).create();
+                .addDeserializationExclusionStrategy(new ProgressDataExclusionStrategy()).create();
     }
 
-    private class DataExclusionStrategy implements ExclusionStrategy {
+    private class ProgressDataExclusionStrategy implements ExclusionStrategy {
 
         @Override
         public boolean shouldSkipField(FieldAttributes fieldAttributes) {
             String fieldName = fieldAttributes.getName();
-            if (fieldName == "customData" || fieldName == "game" || fieldName == "player")
-                return true;
-            else
-                return false;
+            return fieldName.equals("game") || fieldName.equals("player") || fieldName.equals("customData");
         }
 
         @Override

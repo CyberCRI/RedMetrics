@@ -9,8 +9,8 @@ import org.cri.redmetrics.model.Group;
 public class GroupController extends Controller<Group, GroupDao>{
     
     @Inject
-    GroupController(GroupDao dao, GroupJsonConverter json) {
-        super("/group", dao, json);
+    GroupController(GroupDao dao, GroupJsonConverter jsonConverter) {
+        super("/group", dao, jsonConverter);
     }
     
 }

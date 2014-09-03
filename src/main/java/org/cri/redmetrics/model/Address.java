@@ -4,19 +4,15 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @DatabaseTable(tableName = "addresses")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Address implements Entity{
-
-    @DatabaseField(generatedId = true)
-    private int id;
-
-//    @DatabaseField
-//    private String[] lines;
+@EqualsAndHashCode(callSuper = true)
+public class Address extends Entity{
 
     @DatabaseField
     private String postalCode;

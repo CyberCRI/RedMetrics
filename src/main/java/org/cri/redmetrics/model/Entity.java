@@ -1,9 +1,13 @@
 package org.cri.redmetrics.model;
 
-public interface Entity {
+import com.j256.ormlite.field.DatabaseField;
+import lombok.Data;
 
-    int getId();
+@Data
+public abstract class Entity {
 
-    void setId(int id);
+    @DatabaseField(generatedId = true)
+    private int id;
+
 
 }

@@ -7,10 +7,7 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.j256.ormlite.support.ConnectionSource;
-import org.cri.redmetrics.controller.EventController;
-import org.cri.redmetrics.controller.GameController;
-import org.cri.redmetrics.controller.GroupController;
-import org.cri.redmetrics.controller.PlayerController;
+import org.cri.redmetrics.controller.*;
 import org.cri.redmetrics.dao.*;
 import org.cri.redmetrics.db.Db;
 import org.cri.redmetrics.json.*;
@@ -25,11 +22,12 @@ public class MainModule extends AbstractModule {
     protected void configure() {
 
         bind(Gson.class).toProvider(DefaultGsonProvider.class).asEagerSingleton();
-        bind(Gson.class).annotatedWith(Names.named("Event")).toProvider(EventGsonConverterProvider.class).asEagerSingleton();
+        bind(Gson.class).annotatedWith(Names.named("ProgressData")).toProvider(ProgressDataGsonProvider.class).asEagerSingleton();
         bind(JsonParser.class).asEagerSingleton();
         bind(GameJsonConverter.class).asEagerSingleton();
         bind(PlayerJsonConverter.class).asEagerSingleton();
         bind(EventJsonConverter.class).asEagerSingleton();
+        bind(SnapshotJsonConverter.class).asEagerSingleton();
         bind(GroupJsonConverter.class).asEagerSingleton();
 
         bind(GameController.class).asEagerSingleton();
@@ -43,6 +41,9 @@ public class MainModule extends AbstractModule {
 
         bind(GroupController.class).asEagerSingleton();
         bind(GroupDao.class).asEagerSingleton();
+
+        bind(SnapshotController.class).asEagerSingleton();
+        bind(SnapshotDao.class).asEagerSingleton();
 
         bind(AddressDao.class).asEagerSingleton();
 

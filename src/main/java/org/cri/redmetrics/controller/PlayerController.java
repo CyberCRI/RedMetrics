@@ -11,8 +11,8 @@ import static spark.Spark.halt;
 public class PlayerController extends Controller<Player, PlayerDao> {
 
     @Inject
-    PlayerController(PlayerDao dao, PlayerJsonConverter json) {
-        super("/player", dao, json);
+    PlayerController(PlayerDao dao, PlayerJsonConverter jsonConverter) {
+        super("/player", dao, jsonConverter);
     }
 
     @Override

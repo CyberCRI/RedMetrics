@@ -6,6 +6,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
@@ -14,10 +15,8 @@ import java.util.UUID;
 @DatabaseTable(tableName = "games")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Game implements Entity {
-
-    @DatabaseField(generatedId = true)
-    private int id;
+@EqualsAndHashCode(callSuper = true)
+public class Game extends Entity {
 
     @DatabaseField(dataType = DataType.UUID)
     private UUID adminKey;
