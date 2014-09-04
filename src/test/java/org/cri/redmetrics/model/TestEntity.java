@@ -10,6 +10,6 @@ import lombok.EqualsAndHashCode;
 public abstract class TestEntity extends GenericJson {
 
     @Key
-    private int id;
+    private String id;
 
 }

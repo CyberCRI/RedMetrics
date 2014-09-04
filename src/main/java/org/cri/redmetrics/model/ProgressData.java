@@ -13,13 +13,13 @@ public abstract class ProgressData extends Entity {
     @DatabaseField(
             canBeNull = false,
             foreign = true,
-            columnDefinition = "INT, FOREIGN KEY (game_id) REFERENCES games(id)")
+            columnDefinition = "VARCHAR, FOREIGN KEY (game_id) REFERENCES games(id)")
     private Game game;
 
     @DatabaseField(
             canBeNull = false,
             foreign = true,
-            columnDefinition = "INT, FOREIGN KEY (player_id) REFERENCES players(id)")
+            columnDefinition = "VARCHAR, FOREIGN KEY (player_id) REFERENCES players(id)")
     private Player player;
 
     @DatabaseField(canBeNull = false)

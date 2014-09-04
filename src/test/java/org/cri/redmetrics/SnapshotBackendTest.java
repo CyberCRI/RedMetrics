@@ -27,6 +27,6 @@ public class SnapshotBackendTest extends ProgressDataBackendTest {
     public void test() throws IOException {
         snapshot = snapshots.post(snapshot);
         assertThat(snapshot).isNotNull();
-        assertThat(snapshot.getGame()).isGreaterThan(0);
+        assertThat(snapshot.getGame()).isNotNull();
     }
 }

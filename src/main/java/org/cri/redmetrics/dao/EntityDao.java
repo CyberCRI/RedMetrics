@@ -10,19 +10,20 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 public abstract class EntityDao<E extends Entity> {
 
     private static final Logger logger = LoggerFactory.getLogger(EntityDao.class);
 
-    protected final Dao<E, Integer> orm;
+    protected final Dao<E, UUID> orm;
 
     EntityDao(ConnectionSource connectionSource, Class<E> type) throws SQLException {
         this.orm = DaoManager.createDao(connectionSource, type);
         try {
             TableUtils.createTableIfNotExists(connectionSource, type);
         } catch (SQLException e) {
-            logger.info("Problem when trying to create table, probably concerning unique id sequence. Shouldn't be a problem.");
+            logger.info(e.getMessage());
         }
     }
 
@@ -35,7 +36,7 @@ public abstract class EntityDao<E extends Entity> {
         }
     }
 
-    public E read(int id) {
+    public E read(UUID id) {
         try {
             return orm.queryForId(id);
         } catch (SQLException e) {
@@ -52,7 +53,7 @@ public abstract class EntityDao<E extends Entity> {
         }
     }
 
-    public E delete(int id) {
+    public E delete(UUID id) {
         try {
             E entity = read(id);
             orm.deleteById(id);

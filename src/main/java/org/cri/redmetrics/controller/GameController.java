@@ -5,6 +5,8 @@ import org.cri.redmetrics.dao.GameDao;
 import org.cri.redmetrics.json.GameJsonConverter;
 import org.cri.redmetrics.model.Game;
 
+import java.util.UUID;
+
 
 public class GameController extends Controller<Game, GameDao> {
 
@@ -14,7 +16,7 @@ public class GameController extends Controller<Game, GameDao> {
     }
 
     @Override
-    protected Game read(int id) {
+    protected Game read(UUID id) {
         Game game = super.read(id);
         if (game != null) game.setAdminKey(null);
         return game;

@@ -10,10 +10,10 @@ import lombok.EqualsAndHashCode;
 public class TestProgressData extends TestEntity {
 
     @Key
-    private int game;
+    private String game;
 
     @Key
-    private int player;
+    private String player;
 
     @Key
     private String creationDate;

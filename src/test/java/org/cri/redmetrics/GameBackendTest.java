@@ -3,11 +3,11 @@ package org.cri.redmetrics;
 import com.google.api.client.http.HttpResponseException;
 import org.cri.redmetrics.backend.GameBackend;
 import org.cri.redmetrics.model.TestGame;
-import org.cri.redmetrics.util.TestUtils;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrown;
@@ -36,7 +36,7 @@ public class GameBackendTest {
 
     @Test
     public void canCreateGame() throws IOException {
-        assertThat(createdGame.getId()).isNotNull().isNotEqualTo(0);
+        assertThat(createdGame.getId()).isNotNull();
         assertThat(createdGame.getAdminKey()).isNotNull();
         assertThat(createdGame.getName()).isEqualTo(GAME_NAME);
     }
@@ -62,7 +62,7 @@ public class GameBackendTest {
     @Test
     void shouldFailWhenReadingUnknownId() throws IOException {
         try {
-            games.get(TestUtils.randomId());
+            games.get(UUID.randomUUID().toString());
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(404);
@@ -81,19 +81,8 @@ public class GameBackendTest {
     @Test
     public void shouldFailWhenUpdatingWithUrlIdDifferentThanContentId() throws IOException {
         try {
-            games.put(TestUtils.randomId(), createdGame);
-            failBecauseExceptionWasNotThrown(HttpResponseException.class);
-        } catch (HttpResponseException e) {
-            assertThat(e.getStatusCode()).isEqualTo(400);
-        }
-    }
-
-    @Test
-    public void shouldFailWhenUpdatingNegativeId() throws IOException {
-        try {
-            int id = -1;
-            createdGame.setId(id);
-            games.put(id, createdGame);
+            String newId = UUID.randomUUID().toString();
+            games.put(newId, createdGame);
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(400);

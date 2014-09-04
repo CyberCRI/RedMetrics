@@ -7,6 +7,7 @@ import spark.Request;
 import spark.Response;
 
 import java.util.List;
+import java.util.UUID;
 
 import static spark.Spark.*;
 
@@ -29,6 +30,16 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         publishSpecific();
     }
 
+    protected UUID idFromUrl(Request request) {
+        String idParam = request.params(":id");
+        try {
+            return UUID.fromString(idParam);
+        } catch (IllegalArgumentException e) {
+            halt(400, "ID illegal format - expected UUID");
+            return null;
+        }
+    }
+
     private void publishGeneric() {
 
         post(path + "/", (request, response) -> {
@@ -41,7 +52,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         }, jsonConverter);
 
         get(path + "/:id", (request, response) -> {
-            E entity = read(Integer.parseInt(request.params(":id")));
+            E entity = read(idFromUrl(request));
             if (entity == null) halt(404);
             return entity;
         }, jsonConverter);
@@ -51,17 +62,16 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
         put(path + "/:id", (request, response) -> {
             E entity = jsonConverter.parse(request.body());
-            int urlId = Integer.parseInt(request.params(":id"));
-            if (urlId < 0) halt(400, "ID should not be negative");
-            if (urlId != entity.getId()) {
+            UUID id = idFromUrl(request);
+            if (entity.getId() != null && !entity.getId().equals(id)) {
                 halt(400, "IDs in URL and body do not match");
             } else {
-                entity.setId(urlId);
+                entity.setId(id);
             }
             return update(entity);
         }, jsonConverter);
 
-        delete(path + "/:id", (request, response) -> dao.delete(Integer.parseInt(request.params(":id"))), jsonConverter);
+        delete(path + "/:id", (request, response) -> dao.delete(idFromUrl(request)), jsonConverter);
 
     }
 
@@ -69,7 +79,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         return dao.create(entity);
     }
 
-    protected E read(int id) {
+    protected E read(UUID id) {
         return dao.read(id);
     }
 

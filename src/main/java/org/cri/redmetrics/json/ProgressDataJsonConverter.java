@@ -8,6 +8,8 @@ import org.cri.redmetrics.model.Game;
 import org.cri.redmetrics.model.Player;
 import org.cri.redmetrics.model.ProgressData;
 
+import java.util.UUID;
+
 public class ProgressDataJsonConverter<E extends ProgressData> extends EntityJsonConverter<E> {
 
     ProgressDataJsonConverter(Class<E> entityType, Gson gson, JsonParser jsonParser) {
@@ -23,7 +25,8 @@ public class ProgressDataJsonConverter<E extends ProgressData> extends EntityJso
         JsonElement gameId = jsonObject.get("game");
         if (gameId != null) {
             Game game = new Game();
-            game.setId(gameId.getAsInt());
+            // TODO Make sure the progress data can update without overwriting game data
+            game.setId(UUID.fromString(gameId.getAsString()));
             progressData.setGame(game);
         }
 
@@ -31,7 +34,8 @@ public class ProgressDataJsonConverter<E extends ProgressData> extends EntityJso
         JsonElement playerId = jsonObject.get("player");
         if (playerId != null) {
             Player player = new Player();
-            player.setId(playerId.getAsInt());
+            // TODO Make sure the progress data can update without overwriting player data
+            player.setId(UUID.fromString(playerId.getAsString()));
             progressData.setPlayer(player);
         }
 
@@ -49,10 +53,10 @@ public class ProgressDataJsonConverter<E extends ProgressData> extends EntityJso
         JsonObject progressDataJson = gson.toJsonTree(progressData).getAsJsonObject();
 
         // GAME
-        progressDataJson.addProperty("game", progressData.getGame().getId());
+        progressDataJson.addProperty("game", progressData.getGame().getId().toString());
 
         // PLAYER
-        progressDataJson.addProperty("player", progressData.getPlayer().getId());
+        progressDataJson.addProperty("player", progressData.getPlayer().getId().toString());
 
         // CUSTOM DATA
         if (progressData.getCustomData() != null) {

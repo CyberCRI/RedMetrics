@@ -56,7 +56,7 @@ public class PlayerBackendTest {
 
     @Test
     public void canCreateGame() throws IOException {
-        assertThat(createdPlayer.getId()).isNotNull().isNotEqualTo(0);
+        assertThat(createdPlayer.getId()).isNotNull();
         assertThat(createdPlayer.getEmail()).isEqualTo(EMAIL);
         assertThat(createdPlayer.getFirstName()).isEqualTo(FNAME);
         assertThat(createdPlayer.getLastName()).isEqualTo(LNAME);
@@ -69,7 +69,7 @@ public class PlayerBackendTest {
 
     @Test
     public void shouldForbidCreationWhenDuplicateEmail() throws IOException {
-        createdPlayer.setId(0);
+        createdPlayer.setId(null);
         try {
             players.post(createdPlayer);
             failBecauseExceptionWasNotThrown(HttpResponseException.class);

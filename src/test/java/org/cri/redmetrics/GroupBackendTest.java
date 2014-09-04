@@ -8,6 +8,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrown;
@@ -56,7 +57,7 @@ public class GroupBackendTest {
     @Test
     void shouldFailWhenReadingUnknownId() throws IOException {
         try {
-            groups.get(-1);
+            groups.get(UUID.randomUUID().toString());
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(404);
@@ -76,19 +77,7 @@ public class GroupBackendTest {
     @Test
     public void shouldFailWhenUpdatingWithUrlIdDifferentThanContentId() throws IOException {
         try {
-            groups.put(9999999, original);
-            failBecauseExceptionWasNotThrown(HttpResponseException.class);
-        } catch (HttpResponseException e) {
-            assertThat(e.getStatusCode()).isEqualTo(400);
-        }
-    }
-
-    @Test
-    public void shouldFailWhenUpdatingNegativeId() throws IOException {
-        try {
-            int id = -1;
-            original.setId(id);
-            read = groups.put(id, original);
+            groups.put(UUID.randomUUID().toString(), original);
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(400);

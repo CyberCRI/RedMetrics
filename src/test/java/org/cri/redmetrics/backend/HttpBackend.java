@@ -19,63 +19,51 @@ public class HttpBackend<E extends TestEntity> {
     private static final int PORT_NUMBER = 7654;
     private static final Server server = new Server(PORT_NUMBER);
     private static final HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory((request) -> request.setParser(new JsonObjectParser(new GsonFactory())));
-    protected String path;
+
+    private final String path;
     protected Class<E> type;
 
-    public HttpBackend(String path, Class<E> type) {
-        this.path = path;
+    public HttpBackend(String entityPath, Class<E> type) {
+        this.path = "http://localhost:" + PORT_NUMBER + Controller.basePath + entityPath;
         this.type = type;
         server.start();
     }
 
-    public E get(int id) throws IOException {
-        return get(path + id);
+    public E get(String id) throws IOException {
+        return requestFactory.buildGetRequest(url(id)).execute().parseAs(type);
     }
 
     public E post(E entity) throws IOException {
-        return post(path, entity);
+        return buildPostRequest(entity).parseAs(type);
     }
 
     public E put(E entity) throws IOException {
-        return put(path + entity.getId(), entity);
+        return put(entity.getId(), entity);
     }
 
-    public E put(int id, E entity) throws IOException {
-        return put(path + id, entity);
+    public E put(String id, E entity) throws IOException {
+        HttpContent json = asJson(entity);
+        return requestFactory.buildPutRequest(url(id), json).execute().parseAs(type);
     }
 
-    public E delete(int id) throws IOException {
-        return delete(path + id);
+    public E delete(String id) throws IOException {
+        return requestFactory.buildDeleteRequest(url(id)).execute().parseAs(type);
     }
 
-    public E get(String path) throws IOException {
-        return requestFactory.buildGetRequest(url(path)).execute().parseAs(type);
-    }
-
-    public HttpContent asJson(E entity) {
+    private HttpContent asJson(E entity) {
         return new JsonHttpContent(new GsonFactory(), entity);
     }
 
-    public HttpResponse buildPostRequest(String path, E entity) throws IOException {
+    private HttpResponse buildPostRequest(E entity) throws IOException {
         HttpContent json = asJson(entity);
-        return requestFactory.buildPostRequest(url(path), json).execute();
+        return requestFactory.buildPostRequest(url(), json).execute();
     }
 
-    public E post(String path, E entity) throws IOException {
-        return buildPostRequest(path, entity).parseAs(type);
+    private GenericUrl url() {
+        return new GenericUrl(path);
     }
 
-    public E put(String path, E entity) throws IOException {
-        HttpContent json = asJson(entity);
-        return requestFactory.buildPutRequest(url(path), json).execute().parseAs(type);
+    private GenericUrl url(String relativePath) {
+        return new GenericUrl(path + relativePath);
     }
-
-    public E delete(String path) throws IOException {
-        return requestFactory.buildDeleteRequest(url(path)).execute().parseAs(type);
-    }
-
-    private GenericUrl url(String path) {
-        return new GenericUrl("http://localhost:" + PORT_NUMBER + "/" + Controller.basePath + path);
-    }
-
 }

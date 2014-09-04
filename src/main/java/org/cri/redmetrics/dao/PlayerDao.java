@@ -6,6 +6,7 @@ import org.cri.redmetrics.model.Player;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 public class PlayerDao extends EntityDao<Player> {
     
@@ -40,7 +41,7 @@ public class PlayerDao extends EntityDao<Player> {
     }
 
     @Override
-    public Player delete(int id) {
+    public Player delete(UUID id) {
         Player p = super.delete(id);
         addrDao.delete(p.getAddress().getId());
         return p;
