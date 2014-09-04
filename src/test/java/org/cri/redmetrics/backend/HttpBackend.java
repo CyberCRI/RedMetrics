@@ -34,7 +34,8 @@ public class HttpBackend<E extends TestEntity> {
     }
 
     public E post(E entity) throws IOException {
-        return buildPostRequest(entity).parseAs(type);
+        HttpContent json = asJson(entity);
+        return requestFactory.buildPostRequest(url(), json).execute().parseAs(type);
     }
 
     public E put(E entity) throws IOException {
@@ -52,11 +53,6 @@ public class HttpBackend<E extends TestEntity> {
 
     private HttpContent asJson(E entity) {
         return new JsonHttpContent(new GsonFactory(), entity);
-    }
-
-    private HttpResponse buildPostRequest(E entity) throws IOException {
-        HttpContent json = asJson(entity);
-        return requestFactory.buildPostRequest(url(), json).execute();
     }
 
     private GenericUrl url() {

@@ -82,7 +82,7 @@ public class PlayerBackendTest {
 
     @Test
     public void canFindByEmail() throws IOException {
-        TestPlayer foundPlayer = players.get("player/email/" + EMAIL);
+        TestPlayer foundPlayer = players.get("email/" + EMAIL);
         assertThat(foundPlayer.getId()).isEqualTo(createdPlayer.getId());
     }
 

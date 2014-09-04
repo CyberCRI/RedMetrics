@@ -88,10 +88,12 @@ public class GroupBackendTest {
 
     @Test
     public void canDeleteGame() throws IOException {
-        resetTestGroups();
-        read = groups.delete(original.getId());
+        TestGroup group = new TestGroup();
+        group.setName("Some Group");
+        group = groups.post(group);
+        groups.delete(group.getId());
         try {
-            groups.get(original.getId());
+            groups.get(group.getId());
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(404);

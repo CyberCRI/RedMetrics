@@ -35,7 +35,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         try {
             return UUID.fromString(idParam);
         } catch (IllegalArgumentException e) {
-            halt(400, "ID illegal format - expected UUID");
+            halt(400, e.getMessage());
             return null;
         }
     }
