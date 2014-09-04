@@ -17,6 +17,7 @@ public class SnapshotBackendTest extends ProgressDataBackendTest {
 
     @BeforeTest
     void createSnapshot() throws IOException {
+        createGameAndPlayer();
         snapshot = new TestSnapshot();
         snapshot.setGame(game.getId());
         snapshot.setPlayer(player.getId());

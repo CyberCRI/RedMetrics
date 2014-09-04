@@ -16,7 +16,7 @@ public abstract class ProgressDataBackendTest {
     TestGame game;
     TestPlayer player;
 
-    public ProgressDataBackendTest() {
+    public void createGameAndPlayer() {
         try {
             game = new TestGame();
             game.setName("My Test Game");

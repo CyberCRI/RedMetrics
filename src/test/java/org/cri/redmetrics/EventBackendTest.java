@@ -19,6 +19,7 @@ public class EventBackendTest extends ProgressDataBackendTest {
 
     @BeforeTest
     void createEvent() throws IOException {
+        createGameAndPlayer();
         event = new TestEvent();
         event.setGame(game.getId());
         event.setPlayer(player.getId());
