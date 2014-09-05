@@ -56,7 +56,7 @@ public class EventBackendTest extends ProgressDataBackendTest {
     @Test
     public void generatesCreationDate() throws IOException {
         event = events.post(event);
-        assertThat(event.getCreationDate().length()).isEqualTo(19);
+        assertThat(event.getCreationDate().length()).isEqualTo(29);
     }
 
 }
