@@ -22,7 +22,7 @@ public abstract class ProgressDataBackendTest {
             game.setName("My Test Game");
             game = games.post(game);
 
-            player = Players.johnSnow();
+            player = Players.newJohnSnow();
             player = players.post(player);
         } catch (IOException e) {
             throw new RuntimeException(e);

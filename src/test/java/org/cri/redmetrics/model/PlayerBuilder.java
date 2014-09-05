@@ -2,6 +2,7 @@ package org.cri.redmetrics.model;
 
 public class PlayerBuilder {
 
+    private String email;
     private String firstName;
     private String lastName;
     private String birthDate;
@@ -10,12 +11,22 @@ public class PlayerBuilder {
 
     public TestPlayer build() {
         TestPlayer player = new TestPlayer();
+        player.setEmail(email);
         player.setFirstName(firstName);
         player.setLastName(lastName);
         player.setBirthDate(birthDate);
         player.setAddress(address);
         player.setGender(gender.name());
         return player;
+    }
+
+    public PlayerBuilder withEmail(String email) {
+        this.email = email;
+        return this;
+    }
+
+    public PlayerBuilder withNewRandomEmail() {
+        return withEmail(Math.random() + "test@test.com");
     }
 
     public PlayerBuilder withFirstName(String firstName) {

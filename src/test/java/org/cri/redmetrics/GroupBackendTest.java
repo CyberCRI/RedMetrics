@@ -38,7 +38,7 @@ public class GroupBackendTest {
 
     @Test
     public void canCreateGroup() throws IOException {
-        assertThat(read.getId()).isNotNull();
+        assertThat(read.getId()).isNotNull().hasSize(36);
         assertThat(read.getCreator()).isEqualTo(original.getCreator());
         assertThat(read.getDescription()).isEqualTo(original.getDescription());
         assertThat(read.getName()).isEqualTo(original.getName());

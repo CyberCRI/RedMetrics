@@ -36,8 +36,8 @@ public class GameBackendTest {
 
     @Test
     public void canCreateGame() throws IOException {
-        assertThat(createdGame.getId()).isNotNull();
-        assertThat(createdGame.getAdminKey()).isNotNull();
+        assertThat(createdGame.getId()).isNotNull().hasSize(36);
+        assertThat(createdGame.getAdminKey()).isNotNull().hasSize(36);
         assertThat(createdGame.getName()).isEqualTo(GAME_NAME);
     }
 
