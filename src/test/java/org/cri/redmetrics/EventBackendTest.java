@@ -1,30 +1,47 @@
 package org.cri.redmetrics;
 
 import com.google.api.client.json.GenericJson;
+import org.cri.redmetrics.backend.Backends;
 import org.cri.redmetrics.backend.EventBackend;
 import org.cri.redmetrics.model.TestEvent;
+import org.cri.redmetrics.model.TestGame;
+import org.cri.redmetrics.model.TestPlayer;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class EventBackendTest extends ProgressDataBackendTest {
+public class EventBackendTest {
 
-    static final EventBackend events = new EventBackend();
+    static final EventBackend events = Backends.EVENT;
 
+    TestGame game = Backends.newSavedGame();
+    TestPlayer player = Backends.newSavedPlayer();
     TestEvent event;
 
+    public void resetGame() throws IOException {
+        game = Backends.newSavedGame();
+        event.setGame(game.getId());
+    }
+
+    public void resetPlayer() throws IOException {
+        player = Backends.newSavedPlayer();
+        event.setPlayer(player.getId());
+    }
+
     @BeforeTest
-    void createEvent() throws IOException {
-        createGameAndPlayer();
+    public void resetEvent() throws IOException {
         event = new TestEvent();
         event.setGame(game.getId());
         event.setPlayer(player.getId());
         event.setType("start");
     }
+
+    // CREATE
 
     @Test
     public void canSaveSections() throws IOException {
@@ -57,6 +74,16 @@ public class EventBackendTest extends ProgressDataBackendTest {
     public void generatesCreationDate() throws IOException {
         event = events.post(event);
         assertThat(event.getCreationDate().length()).isEqualTo(29);
+    }
+
+    // READ
+
+    @Test
+    public void findsEventsByGame() throws IOException {
+        resetGame();
+        event = events.post(event);
+        List<TestEvent> foundEvents = events.searchByGame(event.getGame());
+        assertThat(foundEvents).hasSize(1);
     }
 
 }

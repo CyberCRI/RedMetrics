@@ -2,10 +2,10 @@ package org.cri.redmetrics.backend;
 
 import org.cri.redmetrics.model.TestEvent;
 
-public class EventBackend extends HttpBackend<TestEvent> {
+public class EventBackend extends ProgressDataBackend<TestEvent> {
 
-    public EventBackend() {
-        super("event/", TestEvent.class);
+    EventBackend() {
+        super("event", TestEvent.class);
     }
 
 }

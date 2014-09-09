@@ -1,6 +1,7 @@
 package org.cri.redmetrics;
 
 import com.google.api.client.http.HttpResponseException;
+import org.cri.redmetrics.backend.Backends;
 import org.cri.redmetrics.backend.GameBackend;
 import org.cri.redmetrics.model.TestGame;
 import org.testng.annotations.BeforeTest;
@@ -14,7 +15,7 @@ import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrow
 
 public class GameBackendTest {
 
-    static final GameBackend games = new GameBackend();
+    static final GameBackend games = Backends.GAME;
 
     static final String GAME_NAME = "Asteroids";
     static final String UPDATED_GAME_NAME = "Gasteroids";
@@ -55,14 +56,14 @@ public class GameBackendTest {
 
     @Test
     public void canReadGame() throws IOException {
-        TestGame readGame = games.get(createdGame.getId());
+        TestGame readGame = games.getById(createdGame.getId());
         assertThat(readGame.getName()).isEqualTo(GAME_NAME);
     }
 
     @Test
-    void shouldFailWhenReadingUnknownId() throws IOException {
+    public void shouldFailWhenReadingUnknownId() throws IOException {
         try {
-            games.get(UUID.randomUUID().toString());
+            games.getById(UUID.randomUUID().toString());
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(404);
@@ -96,7 +97,7 @@ public class GameBackendTest {
         TestGame deletedGame = games.delete(createdGame.getId());
         resetCreatedGame();
         try {
-            games.get(deletedGame.getId());
+            games.getById(deletedGame.getId());
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(404);

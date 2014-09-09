@@ -6,7 +6,7 @@ import org.cri.redmetrics.model.Event;
 
 import java.sql.SQLException;
 
-public class EventDao extends EntityDao<Event> {
+public class EventDao extends ProgressDataDao<Event> {
 
     @Inject
     public EventDao(ConnectionSource connectionSource) throws SQLException {

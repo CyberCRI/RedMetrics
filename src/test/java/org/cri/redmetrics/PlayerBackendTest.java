@@ -1,6 +1,7 @@
 package org.cri.redmetrics;
 
 import com.google.api.client.http.HttpResponseException;
+import org.cri.redmetrics.backend.Backends;
 import org.cri.redmetrics.backend.PlayerBackend;
 import org.cri.redmetrics.model.Players;
 import org.cri.redmetrics.model.TestPlayer;
@@ -13,7 +14,7 @@ import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrow
 
 public class PlayerBackendTest {
 
-    final PlayerBackend players = new PlayerBackend();
+    final PlayerBackend players = Backends.PLAYER;
 
     // CREATE
 
@@ -35,7 +36,7 @@ public class PlayerBackendTest {
     @Test
     public void shouldHideEmail() throws IOException {
         TestPlayer savedPlayer = players.post(Players.newJohnSnow());
-        TestPlayer fetchedPlayer = players.get(savedPlayer.getId());
+        TestPlayer fetchedPlayer = players.getById(savedPlayer.getId());
         assertThat(fetchedPlayer.getEmail()).isNull();
     }
 
@@ -55,7 +56,7 @@ public class PlayerBackendTest {
     @Test
     public void canFindByEmail() throws IOException {
         TestPlayer savedPlayer = players.post(Players.newJohnSnow());
-        TestPlayer foundPlayer = players.get("email/" + savedPlayer.getEmail());
+        TestPlayer foundPlayer = players.getById("email/" + savedPlayer.getEmail());
         assertThat(foundPlayer.getId()).isEqualTo(savedPlayer.getId());
     }
 

@@ -2,6 +2,7 @@
 package org.cri.redmetrics;
 
 import com.google.api.client.http.HttpResponseException;
+import org.cri.redmetrics.backend.Backends;
 import org.cri.redmetrics.backend.GroupBackend;
 import org.cri.redmetrics.model.TestGroup;
 import org.testng.annotations.BeforeTest;
@@ -15,7 +16,7 @@ import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrow
 
 public class GroupBackendTest {
 
-    static final GroupBackend groups = new GroupBackend();
+    static final GroupBackend groups = Backends.GROUP;
 
     TestGroup original;
     TestGroup read;
@@ -50,14 +51,14 @@ public class GroupBackendTest {
     public void canReadGroup() throws IOException {
         resetTestGroups();
         original = read;
-        read = groups.get(original.getId());
+        read = groups.getById(original.getId());
         assertThat(read.getName()).isEqualTo(original.getName());
     }
 
     @Test
-    void shouldFailWhenReadingUnknownId() throws IOException {
+    public void shouldFailWhenReadingUnknownId() throws IOException {
         try {
-            groups.get(UUID.randomUUID().toString());
+            groups.getById(UUID.randomUUID().toString());
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(404);
@@ -93,7 +94,7 @@ public class GroupBackendTest {
         group = groups.post(group);
         groups.delete(group.getId());
         try {
-            groups.get(group.getId());
+            groups.getById(group.getId());
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(404);

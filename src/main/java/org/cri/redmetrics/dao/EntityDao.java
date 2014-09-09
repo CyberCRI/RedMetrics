@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public abstract class EntityDao<E extends Entity> {
 
-    private static final Logger logger = LoggerFactory.getLogger(EntityDao.class);
+    protected static final Logger logger = LoggerFactory.getLogger(EntityDao.class);
 
     protected final Dao<E, UUID> orm;
 
