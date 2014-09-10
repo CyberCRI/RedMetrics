@@ -15,6 +15,7 @@ import org.cri.redmetrics.model.TestEntity;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 
 public class HttpBackend<E extends TestEntity> {
 
@@ -38,7 +39,19 @@ public class HttpBackend<E extends TestEntity> {
     }
 
     public List<E> search(String key, String value) throws IOException {
-        return (List<E>) requestFactory.buildGetRequest(url(key, value)).execute().parseAs(arrayType);
+        GenericUrl url = url();
+        url.put(key, value);
+        return search(url);
+    }
+
+    public List<E> search(Map<String, String> params) throws IOException {
+        GenericUrl url = url();
+        url.putAll(params);
+        return search(url);
+    }
+
+    private List<E> search(GenericUrl url) throws IOException {
+        return (List<E>) requestFactory.buildGetRequest(url).execute().parseAs(arrayType);
     }
 
     public E post(E entity) throws IOException {
@@ -63,13 +76,12 @@ public class HttpBackend<E extends TestEntity> {
         return new JsonHttpContent(new GsonFactory(), entity);
     }
 
+    private GenericUrl url() {
+        return new GenericUrl(path);
+    }
+
     private GenericUrl url(String relativePath) {
         return new GenericUrl(path + relativePath);
     }
 
-    private GenericUrl url(String key, String value) {
-        GenericUrl url = new GenericUrl(path);
-        url.put(key, value);
-        return url;
-    }
 }

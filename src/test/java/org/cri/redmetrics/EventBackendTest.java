@@ -23,14 +23,16 @@ public class EventBackendTest {
     TestPlayer player = Backends.newSavedPlayer();
     TestEvent event;
 
-    public void resetGame() throws IOException {
+    public TestGame resetGame() throws IOException {
         game = Backends.newSavedGame();
         event.setGame(game.getId());
+        return game;
     }
 
-    public void resetPlayer() throws IOException {
+    public TestPlayer resetPlayer() throws IOException {
         player = Backends.newSavedPlayer();
         event.setPlayer(player.getId());
+        return player;
     }
 
     @BeforeTest
@@ -91,6 +93,26 @@ public class EventBackendTest {
         resetPlayer();
         event = events.post(event);
         List<TestEvent> foundEvents = events.searchByPlayer(event.getPlayer());
+        assertThat(foundEvents).hasSize(1);
+    }
+
+    @Test
+    public void findsEventsByGameAndPlayer() throws IOException {
+        String gameId = resetGame().getId();
+        String playerId = resetPlayer().getId();
+        event = events.post(event);
+
+        resetEvent();
+        event.setGame(gameId);
+        resetPlayer();
+        events.post(event);// Save event with same game and different player
+
+        resetEvent();
+        event.setPlayer(playerId);
+        resetGame();
+        events.post(event); // Save event with same player and different game
+
+        List<TestEvent> foundEvents = events.searchByGameAndPlayer(gameId, playerId);
         assertThat(foundEvents).hasSize(1);
     }
 

@@ -6,7 +6,8 @@ import org.cri.redmetrics.model.ProgressData;
 import spark.Request;
 import spark.Response;
 
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
 import static spark.Spark.get;
 import static spark.Spark.halt;
@@ -31,15 +32,14 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
 
         // SEARCH
         get(path, (request, response) -> {
-            boolean hasGame = request.queryParams().contains("game");
-            boolean hasPlayer = request.queryParams().contains("player");
-            if (hasGame) {
-                UUID gameId = idFromQueryParam(request, "game");
-                return dao.searchByGame(gameId);
-            } else if (hasPlayer) {
-                UUID playerId = idFromQueryParam(request, "player");
-                return dao.searchByPlayer(playerId);
-            } else return list();
+            Map<String, Object> params = new HashMap<>();
+            if (request.queryParams().contains("game")) {
+                params.put("game_id", idFromQueryParam(request, "game"));
+            }
+            if (request.queryParams().contains("player")) {
+                params.put("player_id", idFromQueryParam(request, "player"));
+            }
+            return dao.search(params);
         }
                 , jsonConverter);
     }
