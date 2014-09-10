@@ -86,4 +86,12 @@ public class EventBackendTest {
         assertThat(foundEvents).hasSize(1);
     }
 
+    @Test
+    public void findsEventsByPlayer() throws IOException {
+        resetPlayer();
+        event = events.post(event);
+        List<TestEvent> foundEvents = events.searchByPlayer(event.getPlayer());
+        assertThat(foundEvents).hasSize(1);
+    }
+
 }

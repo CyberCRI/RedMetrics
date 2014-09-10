@@ -14,11 +14,11 @@ public class ProgressDataDao<E extends ProgressData> extends EntityDao<E> {
     }
 
     public List<E> searchByGame(UUID gameId) {
-        try {
-            return orm.queryBuilder().where().eq("game_id", gameId).query();
-        } catch (SQLException e) {
-            throw new DbException(e);
-        }
+        return search("game_id", gameId);
+    }
+
+    public List<E> searchByPlayer(UUID playerId) {
+        return search("player_id", playerId);
     }
 
 }

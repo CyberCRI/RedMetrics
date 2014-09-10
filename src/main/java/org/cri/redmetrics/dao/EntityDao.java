@@ -71,4 +71,11 @@ public abstract class EntityDao<E extends Entity> {
         }
     }
 
+    public List<E> search(String key, Object value) {
+        try {
+            return orm.queryBuilder().where().eq(key, value).query();
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
 }

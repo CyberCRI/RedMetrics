@@ -31,8 +31,15 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
 
         // SEARCH
         get(path, (request, response) -> {
-            UUID gameId = idFromQueryParam(request, "game");
-            return dao.searchByGame(gameId);
+            boolean hasGame = request.queryParams().contains("game");
+            boolean hasPlayer = request.queryParams().contains("player");
+            if (hasGame) {
+                UUID gameId = idFromQueryParam(request, "game");
+                return dao.searchByGame(gameId);
+            } else if (hasPlayer) {
+                UUID playerId = idFromQueryParam(request, "player");
+                return dao.searchByPlayer(playerId);
+            } else return list();
         }
                 , jsonConverter);
     }

@@ -15,4 +15,8 @@ public class ProgressDataBackend<E extends TestProgressData> extends HttpBackend
         return search("game", gameId);
     }
 
+    public List<E> searchByPlayer(String playerId) throws IOException {
+        return search("player", playerId);
+    }
+
 }
