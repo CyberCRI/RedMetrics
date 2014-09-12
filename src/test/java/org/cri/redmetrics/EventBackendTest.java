@@ -11,7 +11,9 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -113,6 +115,18 @@ public class EventBackendTest {
         events.post(event); // Save event with same player and different game
 
         List<TestEvent> foundEvents = events.searchByGameAndPlayer(gameId, playerId);
+        assertThat(foundEvents).hasSize(1);
+    }
+
+    @Test
+    public void findsEventsByType() throws IOException {
+        event.setType("findsEventsByType");
+        event = events.post(event);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("game", game.getId());
+        params.put("type", event.getType());
+        List<TestEvent> foundEvents = events.search(params);
         assertThat(foundEvents).hasSize(1);
     }
 

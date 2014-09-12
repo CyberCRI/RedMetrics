@@ -39,6 +39,9 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
             if (request.queryParams().contains("player")) {
                 params.put("player_id", idFromQueryParam(request, "player"));
             }
+            if (request.queryParams().contains("type")) {
+                params.put("type", request.queryParams("type"));
+            }
             return dao.search(params);
         }
                 , jsonConverter);
