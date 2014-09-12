@@ -32,21 +32,12 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
     protected UUID idFromUrl(Request request) {
         String idParam = request.params(":id");
-        return parseUUID(idParam);
+        return Entity.parseId(idParam);
     }
 
     protected UUID idFromQueryParam(Request request, String key) {
         String idParam = request.queryParams(key);
-        return parseUUID(idParam);
-    }
-
-    protected UUID parseUUID(String id) {
-        try {
-            return UUID.fromString(id);
-        } catch (IllegalArgumentException e) {
-            halt(400, e.getMessage());
-            return null;
-        }
+        return Entity.parseId(idParam);
     }
 
     private void publishGeneric() {

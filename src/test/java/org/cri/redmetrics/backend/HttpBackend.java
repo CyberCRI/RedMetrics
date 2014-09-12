@@ -8,14 +8,14 @@ import com.google.api.client.http.json.JsonHttpContent;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.Types;
+import com.google.common.base.Preconditions;
 import org.cri.redmetrics.Server;
 import org.cri.redmetrics.controller.Controller;
 import org.cri.redmetrics.model.TestEntity;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class HttpBackend<E extends TestEntity> {
 
@@ -36,22 +36,6 @@ public class HttpBackend<E extends TestEntity> {
 
     public E getById(String id) throws IOException {
         return requestFactory.buildGetRequest(url("/" + id)).execute().parseAs(type);
-    }
-
-    public List<E> search(String key, String value) throws IOException {
-        GenericUrl url = url();
-        url.put(key, value);
-        return search(url);
-    }
-
-    public List<E> search(Map<String, String> params) throws IOException {
-        GenericUrl url = url();
-        url.putAll(params);
-        return search(url);
-    }
-
-    private List<E> search(GenericUrl url) throws IOException {
-        return (List<E>) requestFactory.buildGetRequest(url).execute().parseAs(arrayType);
     }
 
     public E post(E entity) throws IOException {
@@ -82,6 +66,55 @@ public class HttpBackend<E extends TestEntity> {
 
     private GenericUrl url(String relativePath) {
         return new GenericUrl(path + relativePath);
+    }
+
+    public SearchQueryBuilder search() {
+        return new SearchQueryBuilder();
+    }
+
+    private List<E> search(GenericUrl url) throws IOException {
+        return (List<E>) requestFactory.buildGetRequest(url).execute().parseAs(arrayType);
+    }
+
+
+    public class SearchQueryBuilder {
+
+        Map<String, String> params = new HashMap<>();
+
+        public SearchQueryBuilder with(String key, String value) {
+            params.put(key, value);
+            return this;
+        }
+
+        public SearchQueryBuilder withGame(String gameId) {
+            return with("game", gameId);
+        }
+
+        public SearchQueryBuilder withGames(String... gameIds) {
+            Preconditions.checkArgument(gameIds.length > 0);
+            StringBuilder sb = new StringBuilder();
+            Iterator<String> i = Arrays.asList(gameIds).iterator();
+            while (i.hasNext()) {
+                sb.append(i.next());
+                if (i.hasNext()) sb.append(",");
+            }
+            return with("game", sb.toString());
+        }
+
+        public SearchQueryBuilder withPlayer(String playerId) {
+            return with("player", playerId);
+        }
+
+        public SearchQueryBuilder withType(String type) {
+            return with("type", type);
+        }
+
+        public List<E> execute() throws IOException {
+            GenericUrl url = url();
+            url.putAll(params);
+            return search(url);
+        }
+
     }
 
 }

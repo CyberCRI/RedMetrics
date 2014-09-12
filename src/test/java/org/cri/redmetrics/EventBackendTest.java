@@ -11,9 +11,7 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -24,6 +22,10 @@ public class EventBackendTest {
     TestGame game = Backends.newSavedGame();
     TestPlayer player = Backends.newSavedPlayer();
     TestEvent event;
+
+    void saveEvent() throws IOException {
+        event = events.post(event);
+    }
 
     public TestGame resetGame() throws IOException {
         game = Backends.newSavedGame();
@@ -51,7 +53,7 @@ public class EventBackendTest {
     public void canSaveSections() throws IOException {
         String[] sections = {"level1"};
         event.setSections(sections);
-        event = events.post(event);
+        saveEvent();
         assertThat(event.getSections()).containsOnly("level1");
     }
 
@@ -61,7 +63,7 @@ public class EventBackendTest {
         data.set("thing", "coin");
         data.set("amount", 14);
         event.setCustomData(data);
-        event = events.post(event);
+        saveEvent();
         assertThat(event.getCustomData().get("thing")).isEqualTo("coin");
         assertThat(event.getCustomData().get("amount")).isEqualTo(new BigDecimal(14));
     }
@@ -70,13 +72,13 @@ public class EventBackendTest {
     public void canSaveCoordinates() throws IOException {
         long[] coordinates = {124, 527};
         event.setCoordinates(coordinates);
-        event = events.post(event);
+        saveEvent();
         assertThat(event.getCoordinates()).containsOnly(124, 527);
     }
 
     @Test
     public void generatesCreationDate() throws IOException {
-        event = events.post(event);
+        saveEvent();
         assertThat(event.getCreationDate().length()).isEqualTo(29);
     }
 
@@ -85,16 +87,28 @@ public class EventBackendTest {
     @Test
     public void findsEventsByGame() throws IOException {
         resetGame();
-        event = events.post(event);
-        List<TestEvent> foundEvents = events.searchByGame(event.getGame());
+        saveEvent();
+        List<TestEvent> foundEvents = events.search().withGame(event.getGame()).execute();
         assertThat(foundEvents).hasSize(1);
+    }
+
+    @Test
+    public void findsEventsForMultipleGames() throws IOException {
+        String firstGameId = resetGame().getId();
+        saveEvent();
+        String secondGameId = resetGame().getId();
+        saveEvent();
+        List<TestEvent> foundEvents = events.search()
+                .withGames(firstGameId, secondGameId)
+                .execute();
+        assertThat(foundEvents).hasSize(2);
     }
 
     @Test
     public void findsEventsByPlayer() throws IOException {
         resetPlayer();
         event = events.post(event);
-        List<TestEvent> foundEvents = events.searchByPlayer(event.getPlayer());
+        List<TestEvent> foundEvents = events.search().withPlayer(event.getPlayer()).execute();
         assertThat(foundEvents).hasSize(1);
     }
 
@@ -107,26 +121,26 @@ public class EventBackendTest {
         resetEvent();
         event.setGame(gameId);
         resetPlayer();
-        events.post(event);// Save event with same game and different player
+        events.post(event);// Save event with same game with different player
 
         resetEvent();
         event.setPlayer(playerId);
         resetGame();
-        events.post(event); // Save event with same player and different game
+        events.post(event); // Save event with same player with different game
 
-        List<TestEvent> foundEvents = events.searchByGameAndPlayer(gameId, playerId);
+        List<TestEvent> foundEvents = events.search()
+                .withGame(gameId)
+                .withPlayer(playerId)
+                .execute();
         assertThat(foundEvents).hasSize(1);
     }
 
     @Test
     public void findsEventsByType() throws IOException {
-        event.setType("findsEventsByType");
+        event.setType("findsEventsByType" + Math.random());
         event = events.post(event);
 
-        Map<String, String> params = new HashMap<>();
-        params.put("game", game.getId());
-        params.put("type", event.getType());
-        List<TestEvent> foundEvents = events.search(params);
+        List<TestEvent> foundEvents = events.search().withType(event.getType()).execute();
         assertThat(foundEvents).hasSize(1);
     }
 

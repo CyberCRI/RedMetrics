@@ -1,13 +1,14 @@
 package org.cri.redmetrics.controller;
 
 import org.cri.redmetrics.dao.ProgressDataDao;
+import org.cri.redmetrics.dao.SearchQuery;
 import org.cri.redmetrics.json.JsonConverter;
+import org.cri.redmetrics.model.Entity;
 import org.cri.redmetrics.model.ProgressData;
 import spark.Request;
 import spark.Response;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static spark.Spark.get;
 import static spark.Spark.halt;
@@ -32,18 +33,43 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
 
         // SEARCH
         get(path, (request, response) -> {
-            Map<String, Object> params = new HashMap<>();
-            if (request.queryParams().contains("game")) {
-                params.put("game_id", idFromQueryParam(request, "game"));
-            }
-            if (request.queryParams().contains("player")) {
-                params.put("player_id", idFromQueryParam(request, "player"));
-            }
-            if (request.queryParams().contains("type")) {
-                params.put("type", request.queryParams("type"));
-            }
-            return dao.search(params);
+            SearchQuery search = dao.search();
+            addGameParams(request, search);
+            addPlayerParam(request, search);
+            addTypeParam(request, search);
+            return search.execute();
         }
                 , jsonConverter);
+    }
+
+    private void addGameParams(Request request, SearchQuery search) {
+        if (request.queryParams().contains("game")) {
+            if (request.queryParams("game").contains(",")) {
+                addGameIdList(request, search);
+            } else {
+                search.game(idFromQueryParam(request, "game"));
+            }
+        }
+    }
+
+    private void addGameIdList(Request request, SearchQuery search) {
+        Iterator<String> i = Arrays.asList(request.queryParams("game").split(",")).iterator();
+        List<UUID> gameIds = new ArrayList<>();
+        while (i.hasNext()) {
+            gameIds.add(Entity.parseId(i.next()));
+        }
+        search.games(gameIds);
+    }
+
+    private void addPlayerParam(Request request, SearchQuery search) {
+        if (request.queryParams().contains("player")) {
+            search.player(idFromQueryParam(request, "player"));
+        }
+    }
+
+    private void addTypeParam(Request request, SearchQuery search) {
+        if (request.queryParams().contains("type")) {
+            search.type(request.queryParams("type"));
+        }
     }
 }
