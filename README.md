@@ -1,13 +1,26 @@
 RedMetrics
+=========
+
+
 First :
 
-    Make sure you have a Java 8 SDK installed
+ - Make sure you have a Java 8 SDK installed
+ - Install postgresql
+ - create a postgresql role
+ - create a database named "redmetrics"
 
-    Install postgresql with password "admin"
+#####Once you check out the project with Git, you will need to create the following file :
 
-    create database "test" with owner "postgres"
+    /src/main/java/org/cri/redmetrics/db/DbUser.java
 
-To get started with IntelliJ:
+You can copy the content of DbUserExample.java file in the same package. Then just fill in the username and password of the postgresql role you created previously.
+
+
+Getting started...
+--------------
+
+...with IntelliJ
+----
 
 checkout project using github tool in intelliJ
 
@@ -22,7 +35,8 @@ Install Lombok plugin
     Type "lombok" in search bar
     Install and restart IDE
 
-To get started with NetBeans:
+...with NetBeans
+----
 
 Install NetBeans IDE 8.0
 
