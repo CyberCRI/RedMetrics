@@ -1,4 +1,6 @@
 # IDE config files
 .idea
+
 redmetrics.iml
 /target/
+/src/main/java/org/cri/redmetrics/db/DbUser.java
