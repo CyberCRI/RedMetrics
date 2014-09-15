@@ -5,6 +5,7 @@ import org.cri.redmetrics.json.JsonConverter;
 import org.cri.redmetrics.model.Entity;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 
 import java.util.List;
 import java.util.UUID;
@@ -42,25 +43,38 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
     private void publishGeneric() {
 
-        post(path + "/", (request, response) -> {
+        // POST
+
+        Route postRoute = (request, response) -> {
             // System.out.println("Request body : " + request.body());
             E entity = jsonConverter.parse(request.body());
             beforeCreation(entity, request, response);
             create(entity);
             response.status(201); // Created
             return entity;
-        }, jsonConverter);
+        };
 
-        get(path + "/:id", (request, response) -> {
+        post(path + "", postRoute, jsonConverter);
+        post(path + "/", postRoute, jsonConverter);
+
+
+        // GET
+
+        Route getByIdRoute = (request, response) -> {
             E entity = read(idFromUrl(request));
             if (entity == null) halt(404);
             return entity;
-        }, jsonConverter);
+        };
 
-        get(path + "/", (request, response) -> list()
-                , jsonConverter);
+        get(path + "/:id", getByIdRoute, jsonConverter);
+        get(path + "/:id/", getByIdRoute, jsonConverter);
 
-        put(path + "/:id", (request, response) -> {
+        get(path + "/", (request, response) -> list(), jsonConverter);
+
+
+        // PUT
+
+        Route putRoute = (request, response) -> {
             E entity = jsonConverter.parse(request.body());
             UUID id = idFromUrl(request);
             if (entity.getId() != null && !entity.getId().equals(id)) {
@@ -69,9 +83,16 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
                 entity.setId(id);
             }
             return update(entity);
-        }, jsonConverter);
+        };
+
+        put(path + "/:id", putRoute, jsonConverter);
+        put(path + "/:id/", putRoute, jsonConverter);
+
+
+        // DELETE
 
         delete(path + "/:id", (request, response) -> dao.delete(idFromUrl(request)), jsonConverter);
+        delete(path + "/:id/", (request, response) -> dao.delete(idFromUrl(request)), jsonConverter);
 
     }
 

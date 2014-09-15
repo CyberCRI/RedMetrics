@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import org.cri.redmetrics.dao.PlayerDao;
 import org.cri.redmetrics.json.PlayerJsonConverter;
 import org.cri.redmetrics.model.Player;
+import spark.Route;
 
 import java.util.UUID;
 
@@ -19,12 +20,14 @@ public class PlayerController extends Controller<Player, PlayerDao> {
 
     @Override
     protected void publishSpecific() {
-        get(path + "/email/:email", (request, response) -> {
+        Route getByEmailRoute = (request, response) -> {
             String email = request.params(":email");
             Player player = dao.findByEmail(email);
             if (player == null) halt(404, "No player found for email : " + email);
             return player;
-        }, jsonConverter);
+        };
+        get(path + "/email/:email", getByEmailRoute, jsonConverter);
+        get(path + "/email/:email/", getByEmailRoute, jsonConverter);
     }
 
     @Override
