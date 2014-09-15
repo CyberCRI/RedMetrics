@@ -7,12 +7,22 @@ import org.cri.redmetrics.controller.*;
 import org.cri.redmetrics.dao.DbException;
 import org.cri.redmetrics.dao.InconsistentDataException;
 import org.cri.redmetrics.guice.MainModule;
+import spark.Request;
+import spark.Response;
 
 import java.sql.SQLException;
 
 import static spark.Spark.*;
 
 public class Server {
+
+    private static void enableCORS(final String origin, final String methods, final String headers) {
+        before((Request request, Response response) -> {
+            response.header("Access-Control-Allow-Origin", origin);
+            response.header("Access-Control-Request-Method", methods);
+            response.header("Access-Control-Allow-Headers", headers);
+        });
+    }
 
     private final int portNumber;
 
@@ -32,6 +42,8 @@ public class Server {
         started = true;
 
         setPort(portNumber);
+
+        enableCORS("*", "*", "*");
 
         Injector injector = Guice.createInjector(new MainModule());
 
