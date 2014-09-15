@@ -8,6 +8,7 @@ import com.google.api.client.http.json.JsonHttpContent;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.Types;
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import org.cri.redmetrics.Server;
 import org.cri.redmetrics.controller.Controller;
@@ -15,7 +16,9 @@ import org.cri.redmetrics.model.TestEntity;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class HttpBackend<E extends TestEntity> {
 
@@ -92,17 +95,16 @@ public class HttpBackend<E extends TestEntity> {
 
         public SearchQueryBuilder withGames(String... gameIds) {
             Preconditions.checkArgument(gameIds.length > 0);
-            StringBuilder sb = new StringBuilder();
-            Iterator<String> i = Arrays.asList(gameIds).iterator();
-            while (i.hasNext()) {
-                sb.append(i.next());
-                if (i.hasNext()) sb.append(",");
-            }
-            return with("game", sb.toString());
+            return with("game", Joiner.on(',').join(gameIds));
         }
 
         public SearchQueryBuilder withPlayer(String playerId) {
             return with("player", playerId);
+        }
+
+        public SearchQueryBuilder withPlayers(String... playerIds) {
+            Preconditions.checkArgument(playerIds.length > 0);
+            return with("player", Joiner.on(',').join(playerIds));
         }
 
         public SearchQueryBuilder withType(String type) {

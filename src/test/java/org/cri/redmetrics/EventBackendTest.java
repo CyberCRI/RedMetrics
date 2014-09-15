@@ -113,6 +113,18 @@ public class EventBackendTest {
     }
 
     @Test
+    public void findsEventsForMultiplePlayers() throws IOException {
+        String firstPlayerId = resetPlayer().getId();
+        saveEvent();
+        String secondPlayerId = resetPlayer().getId();
+        saveEvent();
+        List<TestEvent> foundEvents = events.search()
+                .withPlayers(firstPlayerId, secondPlayerId)
+                .execute();
+        assertThat(foundEvents).hasSize(2);
+    }
+
+    @Test
     public void findsEventsByGameAndPlayer() throws IOException {
         String gameId = resetGame().getId();
         String playerId = resetPlayer().getId();

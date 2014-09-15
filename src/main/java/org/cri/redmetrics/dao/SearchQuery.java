@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class SearchQuery<E extends Entity> {
 
@@ -31,27 +32,17 @@ public class SearchQuery<E extends Entity> {
         else hasStatement = true;
     }
 
-    public SearchQuery foreignEntity(String columnName, UUID id) {
-        try {
-            addAndIfNecessary();
-            where.eq(columnName, id);
-            return this;
-        } catch (SQLException e) {
-            throw new DbException(e);
-        }
-    }
-
-    public SearchQuery foreignEntities(String columnName, List<UUID> ids) {
+    public SearchQuery foreignEntity(String entityName, Stream<UUID> ids) {
         try {
             addAndIfNecessary();
             for (Iterator<UUID> i = ids.iterator(); i.hasNext(); ) {
-                where.eq(columnName, i.next());
+                where.eq(entityName + "_id", i.next());
                 if (i.hasNext()) where.or();
             }
-            return this;
         } catch (SQLException e) {
             throw new DbException(e);
         }
+        return this;
     }
 
     public SearchQuery value(String columnName, String value) {
@@ -64,32 +55,17 @@ public class SearchQuery<E extends Entity> {
         }
     }
 
-    public SearchQuery values(String columnName, List<String> values) {
-        try {
-            addAndIfNecessary();
-            for (Iterator<String> i = values.iterator(); i.hasNext(); ) {
-                where.eq(columnName, i.next());
-                if (i.hasNext()) where.or();
-            }
-            return this;
-        } catch (SQLException e) {
-            throw new DbException(e);
-        }
-    }
+//    public SearchQuery values(String columnName, List<String> values) {
+//        try {
+//            addAndIfNecessary();
+//            for (Iterator<String> i = values.iterator(); i.hasNext(); ) {
+//                where.eq(columnName, i.next());
+//                if (i.hasNext()) where.or();
+//            }
+//            return this;
+//        } catch (SQLException e) {
+//            throw new DbException(e);
+//        }
+//    }
 
-    public SearchQuery game(UUID gameId) {
-        return foreignEntity("game_id", gameId);
-    }
-
-    public SearchQuery games(List<UUID> gameIds) {
-        return foreignEntities("game_id", gameIds);
-    }
-
-    public SearchQuery player(UUID playerId) {
-        return foreignEntity("player_id", playerId);
-    }
-
-    public SearchQuery type(String type) {
-        return value("type", type);
-    }
 }
