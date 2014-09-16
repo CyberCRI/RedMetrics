@@ -72,7 +72,7 @@ public class SearchQuery<E extends Entity> {
     public SearchQuery after(Date date) {
         try {
             addAndIfNecessary();
-            where.gt("serverTime", date);
+            where.ge("serverTime", date);
             return this;
         } catch (SQLException e) {
             throw new DbException(e);
@@ -92,7 +92,7 @@ public class SearchQuery<E extends Entity> {
     public SearchQuery afterUserTime(Date date) {
         try {
             addAndIfNecessary();
-            where.gt("userTime", date);
+            where.ge("userTime", date);
             return this;
         } catch (SQLException e) {
             throw new DbException(e);

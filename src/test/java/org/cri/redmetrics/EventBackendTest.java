@@ -187,6 +187,12 @@ public class EventBackendTest {
 
     @Test
     public void findsAfterServerTime() throws IOException {
+        resetEvent(); // Should have been called by TestNG, but the test will strangely fail without this line
+        try {
+            Thread.sleep(1001); // Wait one second
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
         DateTime beforeCreation = new DateTime();
         saveEvent();
 
