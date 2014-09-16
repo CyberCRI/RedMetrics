@@ -21,7 +21,7 @@ public class Event extends ProgressData {
     @DatabaseField(dataType = DataType.SERIALIZABLE)
     private String[] sections;
 
-    @DatabaseField(dataType = DataType.SERIALIZABLE)
-    private long[] coordinates;
+    @DatabaseField
+    private String coordinates;
 
 }

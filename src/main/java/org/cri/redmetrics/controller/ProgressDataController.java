@@ -19,8 +19,8 @@ import static spark.Spark.halt;
 
 public abstract class ProgressDataController<E extends ProgressData, DAO extends ProgressDataDao<E>> extends Controller<E, DAO> {
 
-    private static final String[] FOREIGN_ENTITIES = {"game", "player"};
-    private static final String[] VALUES = {"type"};
+    protected static final String[] FOREIGN_ENTITIES = {"game", "player"};
+    protected static final String[] VALUES = {"type"};
 
     private static final Splitter SPLITTER = Splitter.on(',')
             .trimResults()
@@ -29,6 +29,8 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
     ProgressDataController(String path, DAO dao, JsonConverter<E> jsonConverter) {
         super(path, dao, jsonConverter);
     }
+
+    protected abstract String[] searchableValues();
 
     @Override
     protected void beforeCreation(E progressData, Request request, Response response) {
@@ -68,8 +70,8 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
                 .map(Entity::parseId);
     }
 
-    private void searchValues(Request request, SearchQuery search) {
-        for (String columnName : VALUES) {
+    protected void searchValues(Request request, SearchQuery search) {
+        for (String columnName : searchableValues()) {
             String params = request.queryParams(columnName);
             if (params != null) {
                 search.value(columnName, params);

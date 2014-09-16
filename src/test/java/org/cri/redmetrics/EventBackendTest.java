@@ -74,10 +74,9 @@ public class EventBackendTest {
 
     @Test
     public void canSaveCoordinates() throws IOException {
-        long[] coordinates = {124, 527};
-        event.setCoordinates(coordinates);
+        event.setCoordinates("124,527");
         saveEvent();
-        assertThat(event.getCoordinates()).containsOnly(124, 527);
+        assertThat(event.getCoordinates()).isEqualTo("124,527");
     }
 
     @Test
@@ -180,10 +179,12 @@ public class EventBackendTest {
         resetEvent();
         saveEvent();
 
-        List<TestEvent> foundEvents = events.search().before(afterFirstSave).withGame(game.getId()).execute();
+        List<TestEvent> foundEvents = events.search()
+                .before(afterFirstSave)
+                .withGame(game.getId())
+                .execute();
         assertThat(foundEvents).hasSize(1);
     }
-
 
     @Test
     public void findsAfterServerTime() throws IOException {
@@ -212,10 +213,12 @@ public class EventBackendTest {
         event.setUserTime(DateUtils.print(time.plusSeconds(1)));
         saveEvent();
 
-        List<TestEvent> foundEvents = events.search().beforeUserTime(time).withGame(game.getId()).execute();
+        List<TestEvent> foundEvents = events.search()
+                .beforeUserTime(time)
+                .withGame(game.getId())
+                .execute();
         assertThat(foundEvents).hasSize(1);
     }
-
 
     @Test
     public void findsAfterUserTime() throws IOException {
@@ -229,8 +232,28 @@ public class EventBackendTest {
         event.setUserTime(DateUtils.print(time.plusSeconds(1)));
         saveEvent();
 
-        List<TestEvent> foundEvents = events.search().afterUserTime(time).withGame(game.getId()).execute();
+        List<TestEvent> foundEvents = events.search()
+                .afterUserTime(time)
+                .withGame(game.getId())
+                .execute();
         assertThat(foundEvents).hasSize(1);
     }
 
+    @Test
+    public void findsByCoordinates() throws IOException {
+        String coordinates = "123,456";
+
+        resetGame();
+        event.setCoordinates(coordinates);
+        saveEvent();
+
+        resetEvent();
+        saveEvent(); // Same game but different coordinates
+
+        List<TestEvent> foundEvents = events.search()
+                .withCoordinates(coordinates)
+                .withGame(game.getId())
+                .execute();
+        assertThat(foundEvents).hasSize(1);
+    }
 }

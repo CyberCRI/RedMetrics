@@ -12,4 +12,9 @@ public class SnapshotController extends ProgressDataController<Snapshot, Snapsho
         super("/snapshot", dao, json);
     }
 
+    @Override
+    protected String[] searchableValues() {
+        return VALUES;
+    }
+
 }

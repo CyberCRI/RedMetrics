@@ -129,6 +129,10 @@ public class HttpBackend<E extends TestEntity> {
             return with("afterUserTime", DateUtils.print(date));
         }
 
+        public SearchQueryBuilder withCoordinates(String coordinates) {
+            return with("coordinates", coordinates);
+        }
+
         public List<E> execute() throws IOException {
             GenericUrl url = url();
             url.putAll(params);
