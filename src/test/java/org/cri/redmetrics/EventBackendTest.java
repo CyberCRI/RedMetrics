@@ -1,11 +1,13 @@
 package org.cri.redmetrics;
 
+import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.json.GenericJson;
 import org.cri.redmetrics.backend.Backends;
 import org.cri.redmetrics.backend.EventBackend;
 import org.cri.redmetrics.model.TestEvent;
 import org.cri.redmetrics.model.TestGame;
 import org.cri.redmetrics.model.TestPlayer;
+import org.joda.time.DateTime;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -14,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrown;
 
 public class EventBackendTest {
 
@@ -128,17 +131,17 @@ public class EventBackendTest {
     public void findsEventsByGameAndPlayer() throws IOException {
         String gameId = resetGame().getId();
         String playerId = resetPlayer().getId();
-        event = events.post(event);
+        saveEvent();
 
         resetEvent();
         event.setGame(gameId);
         resetPlayer();
-        events.post(event);// Save event with same game with different player
+        saveEvent();// Same game but different player
 
         resetEvent();
         event.setPlayer(playerId);
         resetGame();
-        events.post(event); // Save event with same player with different game
+        saveEvent(); // Same player but different game
 
         List<TestEvent> foundEvents = events.search()
                 .withGame(gameId)
@@ -150,9 +153,38 @@ public class EventBackendTest {
     @Test
     public void findsEventsByType() throws IOException {
         event.setType("findsEventsByType" + Math.random());
-        event = events.post(event);
+        saveEvent();
 
         List<TestEvent> foundEvents = events.search().withType(event.getType()).execute();
+        assertThat(foundEvents).hasSize(1);
+    }
+
+    @Test
+    public void shouldFailWhenSearchingWithoutRequestParams() throws IOException {
+        try {
+            events.search().execute();
+            failBecauseExceptionWasNotThrown(HttpResponseException.class);
+        } catch (HttpResponseException e) {
+            assertThat(e.getStatusCode()).isEqualTo(400);
+        }
+    }
+
+    @Test
+    public void findsByBeforeDate() throws IOException {
+        resetGame();
+        saveEvent();
+
+        List<TestEvent> foundEvents = events.search().before(new DateTime()).withGame(game.getId()).execute();
+        assertThat(foundEvents).hasSize(1);
+    }
+
+
+    @Test
+    public void findsByAfterDate() throws IOException {
+        DateTime beforeCreation = new DateTime();
+        saveEvent();
+
+        List<TestEvent> foundEvents = events.search().after(beforeCreation).execute();
         assertThat(foundEvents).hasSize(1);
     }
 

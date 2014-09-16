@@ -4,10 +4,13 @@ import com.j256.ormlite.stmt.Where;
 import org.cri.redmetrics.model.Entity;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
+
+import static spark.Spark.halt;
 
 public class SearchQuery<E extends Entity> {
 
@@ -20,6 +23,7 @@ public class SearchQuery<E extends Entity> {
     }
 
     public List<E> execute() {
+        if (!hasStatement) halt(400, "No parameters were specified for search query");
         try {
             return where.query();
         } catch (SQLException e) {
@@ -49,6 +53,26 @@ public class SearchQuery<E extends Entity> {
         try {
             addAndIfNecessary();
             where.eq(columnName, value);
+            return this;
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
+
+    public SearchQuery before(Date date) {
+        try {
+            addAndIfNecessary();
+            where.le("creationDate", date);
+            return this;
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
+
+    public SearchQuery after(Date date) {
+        try {
+            addAndIfNecessary();
+            where.gt("creationDate", date);
             return this;
         } catch (SQLException e) {
             throw new DbException(e);

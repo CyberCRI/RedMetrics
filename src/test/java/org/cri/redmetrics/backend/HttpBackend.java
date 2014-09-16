@@ -13,6 +13,8 @@ import com.google.common.base.Preconditions;
 import org.cri.redmetrics.Server;
 import org.cri.redmetrics.controller.Controller;
 import org.cri.redmetrics.model.TestEntity;
+import org.cri.redmetrics.util.DateUtils;
+import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -109,6 +111,14 @@ public class HttpBackend<E extends TestEntity> {
 
         public SearchQueryBuilder withType(String type) {
             return with("type", type);
+        }
+
+        public SearchQueryBuilder before(DateTime date) {
+            return with("before", DateUtils.print(date));
+        }
+
+        public SearchQueryBuilder after(DateTime date) {
+            return with("after", DateUtils.print(date));
         }
 
         public List<E> execute() throws IOException {
