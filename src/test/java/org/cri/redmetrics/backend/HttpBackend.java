@@ -121,6 +121,14 @@ public class HttpBackend<E extends TestEntity> {
             return with("after", DateUtils.print(date));
         }
 
+        public SearchQueryBuilder beforeUserTime(DateTime date) {
+            return with("beforeUserTime", DateUtils.print(date));
+        }
+
+        public SearchQueryBuilder afterUserTime(DateTime date) {
+            return with("afterUserTime", DateUtils.print(date));
+        }
+
         public List<E> execute() throws IOException {
             GenericUrl url = url();
             url.putAll(params);

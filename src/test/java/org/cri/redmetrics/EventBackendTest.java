@@ -7,6 +7,7 @@ import org.cri.redmetrics.backend.EventBackend;
 import org.cri.redmetrics.model.TestEvent;
 import org.cri.redmetrics.model.TestGame;
 import org.cri.redmetrics.model.TestPlayer;
+import org.cri.redmetrics.util.DateUtils;
 import org.joda.time.DateTime;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -82,7 +83,7 @@ public class EventBackendTest {
     @Test
     public void generatesCreationDate() throws IOException {
         saveEvent();
-        assertThat(event.getCreationDate().length()).isEqualTo(29);
+        assertThat(event.getServerTime().length()).isEqualTo(29);
     }
 
     // READ
@@ -170,21 +171,59 @@ public class EventBackendTest {
     }
 
     @Test
-    public void findsByBeforeDate() throws IOException {
+    public void findsBeforeServerTime() throws IOException {
         resetGame();
         saveEvent();
 
-        List<TestEvent> foundEvents = events.search().before(new DateTime()).withGame(game.getId()).execute();
+        DateTime afterFirstSave = new DateTime();
+
+        resetEvent();
+        saveEvent();
+
+        List<TestEvent> foundEvents = events.search().before(afterFirstSave).withGame(game.getId()).execute();
         assertThat(foundEvents).hasSize(1);
     }
 
 
     @Test
-    public void findsByAfterDate() throws IOException {
+    public void findsAfterServerTime() throws IOException {
         DateTime beforeCreation = new DateTime();
         saveEvent();
 
         List<TestEvent> foundEvents = events.search().after(beforeCreation).execute();
+        assertThat(foundEvents).hasSize(1);
+    }
+
+    @Test
+    public void findsBeforeUserTime() throws IOException {
+        resetGame();
+        DateTime time = new DateTime();
+
+        event.setUserTime(DateUtils.print(time.minusSeconds(1)));
+        saveEvent();
+
+        resetEvent();
+        event.setUserTime(DateUtils.print(time.plusSeconds(1)));
+        saveEvent();
+
+        List<TestEvent> foundEvents = events.search().beforeUserTime(time).withGame(game.getId()).execute();
+        assertThat(foundEvents).hasSize(1);
+    }
+
+
+    @Test
+    public void findsAfterUserTime() throws IOException {
+        resetGame();
+        DateTime time = new DateTime();
+
+        event.setUserTime(DateUtils.print(time.minusSeconds(1)));
+        saveEvent();
+
+        resetEvent();
+        event.setUserTime(DateUtils.print(time.plusSeconds(1)));
+        saveEvent();
+
+        List<TestEvent> foundEvents = events.search().afterUserTime(time).withGame(game.getId()).execute();
         assertThat(foundEvents).hasSize(1);
     }
 

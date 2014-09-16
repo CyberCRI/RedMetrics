@@ -11,7 +11,6 @@ public class DateUtils {
     private static final DateTimeFormatter RFC1123_DATE_TIME_FORMATTER =
             DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss 'UTC'").withLocale(Locale.US);
 
-
     public static String print(DateTime date) {
         return RFC1123_DATE_TIME_FORMATTER.print(date);
     }
@@ -19,4 +18,5 @@ public class DateUtils {
     public static String now() {
         return print(new DateTime());
     }
+
 }

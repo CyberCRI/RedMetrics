@@ -62,7 +62,7 @@ public class SearchQuery<E extends Entity> {
     public SearchQuery before(Date date) {
         try {
             addAndIfNecessary();
-            where.le("creationDate", date);
+            where.le("serverTime", date);
             return this;
         } catch (SQLException e) {
             throw new DbException(e);
@@ -72,7 +72,27 @@ public class SearchQuery<E extends Entity> {
     public SearchQuery after(Date date) {
         try {
             addAndIfNecessary();
-            where.gt("creationDate", date);
+            where.gt("serverTime", date);
+            return this;
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
+
+    public SearchQuery beforeUserTime(Date date) {
+        try {
+            addAndIfNecessary();
+            where.le("userTime", date);
+            return this;
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
+
+    public SearchQuery afterUserTime(Date date) {
+        try {
+            addAndIfNecessary();
+            where.gt("userTime", date);
             return this;
         } catch (SQLException e) {
             throw new DbException(e);

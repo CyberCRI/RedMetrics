@@ -16,7 +16,10 @@ public class TestProgressData extends TestEntity {
     private String player;
 
     @Key
-    private String creationDate;
+    private String serverTime;
+
+    @Key
+    private String userTime;
 
     @Key
     private GenericJson customData;

@@ -23,7 +23,10 @@ public abstract class ProgressData extends Entity {
     private Player player;
 
     @DatabaseField(canBeNull = false)
-    private Date creationDate = new Date();
+    private Date serverTime = new Date();
+
+    @DatabaseField
+    private Date userTime;
 
     @DatabaseField
     private String customData;

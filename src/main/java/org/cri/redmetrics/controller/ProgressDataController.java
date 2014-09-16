@@ -90,6 +90,18 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
             Date date = DateFormatter.parse(afterParam);
             search.after(date);
         }
+        // BEFORE USER TIME
+        String beforeUserTime = request.queryParams("beforeUserTime");
+        if (beforeUserTime != null) {
+            Date date = DateFormatter.parse(beforeUserTime);
+            search.beforeUserTime(date);
+        }
+        // AFTER USER TIME
+        String afterUserTime = request.queryParams("afterUserTime");
+        if (afterUserTime != null) {
+            Date date = DateFormatter.parse(afterUserTime);
+            search.afterUserTime(date);
+        }
     }
 
 }
