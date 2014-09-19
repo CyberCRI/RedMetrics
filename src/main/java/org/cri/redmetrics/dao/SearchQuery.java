@@ -99,6 +99,12 @@ public class SearchQuery<E extends Entity> {
         }
     }
 
+    public SearchQuery sections(String sections) {
+        addAndIfNecessary();
+        where.raw("sections ~ '" + sections + "'");
+        return this;
+    }
+
 //    public SearchQuery values(String columnName, List<String> values) {
 //        try {
 //            addAndIfNecessary();

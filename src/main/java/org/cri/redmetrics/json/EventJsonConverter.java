@@ -26,6 +26,12 @@ public class EventJsonConverter extends ProgressDataJsonConverter<Event> {
             event.setType(type.getAsString().trim().toLowerCase());
         }
 
+        // Coordinates
+//        JsonElement coordinates = jsonObject.get("coordinates");
+//        if (coordinates != null && coordinates.isJsonArray()) {
+//            event.setCoordinates(coordinates.toString());
+//        }
+
         return event;
     }
 

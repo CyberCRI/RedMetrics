@@ -129,8 +129,12 @@ public class HttpBackend<E extends TestEntity> {
             return with("afterUserTime", DateUtils.print(date));
         }
 
-        public SearchQueryBuilder withCoordinates(String coordinates) {
-            return with("coordinates", coordinates);
+        public SearchQueryBuilder withCoordinates(Integer[] coordinates) {
+            return with("coordinates", coordinates.toString());
+        }
+
+        public SearchQueryBuilder withSections(String sections) {
+            return with("sections", sections);
         }
 
         public List<E> execute() throws IOException {

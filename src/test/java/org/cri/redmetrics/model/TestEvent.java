@@ -12,9 +12,6 @@ public class TestEvent extends TestProgressData {
     private String type;
 
     @Key
-    private String[] sections;
-
-    @Key
-    private String coordinates;
+    private Integer[] coordinates;
 
 }

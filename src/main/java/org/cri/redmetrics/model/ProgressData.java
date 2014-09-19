@@ -3,6 +3,7 @@ package org.cri.redmetrics.model;
 import com.j256.ormlite.field.DatabaseField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.cri.redmetrics.db.LtreePersister;
 
 import java.util.Date;
 
@@ -30,5 +31,8 @@ public abstract class ProgressData extends Entity {
 
     @DatabaseField
     private String customData;
+
+    @DatabaseField(persisterClass = LtreePersister.class, columnDefinition = "ltree")
+    private String sections;
 
 }

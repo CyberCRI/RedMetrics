@@ -1,6 +1,5 @@
 package org.cri.redmetrics.model;
 
-import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import lombok.AllArgsConstructor;
@@ -18,10 +17,7 @@ public class Event extends ProgressData {
     @DatabaseField(canBeNull = false)
     private String type;
 
-    @DatabaseField(dataType = DataType.SERIALIZABLE)
-    private String[] sections;
-
-    @DatabaseField
-    private String coordinates;
+//    @DatabaseField(persisterClass = IntegerArrayPersister.class, columnDefinition = "integer[]")
+//    private Integer[] coordinates;
 
 }

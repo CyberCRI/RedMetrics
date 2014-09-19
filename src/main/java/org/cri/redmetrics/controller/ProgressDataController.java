@@ -50,6 +50,7 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
             searchForeignEntities(request, search);
             searchValues(request, search);
             searchDates(request, search);
+            searchSections(request, search);
             return search.execute();
         }
                 , jsonConverter);
@@ -103,6 +104,14 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         if (afterUserTime != null) {
             Date date = DateFormatter.parse(afterUserTime);
             search.afterUserTime(date);
+        }
+    }
+
+    private void searchSections(Request request, SearchQuery search) {
+        String sectionsParam = request.queryParams("sections");
+        if (sectionsParam != null) {
+            sectionsParam = sectionsParam.trim();
+            search.sections(sectionsParam);
         }
     }
 

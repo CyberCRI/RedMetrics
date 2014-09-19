@@ -8,6 +8,9 @@ First :
  - Install postgresql
  - create a postgresql role
  - create a database named "redmetrics"
+ - run "CREATE EXTENSION ltree;" as a superuser
+   OR
+   psql yourdb < ltree.sql
 
 #####Once you check out the project with Git, you will need to create the following file :
 
