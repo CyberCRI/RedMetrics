@@ -72,7 +72,7 @@ public class EventBackendTest {
         assertThat(event.getCustomData().get("amount")).isEqualTo(new BigDecimal(14));
     }
 
-    // TODO    @Test
+    @Test
     public void canSaveCoordinates() throws IOException {
         Integer[] coordinates = {123, 456};
         event.setCoordinates(coordinates);
@@ -254,24 +254,6 @@ public class EventBackendTest {
 
         List<TestEvent> foundEvents = events.search()
                 .withSections("level1.*")
-                .withGame(game.getId())
-                .execute();
-        assertThat(foundEvents).hasSize(1);
-    }
-
-    // TODO @Test
-    public void findsByCoordinates() throws IOException {
-        Integer[] coordinates = {123, 456};
-
-        resetGame();
-        event.setCoordinates(coordinates);
-        saveEvent();
-
-        resetEvent();
-        saveEvent(); // Same game but different coordinates
-
-        List<TestEvent> foundEvents = events.search()
-                .withCoordinates(coordinates)
                 .withGame(game.getId())
                 .execute();
         assertThat(foundEvents).hasSize(1);

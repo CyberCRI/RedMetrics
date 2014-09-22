@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.cri.redmetrics.db.IntegerArrayPersister;
 
 @Data
 @DatabaseTable(tableName = "events")
@@ -17,7 +18,7 @@ public class Event extends ProgressData {
     @DatabaseField(canBeNull = false)
     private String type;
 
-//    @DatabaseField(persisterClass = IntegerArrayPersister.class, columnDefinition = "integer[]")
-//    private Integer[] coordinates;
+    @DatabaseField(persisterClass = IntegerArrayPersister.class, columnDefinition = "integer[]")
+    private Integer[] coordinates;
 
 }

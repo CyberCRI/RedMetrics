@@ -25,10 +25,10 @@ public class IntegerArrayPersister extends StringType {
             return null;
         } else {
             String join = "";
-            for (Integer str : array) {
-                join += str + ",";
+            for (Integer i : array) {
+                join += i + ",";
             }
-            return "'{" + join.substring(0, join.length() - 1) + "}'";
+            return "{" + join.substring(0, join.length() - 1) + "}";
         }
 
     }
@@ -43,7 +43,7 @@ public class IntegerArrayPersister extends StringType {
             String[] strings = string.replaceAll("[{}]", "").split(",");
             Integer[] ints = new Integer[strings.length];
             for (int i = 0, length = strings.length; i < length; i++) {
-                ints[0] = Integer.parseInt(strings[0]);
+                ints[i] = Integer.parseInt(strings[i]);
             }
             return ints;
         }
