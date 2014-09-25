@@ -171,6 +171,21 @@ public class EventBackendTest {
     }
 
     @Test
+    public void shouldFailWhenSearchingWithEmptyParamsOnly() throws IOException {
+        try {
+            events
+                    .search()
+                    .withGame("")
+                    .withPlayer("")
+                    .execute();
+            failBecauseExceptionWasNotThrown(HttpResponseException.class);
+        } catch (HttpResponseException e) {
+            assertThat(e.getStatusCode()).isEqualTo(400);
+        }
+    }
+
+
+    @Test
     public void findsBeforeServerTime() throws IOException {
         resetGame();
         saveEvent();
@@ -255,6 +270,18 @@ public class EventBackendTest {
         List<TestEvent> foundEvents = events.search()
                 .withSections("level1.*")
                 .withGame(game.getId())
+                .execute();
+        assertThat(foundEvents).hasSize(1);
+    }
+
+    @Test
+    public void searchShouldAcceptEmptyParams() throws IOException {
+        resetGame();
+        saveEvent();
+
+        List<TestEvent> foundEvents = events.search()
+                .withGame(game.getId())
+                .withPlayer("")
                 .execute();
         assertThat(foundEvents).hasSize(1);
     }

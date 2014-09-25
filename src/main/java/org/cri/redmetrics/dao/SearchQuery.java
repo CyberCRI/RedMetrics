@@ -1,6 +1,7 @@
 package org.cri.redmetrics.dao;
 
 import com.j256.ormlite.stmt.Where;
+import org.cri.redmetrics.Console;
 import org.cri.redmetrics.model.Entity;
 
 import java.sql.SQLException;
@@ -38,8 +39,11 @@ public class SearchQuery<E extends Entity> {
 
     public SearchQuery foreignEntity(String entityName, Stream<UUID> ids) {
         try {
-            addAndIfNecessary();
-            for (Iterator<UUID> i = ids.iterator(); i.hasNext(); ) {
+            Iterator<UUID> i = ids.iterator();
+            if (i.hasNext()) {
+                addAndIfNecessary();
+            }
+            for (; i.hasNext(); ) {
                 where.eq(entityName + "_id", i.next());
                 if (i.hasNext()) where.or();
             }
