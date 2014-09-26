@@ -55,6 +55,7 @@ public class SearchQuery<E extends Entity> {
 
     public SearchQuery value(String columnName, String value) {
         try {
+            if (value.isEmpty()) return this;
             addAndIfNecessary();
             where.eq(columnName, value);
             return this;

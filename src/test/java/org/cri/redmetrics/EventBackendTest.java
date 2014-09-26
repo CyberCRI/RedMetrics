@@ -286,4 +286,16 @@ public class EventBackendTest {
         assertThat(foundEvents).hasSize(1);
     }
 
+    @Test
+    public void searchShouldIgnoreEmptyParams() throws IOException {
+        resetGame();
+        saveEvent();
+
+        List<TestEvent> foundEvents = events.search()
+                .withGame(game.getId())
+                .withType("")
+                .execute();
+        assertThat(foundEvents).hasSize(1);
+    }
+
 }
