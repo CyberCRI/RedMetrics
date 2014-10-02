@@ -74,7 +74,7 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
     protected void searchValues(Request request, SearchQuery search) {
         for (String columnName : searchableValues()) {
             String params = request.queryParams(columnName);
-            if (params != null) {
+            if (params != null && !params.isEmpty()) {
                 search.value(columnName, params);
             }
         }
@@ -109,7 +109,7 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
 
     private void searchSections(Request request, SearchQuery search) {
         String sectionsParam = request.queryParams("sections");
-        if (sectionsParam != null) {
+        if (sectionsParam != null && !sectionsParam.isEmpty()) {
             sectionsParam = sectionsParam.trim();
             search.sections(sectionsParam);
         }

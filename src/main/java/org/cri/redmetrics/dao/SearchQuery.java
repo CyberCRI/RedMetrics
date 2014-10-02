@@ -1,7 +1,6 @@
 package org.cri.redmetrics.dao;
 
 import com.j256.ormlite.stmt.Where;
-import org.cri.redmetrics.Console;
 import org.cri.redmetrics.model.Entity;
 
 import java.sql.SQLException;
@@ -43,7 +42,7 @@ public class SearchQuery<E extends Entity> {
             if (i.hasNext()) {
                 addAndIfNecessary();
             }
-            for (; i.hasNext(); ) {
+            while (i.hasNext()) {
                 where.eq(entityName + "_id", i.next());
                 if (i.hasNext()) where.or();
             }
@@ -55,7 +54,6 @@ public class SearchQuery<E extends Entity> {
 
     public SearchQuery value(String columnName, String value) {
         try {
-            if (value.isEmpty()) return this;
             addAndIfNecessary();
             where.eq(columnName, value);
             return this;
