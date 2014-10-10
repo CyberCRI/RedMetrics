@@ -5,7 +5,7 @@ import com.google.api.client.json.GenericJson;
 import org.cri.redmetrics.backend.Backends;
 import org.cri.redmetrics.backend.EventBackend;
 import org.cri.redmetrics.model.TestEvent;
-import org.cri.redmetrics.model.TestGame;
+import org.cri.redmetrics.model.TestGameVersion;
 import org.cri.redmetrics.model.TestPlayer;
 import org.cri.redmetrics.util.DateUtils;
 import org.joda.time.DateTime;
@@ -23,7 +23,7 @@ public class EventBackendTest {
 
     static final EventBackend events = Backends.EVENT;
 
-    TestGame game = Backends.newSavedGame();
+    TestGameVersion gameVersion = Backends.newSavedGameVersion();
     TestPlayer player = Backends.newSavedPlayer();
     TestEvent event;
 
@@ -31,10 +31,10 @@ public class EventBackendTest {
         event = events.post(event);
     }
 
-    public TestGame resetGame() throws IOException {
-        game = Backends.newSavedGame();
-        event.setGame(game.getId());
-        return game;
+    public TestGameVersion resetGameVersion() throws IOException {
+        gameVersion = Backends.newSavedGameVersion();
+        event.setGameVersion(gameVersion.getId());
+        return gameVersion;
     }
 
     public TestPlayer resetPlayer() throws IOException {
@@ -46,7 +46,7 @@ public class EventBackendTest {
     @BeforeTest
     public void resetEvent() throws IOException {
         event = new TestEvent();
-        event.setGame(game.getId());
+        event.setGameVersion(gameVersion.getId());
         event.setPlayer(player.getId());
         event.setType("start");
     }
@@ -90,17 +90,37 @@ public class EventBackendTest {
 
     @Test
     public void findsEventsByGame() throws IOException {
-        resetGame();
+        resetGameVersion();
         saveEvent();
-        List<TestEvent> foundEvents = events.search().withGame(event.getGame()).execute();
+        List<TestEvent> foundEvents = events.search().withGame(gameVersion.getGame()).execute();
+        assertThat(foundEvents).hasSize(1);
+    }
+
+    @Test
+    public void findsEventsByGameVersion() throws IOException {
+        resetGameVersion();
+        saveEvent();
+        List<TestEvent> foundEvents = events.search().withGameVersion(event.getGameVersion()).execute();
         assertThat(foundEvents).hasSize(1);
     }
 
     @Test
     public void findsEventsForMultipleGames() throws IOException {
-        String firstGameId = resetGame().getId();
+        String firstGameId = resetGameVersion().getId();
         saveEvent();
-        String secondGameId = resetGame().getId();
+        String secondGameId = resetGameVersion().getId();
+        saveEvent();
+        List<TestEvent> foundEvents = events.search()
+                .withGames(firstGameId, secondGameId)
+                .execute();
+        assertThat(foundEvents).hasSize(2);
+    }
+
+    @Test
+    public void findsEventsForMultipleGameVersions() throws IOException {
+        String firstGameId = resetGameVersion().getId();
+        saveEvent();
+        String secondGameId = resetGameVersion().getId();
         saveEvent();
         List<TestEvent> foundEvents = events.search()
                 .withGames(firstGameId, secondGameId)
@@ -130,22 +150,22 @@ public class EventBackendTest {
 
     @Test
     public void findsEventsByGameAndPlayer() throws IOException {
-        String gameId = resetGame().getId();
+        String gameVersionId = resetGameVersion().getId();
         String playerId = resetPlayer().getId();
         saveEvent();
 
         resetEvent();
-        event.setGame(gameId);
+        event.setGameVersion(gameVersionId);
         resetPlayer();
-        saveEvent();// Same game but different player
+        saveEvent();// Same gameVersion but different player
 
         resetEvent();
         event.setPlayer(playerId);
-        resetGame();
-        saveEvent(); // Same player but different game
+        resetGameVersion();
+        saveEvent(); // Same player but different gameVersion
 
         List<TestEvent> foundEvents = events.search()
-                .withGame(gameId)
+                .withGameVersion(gameVersionId)
                 .withPlayer(playerId)
                 .execute();
         assertThat(foundEvents).hasSize(1);
@@ -175,7 +195,7 @@ public class EventBackendTest {
         try {
             events
                     .search()
-                    .withGame("")
+                    .withGameVersion("")
                     .withPlayer("")
                     .execute();
             failBecauseExceptionWasNotThrown(HttpResponseException.class);
@@ -184,10 +204,9 @@ public class EventBackendTest {
         }
     }
 
-
     @Test
     public void findsBeforeServerTime() throws IOException {
-        resetGame();
+        resetGameVersion();
         saveEvent();
 
         DateTime afterFirstSave = new DateTime();
@@ -197,7 +216,7 @@ public class EventBackendTest {
 
         List<TestEvent> foundEvents = events.search()
                 .before(afterFirstSave)
-                .withGame(game.getId())
+                .withGameVersion(gameVersion.getId())
                 .execute();
         assertThat(foundEvents).hasSize(1);
     }
@@ -219,7 +238,7 @@ public class EventBackendTest {
 
     @Test
     public void findsBeforeUserTime() throws IOException {
-        resetGame();
+        resetGameVersion();
         DateTime time = new DateTime();
 
         event.setUserTime(DateUtils.print(time.minusSeconds(1)));
@@ -231,14 +250,14 @@ public class EventBackendTest {
 
         List<TestEvent> foundEvents = events.search()
                 .beforeUserTime(time)
-                .withGame(game.getId())
+                .withGameVersion(gameVersion.getId())
                 .execute();
         assertThat(foundEvents).hasSize(1);
     }
 
     @Test
     public void findsAfterUserTime() throws IOException {
-        resetGame();
+        resetGameVersion();
         DateTime time = new DateTime();
 
         event.setUserTime(DateUtils.print(time.minusSeconds(1)));
@@ -250,14 +269,14 @@ public class EventBackendTest {
 
         List<TestEvent> foundEvents = events.search()
                 .afterUserTime(time)
-                .withGame(game.getId())
+                .withGameVersion(gameVersion.getId())
                 .execute();
         assertThat(foundEvents).hasSize(1);
     }
 
     @Test
     public void findsBySection() throws IOException {
-        resetGame();
+        resetGameVersion();
 
         event.setSections("nosections");
         saveEvent();
@@ -269,18 +288,18 @@ public class EventBackendTest {
 
         List<TestEvent> foundEvents = events.search()
                 .withSections("level1.*")
-                .withGame(game.getId())
+                .withGameVersion(gameVersion.getId())
                 .execute();
         assertThat(foundEvents).hasSize(1);
     }
 
     @Test
     public void searchShouldAcceptEmptyParams() throws IOException {
-        resetGame();
+        resetGameVersion();
         saveEvent();
 
         List<TestEvent> foundEvents = events.search()
-                .withGame(game.getId())
+                .withGameVersion(gameVersion.getId())
                 .withPlayer("")
                 .execute();
         assertThat(foundEvents).hasSize(1);
@@ -288,11 +307,11 @@ public class EventBackendTest {
 
     @Test
     public void searchShouldIgnoreEmptyStringParams() throws IOException {
-        resetGame();
+        resetGameVersion();
         saveEvent();
 
         List<TestEvent> foundEvents = events.search()
-                .withGame(game.getId())
+                .withGameVersion(gameVersion.getId())
                 .withType("")
                 .execute();
         assertThat(foundEvents).hasSize(1);
@@ -300,11 +319,11 @@ public class EventBackendTest {
 
     @Test
     public void searchShouldIgnoreEmptySectionsParam() throws IOException {
-        resetGame();
+        resetGameVersion();
         saveEvent();
 
         List<TestEvent> foundEvents = events.search()
-                .withGame(game.getId())
+                .withGameVersion(gameVersion.getId())
                 .withSections("")
                 .execute();
         assertThat(foundEvents).hasSize(1);

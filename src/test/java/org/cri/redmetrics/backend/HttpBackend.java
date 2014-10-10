@@ -95,6 +95,10 @@ public class HttpBackend<E extends TestEntity> {
             return with("game", gameId);
         }
 
+        public SearchQueryBuilder withGameVersion(String gameVersionId) {
+            return with("gameVersion", gameVersionId);
+        }
+
         public SearchQueryBuilder withGames(String... gameIds) {
             Preconditions.checkArgument(gameIds.length > 0);
             return with("game", Joiner.on(',').join(gameIds));

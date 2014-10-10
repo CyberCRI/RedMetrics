@@ -19,7 +19,7 @@ import static spark.Spark.halt;
 
 public abstract class ProgressDataController<E extends ProgressData, DAO extends ProgressDataDao<E>> extends Controller<E, DAO> {
 
-    protected static final String[] FOREIGN_ENTITIES = {"game", "player"};
+    protected static final String[] FOREIGN_ENTITIES = {"gameVersion", "player"};
     protected static final String[] VALUES = {"type"};
 
     private static final Splitter SPLITTER = Splitter.on(',')
@@ -34,7 +34,7 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
 
     @Override
     protected void beforeCreation(E progressData, Request request, Response response) {
-        if (progressData.getGame() == null) halt(400, "game required (integer)");
+        if (progressData.getGameVersion() == null) halt(400, "game version required (integer)");
         if (progressData.getPlayer() == null) halt(400, "player required (integer)");
 //        String adminKey = request.params("adminKey");
 //        if (adminKey == null) halt();

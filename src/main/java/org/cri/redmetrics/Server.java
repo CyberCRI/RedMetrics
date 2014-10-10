@@ -49,6 +49,7 @@ public class Server {
 
         Class[] controllers = {
                 GameController.class,
+                GameVersionController.class,
                 PlayerController.class,
                 EventController.class,
                 SnapshotController.class,

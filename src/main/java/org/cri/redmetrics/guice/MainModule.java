@@ -17,33 +17,38 @@ import java.sql.SQLException;
 
 public class MainModule extends AbstractModule {
 
-
     @Override
     protected void configure() {
 
         bind(Gson.class).toProvider(DefaultGsonProvider.class).asEagerSingleton();
-        bind(Gson.class).annotatedWith(Names.named("ProgressData")).toProvider(ProgressDataGsonProvider.class).asEagerSingleton();
         bind(JsonParser.class).asEagerSingleton();
-        bind(GameJsonConverter.class).asEagerSingleton();
-        bind(PlayerJsonConverter.class).asEagerSingleton();
-        bind(EventJsonConverter.class).asEagerSingleton();
-        bind(SnapshotJsonConverter.class).asEagerSingleton();
-        bind(GroupJsonConverter.class).asEagerSingleton();
 
         bind(GameController.class).asEagerSingleton();
         bind(GameDao.class).asEagerSingleton();
+        bind(GameJsonConverter.class).asEagerSingleton();
+
+        bind(Gson.class).annotatedWith(Names.named("GameVersion")).toProvider(GameVersionGsonProvider.class).asEagerSingleton();
+        bind(GameVersionController.class).asEagerSingleton();
+        bind(GameVersionDao.class).asEagerSingleton();
+        bind(GameVersionJsonConverter.class).asEagerSingleton();
 
         bind(PlayerController.class).asEagerSingleton();
         bind(PlayerDao.class).asEagerSingleton();
-
-        bind(EventController.class).asEagerSingleton();
-        bind(EventDao.class).asEagerSingleton();
+        bind(PlayerJsonConverter.class).asEagerSingleton();
 
         bind(GroupController.class).asEagerSingleton();
         bind(GroupDao.class).asEagerSingleton();
+        bind(GroupJsonConverter.class).asEagerSingleton();
+
+        bind(Gson.class).annotatedWith(Names.named("ProgressData")).toProvider(ProgressDataGsonProvider.class).asEagerSingleton();
+
+        bind(EventController.class).asEagerSingleton();
+        bind(EventDao.class).asEagerSingleton();
+        bind(EventJsonConverter.class).asEagerSingleton();
 
         bind(SnapshotController.class).asEagerSingleton();
         bind(SnapshotDao.class).asEagerSingleton();
+        bind(SnapshotJsonConverter.class).asEagerSingleton();
 
         bind(AddressDao.class).asEagerSingleton();
 

@@ -1,4 +1,3 @@
-
 package org.cri.redmetrics.model;
 
 import com.google.api.client.util.Key;
@@ -9,17 +8,9 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class TestGroup extends TestEntity{
+public class TestGameVersion extends TestEntity {
 
     @Key
-    private String name;
-    
-    @Key
-    private String description;
-    
-    @Key
-    private String creator;
-    
-    @Key
-    private boolean open;
+    private String game;
+
 }

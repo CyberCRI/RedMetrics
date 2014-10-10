@@ -2,7 +2,7 @@ package org.cri.redmetrics;
 
 import org.cri.redmetrics.backend.Backends;
 import org.cri.redmetrics.backend.SnapshotBackend;
-import org.cri.redmetrics.model.TestGame;
+import org.cri.redmetrics.model.TestGameVersion;
 import org.cri.redmetrics.model.TestPlayer;
 import org.cri.redmetrics.model.TestSnapshot;
 import org.testng.annotations.BeforeTest;
@@ -16,13 +16,13 @@ public class SnapshotBackendTest {
 
     static final SnapshotBackend snapshots = Backends.SNAPSHOT;
 
-    TestGame game = Backends.newSavedGame();
-    TestPlayer player = Backends.newSavedPlayer();
+    TestGameVersion gameVersion;
+    TestPlayer player;
     TestSnapshot snapshot;
 
-    public void resetGame() throws IOException {
-        game = Backends.newSavedGame();
-        snapshot.setGame(game.getId());
+    public void resetGameVersion() throws IOException {
+        gameVersion = Backends.newSavedGameVersion();
+        snapshot.setGameVersion(gameVersion.getId());
     }
 
     public void resetPlayer() throws IOException {
@@ -31,12 +31,10 @@ public class SnapshotBackendTest {
     }
 
     @BeforeTest
-    public void createSnapshot() throws IOException {
-        game = Backends.newSavedGame();
-        player = Backends.newSavedPlayer();
+    public void resetSnapshot() throws IOException {
         snapshot = new TestSnapshot();
-        snapshot.setGame(game.getId());
-        snapshot.setPlayer(player.getId());
+        resetGameVersion();
+        resetPlayer();
     }
 
     @Test
@@ -44,6 +42,6 @@ public class SnapshotBackendTest {
         snapshot = snapshots.post(snapshot);
         assertThat(snapshot).isNotNull();
         assertThat(snapshot.getId()).isNotNull().hasSize(36);
-        assertThat(snapshot.getGame()).isNotNull();
+        assertThat(snapshot.getGameVersion()).isNotNull();
     }
 }

@@ -46,7 +46,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         // POST
 
         Route postRoute = (request, response) -> {
-            // System.out.println("Request body : " + request.body());
+//            Console.log("Request body : " + request.body());
             E entity = jsonConverter.parse(request.body());
             beforeCreation(entity, request, response);
             create(entity);

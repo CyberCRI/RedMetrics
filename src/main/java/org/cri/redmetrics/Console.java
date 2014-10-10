@@ -10,4 +10,9 @@ public class Console {
     public static void log(String message) {
         logger.info(message);
     }
+
+    public static void log(Object object) {
+        if (object == null) log(null);
+        else logger.info(object.toString());
+    }
 }
