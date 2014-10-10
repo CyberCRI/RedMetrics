@@ -47,6 +47,7 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         // SEARCH
         get(path, (request, response) -> {
             SearchQuery search = dao.search();
+            searchGame(request, search);
             searchForeignEntities(request, search);
             searchValues(request, search);
             searchDates(request, search);
@@ -54,6 +55,13 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
             return search.execute();
         }
                 , jsonConverter);
+    }
+
+    private void searchGame(Request request, SearchQuery search) {
+        String params = request.queryParams("game");
+        if (params != null) {
+            search.game(parseIds(params));
+        }
     }
 
     private void searchForeignEntities(Request request, SearchQuery search) {

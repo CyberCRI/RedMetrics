@@ -104,6 +104,11 @@ public class HttpBackend<E extends TestEntity> {
             return with("game", Joiner.on(',').join(gameIds));
         }
 
+        public SearchQueryBuilder withGameVersions(String... gameVersionIds) {
+            Preconditions.checkArgument(gameVersionIds.length > 0);
+            return with("gameVersion", Joiner.on(',').join(gameVersionIds));
+        }
+
         public SearchQueryBuilder withPlayer(String playerId) {
             return with("player", playerId);
         }

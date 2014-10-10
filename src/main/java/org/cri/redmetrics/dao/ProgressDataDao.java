@@ -5,10 +5,17 @@ import org.cri.redmetrics.model.ProgressData;
 
 import java.sql.SQLException;
 
-public class ProgressDataDao<E extends ProgressData> extends EntityDao<E> {
+public abstract class ProgressDataDao<E extends ProgressData> extends EntityDao<E> {
 
-    ProgressDataDao(ConnectionSource connectionSource, Class<E> type) throws SQLException {
+    protected final GameVersionDao gameVersionDao;
+
+    ProgressDataDao(ConnectionSource connectionSource, GameVersionDao gameVersionDao, Class<E> type) throws SQLException {
         super(connectionSource, type);
+        this.gameVersionDao = gameVersionDao;
+    }
+
+    public SearchQuery<E> search() {
+        return new SearchQuery<>(orm.queryBuilder(), gameVersionDao.orm.queryBuilder());
     }
 
 }

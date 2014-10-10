@@ -71,8 +71,4 @@ public abstract class EntityDao<E extends Entity> {
         }
     }
 
-    public SearchQuery<E> search() {
-        return new SearchQuery<>(orm.queryBuilder().where());
-    }
-
 }

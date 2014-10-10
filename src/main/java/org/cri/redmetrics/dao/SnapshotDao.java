@@ -9,8 +9,8 @@ import java.sql.SQLException;
 public class SnapshotDao extends ProgressDataDao<Snapshot> {
 
     @Inject
-    public SnapshotDao(ConnectionSource connectionSource) throws SQLException {
-        super(connectionSource, Snapshot.class);
+    public SnapshotDao(ConnectionSource connectionSource, GameVersionDao gameVersionDao) throws SQLException {
+        super(connectionSource, gameVersionDao, Snapshot.class);
     }
 
 }

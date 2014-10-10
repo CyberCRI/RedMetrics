@@ -106,9 +106,9 @@ public class EventBackendTest {
 
     @Test
     public void findsEventsForMultipleGames() throws IOException {
-        String firstGameId = resetGameVersion().getId();
+        String firstGameId = resetGameVersion().getGame();
         saveEvent();
-        String secondGameId = resetGameVersion().getId();
+        String secondGameId = resetGameVersion().getGame();
         saveEvent();
         List<TestEvent> foundEvents = events.search()
                 .withGames(firstGameId, secondGameId)
@@ -118,12 +118,12 @@ public class EventBackendTest {
 
     @Test
     public void findsEventsForMultipleGameVersions() throws IOException {
-        String firstGameId = resetGameVersion().getId();
+        String firstGameVersionId = resetGameVersion().getId();
         saveEvent();
-        String secondGameId = resetGameVersion().getId();
+        String secondGameVersionId = resetGameVersion().getId();
         saveEvent();
         List<TestEvent> foundEvents = events.search()
-                .withGames(firstGameId, secondGameId)
+                .withGameVersions(firstGameVersionId, secondGameVersionId)
                 .execute();
         assertThat(foundEvents).hasSize(2);
     }

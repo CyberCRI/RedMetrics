@@ -1,7 +1,9 @@
 package org.cri.redmetrics.dao;
 
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
-import org.cri.redmetrics.model.Entity;
+import org.cri.redmetrics.model.GameVersion;
+import org.cri.redmetrics.model.ProgressData;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -12,28 +14,55 @@ import java.util.stream.Stream;
 
 import static spark.Spark.halt;
 
-public class SearchQuery<E extends Entity> {
+public class SearchQuery<E extends ProgressData> {
 
-    private final Where where;
+    private final QueryBuilder<E, UUID> queryBuilder;
+    private final QueryBuilder<GameVersion, UUID> gameVersionQueryBuilder;
+    private Where where;
+    private final Where whereGameVersion;
 
     private boolean hasStatement = false;
+    private boolean hasGameFilter = false;
 
-    SearchQuery(Where where) {
-        this.where = where;
+    SearchQuery(QueryBuilder<E, UUID> queryBuilder, QueryBuilder<GameVersion, UUID> gameVersionQueryBuilder) {
+        this.queryBuilder = queryBuilder;
+        this.gameVersionQueryBuilder = gameVersionQueryBuilder;
+        this.whereGameVersion = gameVersionQueryBuilder.where();
     }
 
     public List<E> execute() {
-        if (!hasStatement) halt(400, "No parameters were specified for search query");
+        if (!hasStatement && !hasGameFilter) halt(400, "No parameters were specified for search query");
         try {
-            return where.query();
+            return queryBuilder.query();
         } catch (SQLException e) {
             throw new DbException(e);
         }
     }
 
     private void addAndIfNecessary() {
-        if (hasStatement) where.and();
-        else hasStatement = true;
+        if (hasStatement) {
+            where.and();
+        } else {
+            where = queryBuilder.where();
+            hasStatement = true;
+        }
+    }
+
+    public SearchQuery game(Stream<UUID> ids) {
+        try {
+            Iterator<UUID> i = ids.iterator();
+            if (i.hasNext()) {
+                hasGameFilter = true;
+                queryBuilder.join(gameVersionQueryBuilder);
+            }
+            while (i.hasNext()) {
+                whereGameVersion.eq("game_id", i.next());
+                if (i.hasNext()) whereGameVersion.or();
+            }
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+        return this;
     }
 
     public SearchQuery foreignEntity(String entityName, Stream<UUID> ids) {
@@ -107,18 +136,5 @@ public class SearchQuery<E extends Entity> {
         where.raw("sections ~ '" + sections + "'");
         return this;
     }
-
-//    public SearchQuery values(String columnName, List<String> values) {
-//        try {
-//            addAndIfNecessary();
-//            for (Iterator<String> i = values.iterator(); i.hasNext(); ) {
-//                where.eq(columnName, i.next());
-//                if (i.hasNext()) where.or();
-//            }
-//            return this;
-//        } catch (SQLException e) {
-//            throw new DbException(e);
-//        }
-//    }
 
 }
