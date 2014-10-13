@@ -37,7 +37,7 @@ abstract class EntityJsonConverter<E extends Entity> implements JsonConverter<E>
 
     private String stringifyCollection(Collection<E> collection) {
         JsonArray jsonArray = new JsonArray();
-        collection.forEach((entity) -> toJsonObject(entity));
+        collection.forEach((entity) -> jsonArray.add(toJsonObject(entity)));
         return gson.toJson(jsonArray);
     }
 
