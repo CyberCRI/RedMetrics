@@ -56,7 +56,7 @@ public abstract class EntityDao<E extends Entity> {
     public E delete(UUID id) {
         try {
             E entity = read(id);
-            orm.deleteById(id);
+            orm.delete(entity);
             return entity;
         } catch (SQLException e) {
             throw new DbException(e);

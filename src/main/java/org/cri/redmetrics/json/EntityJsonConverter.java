@@ -19,9 +19,7 @@ abstract class EntityJsonConverter<E extends Entity> implements JsonConverter<E>
     }
 
     public JsonObject toJsonObject(E entity) {
-        JsonElement element = gson.toJsonTree(entity);
-        if (element.isJsonObject()) return element.getAsJsonObject();
-        else return null;
+        return gson.toJsonTree(entity).getAsJsonObject();
     }
 
     public final String stringify(E entity) {
@@ -39,9 +37,7 @@ abstract class EntityJsonConverter<E extends Entity> implements JsonConverter<E>
 
     private String stringifyCollection(Collection<E> collection) {
         JsonArray jsonArray = new JsonArray();
-        for (E entity : collection) {
-            jsonArray.add(toJsonObject(entity));
-        }
+        collection.forEach((entity) -> toJsonObject(entity));
         return gson.toJson(jsonArray);
     }
 

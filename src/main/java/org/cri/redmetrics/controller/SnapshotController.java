@@ -9,7 +9,7 @@ public class SnapshotController extends ProgressDataController<Snapshot, Snapsho
 
     @Inject
     SnapshotController(SnapshotDao dao, SnapshotJsonConverter json) {
-        super("/snapshot", dao, json);
+        super("snapshot", dao, json);
     }
 
     @Override

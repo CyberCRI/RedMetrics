@@ -19,24 +19,11 @@ public class LtreePersister extends StringType {
 
     @Override
     public Object javaToSqlArg(FieldType fieldType, Object javaObject) {
-        String ltree = (String) javaObject;
-
-        if (ltree == null) {
-            return null;
-        } else {
-            return ltree.trim();
-        }
-
+        return javaObject;
     }
 
     @Override
     public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos) {
-        String ltree = (String) sqlArg;
-
-        if (ltree == null) {
-            return null;
-        } else {
-            return ltree;
-        }
+        return sqlArg;
     }
 }

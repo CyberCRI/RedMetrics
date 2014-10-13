@@ -76,8 +76,6 @@ public class GameBackendTest {
 
     @Test
     public void canFindGameVersions() throws IOException {
-        resetCreatedGame();
-
         TestGameVersion gameVersion1 = new TestGameVersion();
         gameVersion1.setGame(createdGame.getId());
         gameVersions.post(gameVersion1);
@@ -87,7 +85,7 @@ public class GameBackendTest {
         gameVersions.post(gameVersion2);
 
         List<TestGameVersion> foundGameVersions = gameVersions.getGameVersions(createdGame.getId());
-        assertThat(foundGameVersions.size()).isEqualTo(2);
+        assertThat(foundGameVersions).hasSize(2);
     }
 
     // UPDATE

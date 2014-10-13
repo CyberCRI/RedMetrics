@@ -50,6 +50,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             E entity = jsonConverter.parse(request.body());
             beforeCreation(entity, request, response);
             create(entity);
+            response.header("Location", path + "/" + entity.getId());
             response.status(201); // Created
             return entity;
         };

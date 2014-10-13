@@ -17,7 +17,7 @@ public class GameVersionController extends Controller<GameVersion, GameVersionDa
 
     @Inject
     GameVersionController(GameVersionDao dao, GameVersionJsonConverter jsonConverter) {
-        super("/gameVersion", dao, jsonConverter);
+        super("gameVersion", dao, jsonConverter);
     }
 
     @Override
@@ -33,6 +33,7 @@ public class GameVersionController extends Controller<GameVersion, GameVersionDa
             return dao.searchByGameId(gameId);
         };
         get(basePath + "game/:id/versions", findByGameId, jsonConverter);
+        get(basePath + "game/:id/versions/", findByGameId, jsonConverter);
     }
 
 }

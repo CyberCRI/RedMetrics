@@ -5,6 +5,7 @@ import org.cri.redmetrics.dao.GameDao;
 import org.cri.redmetrics.json.GameJsonConverter;
 import org.cri.redmetrics.model.Game;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -12,7 +13,7 @@ public class GameController extends Controller<Game, GameDao> {
 
     @Inject
     GameController(GameDao dao, GameJsonConverter jsonConverter) {
-        super("/game", dao, jsonConverter);
+        super("game", dao, jsonConverter);
     }
 
     @Override
@@ -22,4 +23,10 @@ public class GameController extends Controller<Game, GameDao> {
         return game;
     }
 
+    @Override
+    protected List<Game> list() {
+        List<Game> allGames = super.list();
+        allGames.forEach((game) -> game.setAdminKey(null));
+        return allGames;
+    }
 }

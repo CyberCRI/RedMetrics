@@ -10,7 +10,7 @@ public class GroupController extends Controller<Group, GroupDao>{
     
     @Inject
     GroupController(GroupDao dao, GroupJsonConverter jsonConverter) {
-        super("/group", dao, jsonConverter);
+        super("group", dao, jsonConverter);
     }
     
 }
