@@ -3,11 +3,14 @@ package org.cri.redmetrics;
 import com.google.api.client.http.HttpResponseException;
 import org.cri.redmetrics.backend.Backends;
 import org.cri.redmetrics.backend.GameBackend;
+import org.cri.redmetrics.backend.GameVersionBackend;
 import org.cri.redmetrics.model.TestGame;
+import org.cri.redmetrics.model.TestGameVersion;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -16,6 +19,7 @@ import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrow
 public class GameBackendTest {
 
     static final GameBackend games = Backends.GAME;
+    static final GameVersionBackend gameVersions = Backends.GAME_VERSION;
 
     static final String GAME_NAME = "Asteroids";
     static final String UPDATED_GAME_NAME = "Gasteroids";
@@ -68,6 +72,22 @@ public class GameBackendTest {
         } catch (HttpResponseException e) {
             assertThat(e.getStatusCode()).isEqualTo(404);
         }
+    }
+
+    @Test
+    public void canFindGameVersions() throws IOException {
+        resetCreatedGame();
+
+        TestGameVersion gameVersion1 = new TestGameVersion();
+        gameVersion1.setGame(createdGame.getId());
+        gameVersions.post(gameVersion1);
+
+        TestGameVersion gameVersion2 = new TestGameVersion();
+        gameVersion2.setGame(createdGame.getId());
+        gameVersions.post(gameVersion2);
+
+        List<TestGameVersion> foundGameVersions = gameVersions.getGameVersions(createdGame.getId());
+        assertThat(foundGameVersions.size()).isEqualTo(2);
     }
 
     // UPDATE

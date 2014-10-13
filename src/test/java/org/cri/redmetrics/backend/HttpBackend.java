@@ -24,16 +24,17 @@ import java.util.Map;
 
 public class HttpBackend<E extends TestEntity> {
 
-    private static final int PORT_NUMBER = 7654;
-    private static final Server server = new Server(PORT_NUMBER);
-    private static final HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory((request) -> request.setParser(new JsonObjectParser(new GsonFactory())));
-
     private final String path;
-    private final Class<E> type;
-    private final Type arrayType;
+    private static final int PORT_NUMBER = 7654;
+    protected static final String BASE_PATH = "http://localhost:" + PORT_NUMBER + Controller.basePath;
+    private static final Server server = new Server(PORT_NUMBER);
+
+    protected static final HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory((request) -> request.setParser(new JsonObjectParser(new GsonFactory())));
+    protected final Class<E> type;
+    protected final Type arrayType;
 
     HttpBackend(String entityPath, Class<E> type) {
-        this.path = "http://localhost:" + PORT_NUMBER + Controller.basePath + entityPath;
+        this.path = BASE_PATH + entityPath;
         this.type = type;
         this.arrayType = Types.getArrayComponentType(type);
         server.start();
@@ -69,7 +70,7 @@ public class HttpBackend<E extends TestEntity> {
         return new GenericUrl(path);
     }
 
-    private GenericUrl url(String relativePath) {
+    protected GenericUrl url(String relativePath) {
         return new GenericUrl(path + relativePath);
     }
 

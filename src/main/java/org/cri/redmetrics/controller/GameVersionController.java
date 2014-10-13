@@ -6,7 +6,11 @@ import org.cri.redmetrics.json.GameVersionJsonConverter;
 import org.cri.redmetrics.model.GameVersion;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 
+import java.util.UUID;
+
+import static spark.Spark.get;
 import static spark.Spark.halt;
 
 public class GameVersionController extends Controller<GameVersion, GameVersionDao> {
@@ -19,6 +23,16 @@ public class GameVersionController extends Controller<GameVersion, GameVersionDa
     @Override
     protected void beforeCreation(GameVersion gameVersion, Request request, Response response) {
         if (gameVersion.getGame() == null) halt(400, "game required (integer)");
+    }
+
+    @Override
+    protected void publishSpecific() {
+        super.publishSpecific();
+        Route findByGameId = (request, response) -> {
+            UUID gameId = idFromUrl(request);
+            return dao.searchByGameId(gameId);
+        };
+        get(basePath + "game/:id/versions", findByGameId, jsonConverter);
     }
 
 }
