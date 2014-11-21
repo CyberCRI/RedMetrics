@@ -54,3 +54,12 @@ Set language level to Java 8.0
 
     File > Project Properties > sources
     Set source/binary format to 1.8
+   
+
+## Using
+
+By default, RedMetrics listens on port [4567](http://localhost:4567). This can be changed by editing the constructor of [src/main/java/org/cri/redmetrics/Server.java](https://github.com/CyberCRI/RedMetrics/blob/master/src/main/java/org/cri/redmetrics/Server.java). 
+
+## Deploying 
+
+To deploy, simply create a packaged JAR file that contains all the dependencies, upload it onto your server, and launch it.
