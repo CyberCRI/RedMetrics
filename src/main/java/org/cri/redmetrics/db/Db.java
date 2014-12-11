@@ -18,7 +18,8 @@ public class Db {
             Player.class};
 
     public static JdbcConnectionSource newConnectionSource() throws SQLException {
-        return new JdbcConnectionSource(URL, DbUser.NAME, DbUser.PASSWORD);
+        throw new UnsupportedOperationException("You need to implements a DbUser");
+        //return new JdbcConnectionSource(URL, DbUser.NAME, DbUser.PASSWORD);
     }
 
 }
