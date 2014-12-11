@@ -18,6 +18,7 @@ public class Db {
             Player.class};
 
     public static JdbcConnectionSource newConnectionSource() throws SQLException {
+        
         return new JdbcConnectionSource(URL, DbUser.NAME, DbUser.PASSWORD);
     }
 
