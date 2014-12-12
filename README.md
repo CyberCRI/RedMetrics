@@ -7,17 +7,10 @@ First :
  - Make sure you have a Java 8 SDK installed
  - Install postgresql
  - create a postgresql role
- - create a database named "redmetrics"
- - run "CREATE EXTENSION ltree;" as a superuser
+ - create a database 
+ - run "CREATE EXTENSION ltree;" as a superuser on the database
    OR
    psql yourdb < ltree.sql
-
-#####Once you check out the project with Git, you will need to create the following file :
-
-    /src/main/java/org/cri/redmetrics/db/DbUser.java
-
-You can copy the content of DbUserExample.java file in the same package. Then just fill in the username and password of the postgresql role you created previously.
-
 
 Getting started...
 --------------
@@ -54,17 +47,29 @@ Set language level to Java 8.0
 
     File > Project Properties > sources
     Set source/binary format to 1.8
-   
-
-## Using
-
-By default, RedMetrics listens on port [4567](http://localhost:4567). This can be changed by editing the constructor of [src/main/java/org/cri/redmetrics/Server.java](https://github.com/CyberCRI/RedMetrics/blob/master/src/main/java/org/cri/redmetrics/Server.java). 
-
-## Deploying 
-
-To deploy, simply create a packaged JAR file that contains all the dependencies, upload it onto your server, and launch it.
 
 
+
+# Deploying 
+
+To deploy, simply create a packaged JAR file that contains all the dependencies, upload it onto your server.
+
+## Configuration
+
+You need to create the redmetrics config file redmetrics.conf in /etc/redmetrics.conf or in ./redmetrics.conf.
+You can use the example given with the project : [ExampleFile](https://github.com/CyberCRI/RedMetrics/blob/master/src/main/java/redmetricsExample.conf)
+
+###Database related config
+ * **databaseURL** is the psql database URL
+ * **dbusername** is the username you choose for the psql database
+ * **dbassword** is the password you choose for the psql database
+
+###redmetrics related config
+ * **listenPort** will be the port used by redmetrics for listening
+
+## Starting the server
+
+To start the redmetrics lauch it with java. We recommend using a daemon on linux to start, stop, restart and check the status of redmetrics.
 
 RedMetrics Specifications
 =========
