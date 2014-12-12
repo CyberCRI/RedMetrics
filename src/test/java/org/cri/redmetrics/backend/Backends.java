@@ -1,6 +1,5 @@
 package org.cri.redmetrics.backend;
 
-import org.cri.redmetrics.Console;
 import org.cri.redmetrics.model.Players;
 import org.cri.redmetrics.model.TestGame;
 import org.cri.redmetrics.model.TestGameVersion;
@@ -16,11 +15,14 @@ public class Backends {
     public static final GroupBackend GROUP = new GroupBackend();
     public static final PlayerBackend PLAYER = new PlayerBackend();
     public static final SnapshotBackend SNAPSHOT = new SnapshotBackend();
-
+    private static int gameNo = 0;
+    
     public static TestGame newSavedGame() {
+        
         try {
             TestGame game = new TestGame();
-            game.setName("My Test Game");
+            game.setName("My Test Game " + gameNo);
+            ++gameNo;
             TestGame savedGame = GAME.post(game);
             return savedGame;
         } catch (IOException e) {
@@ -49,5 +51,5 @@ public class Backends {
             throw new RuntimeException(e);
         }
     }
-
+    
 }

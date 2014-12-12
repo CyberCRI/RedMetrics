@@ -7,7 +7,6 @@ import java.sql.SQLException;
 
 public class Db {
 
-    public static final String URL = "jdbc:postgresql://localhost:5432/redmetrics";
     public static final Class[] ENTITY_TYPES = {
             Address.class,
             Event.class,
@@ -16,10 +15,21 @@ public class Db {
             GameVersion.class,
             Group.class,
             Player.class};
+    
+    private final String URL;
+    private final String user;
+    private final String password;
 
-    public static JdbcConnectionSource newConnectionSource() throws SQLException {
+
+    public Db(String databaseURL, String user, String password) {
+        this.URL = databaseURL;
+        this.user = user;
+        this.password = password;
         
-        return new JdbcConnectionSource(URL, DbUser.NAME, DbUser.PASSWORD);
+    }
+
+    public JdbcConnectionSource newConnectionSource() throws SQLException {
+        return new JdbcConnectionSource(URL, user, password);
     }
 
 }

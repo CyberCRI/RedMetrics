@@ -4,3 +4,6 @@
 redmetrics.iml
 /target/
 /src/main/java/org/cri/redmetrics/db/DbUser.java
+/src/main/java/redmetrics.conf
+/nbactions-release-profile.xml
+/nb-configuration.xml
