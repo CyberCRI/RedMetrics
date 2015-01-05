@@ -1,5 +1,6 @@
 # IDE config files
 .idea
+.DS_Store
 
 redmetrics.iml
 /target/
