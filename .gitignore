@@ -5,3 +5,4 @@
 redmetrics.iml
 /target/
 /src/main/java/org/cri/redmetrics/db/DbUser.java
+db/
