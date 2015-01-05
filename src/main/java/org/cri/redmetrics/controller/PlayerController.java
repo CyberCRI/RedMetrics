@@ -39,6 +39,8 @@ public class PlayerController extends Controller<Player, PlayerDao> {
     @Override
     protected Player read(UUID id) {
         Player player = super.read(id);
+        if(player == null) return null;
+
         player.setEmail(null); // Hide email
         return player;
     }
