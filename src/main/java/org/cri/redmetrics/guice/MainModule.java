@@ -16,6 +16,10 @@ import java.sql.SQLException;
 
 
 public class MainModule extends AbstractModule {
+    private final Db database;
+    public MainModule(Db database) {
+        this.database = database;
+    }
 
     @Override
     protected void configure() {
@@ -57,7 +61,7 @@ public class MainModule extends AbstractModule {
     @Provides
     @Singleton
     ConnectionSource provideConnectionSource() throws SQLException {
-        return Db.newConnectionSource();
+        return database.newConnectionSource();
     }
 
 }
