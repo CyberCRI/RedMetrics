@@ -11,6 +11,7 @@ import spark.Request;
 import spark.Response;
 
 import java.sql.SQLException;
+import org.cri.redmetrics.db.Db;
 
 import static spark.Spark.*;
 
@@ -25,15 +26,17 @@ public class Server {
     }
 
     private final int portNumber;
+    private final Db database;
 
     private boolean started;
 
-    public Server() {
-        this(4567);
-    }
-
-    public Server(int portNumber) {
+    public Server(int portNumber, Db database) {
         this.portNumber = portNumber;
+        this.database = database;
+    }
+    
+    public int getPort(){
+        return portNumber;
     }
 
     public void start() {
@@ -45,7 +48,7 @@ public class Server {
 
         enableCORS("*", "GET, POST, PUT, DELETE, OPTIONS", "Content-Type");
 
-        Injector injector = Guice.createInjector(new MainModule());
+        Injector injector = Guice.createInjector(new MainModule(database));
 
         Class[] controllers = {
                 GameController.class,
