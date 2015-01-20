@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -63,12 +65,18 @@ public abstract class EntityDao<E extends Entity> {
         }
     }
 
-    public List<E> list() {
+    public Map<String, Object> list(long startAt, long count) {
         try {
-            return orm.queryForAll();
+            long total = orm.countOf();
+            List<E> results = orm.queryBuilder().offset(startAt).limit(count).query();
+            HashMap<String, Object> map = new HashMap<String, Object>();
+            map.put("total", total);
+            map.put("start", startAt);
+            map.put("count", count);
+            map.put("data", results);
+            return map;
         } catch (SQLException e) {
             throw new DbException(e);
         }
     }
-
 }

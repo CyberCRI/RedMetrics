@@ -15,6 +15,7 @@ import static spark.Spark.*;
 public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
     public static final String basePath = "/v1/";
+    public static final long maxListCount = 200;
 
     protected final String path;
     protected final DAO dao;
@@ -70,7 +71,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         get(path + "/:id", getByIdRoute, jsonConverter);
         get(path + "/:id/", getByIdRoute, jsonConverter);
 
-        get(path + "/", (request, response) -> list(), jsonConverter);
+        get(path + "/", (request, response) -> list(request), jsonConverter);
 
 
         // PUT
@@ -117,8 +118,10 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         return dao.update(entity);
     }
 
-    protected List<E> list() {
-        return dao.list();
+    protected List<E> list(Request request) {
+        long startAt = request.queryMap("start").hasValue() ? request.queryMap("start").longValue() : 0;
+        long count = request.queryMap("count").hasValue() ? request.queryMap("count").longValue() : maxListCount;
+        return dao.list(startAt, count);
     }
 
     protected void publishSpecific() {
