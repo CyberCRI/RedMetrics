@@ -1,9 +1,15 @@
-# IDE config files
-.idea
-
-redmetrics.iml
-/target/
-/src/main/java/org/cri/redmetrics/db/DbUser.java
+# Config files
+redmetrics.conf
 /src/main/java/redmetrics.conf
+/src/main/java/org/cri/redmetrics/db/DbUser.java
+
+# Generated files
+/target/
+
+# Others
+.idea
+.DS_Store
+redmetrics.iml
+db/
 /nbactions-release-profile.xml
 /nb-configuration.xml

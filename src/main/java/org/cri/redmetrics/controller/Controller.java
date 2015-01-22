@@ -95,6 +95,14 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         delete(path + "/:id", (request, response) -> dao.delete(idFromUrl(request)), jsonConverter);
         delete(path + "/:id/", (request, response) -> dao.delete(idFromUrl(request)), jsonConverter);
 
+
+        // OPTIONS
+        // Always return empty response with CORS headers
+        Route optionsRoute = (request, response) -> { return "{}"; };
+        options(path + "", optionsRoute);
+        options(path + "/", optionsRoute);
+        options(path + "/:id", optionsRoute);
+        options(path + "/:id/", optionsRoute);
     }
 
     protected E create(E entity) {

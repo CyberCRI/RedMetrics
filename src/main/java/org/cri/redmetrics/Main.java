@@ -13,23 +13,23 @@ public class Main {
                 
         Config<String, String> config;
         String requiredOptions[] = {"databaseURL", "listenPort", "dbusername", "dbassword"};
-        try{
-            config = Configs.getSimpleConfig(Paths.get("/etc/redmetrics.conf"), requiredOptions);
-        }catch(IOException ioex){
+
+        try {
+            config = Configs.getSimpleConfig(Paths.get("./redmetrics.conf"), requiredOptions);
+            System.out.println("Using local redmetrics.conf");
+        } catch(IOException ioex) {
             try {
-                System.out.println("Warning, missing redmetrics.conf in /etc/, redmetrics will use local config file");
-                config = Configs.getSimpleConfig(Paths.get("./redmetrics.conf"), requiredOptions);
+                config = Configs.getSimpleConfig(Paths.get("/etc/redmetrics.conf"), requiredOptions);
+                System.out.println("Using /etc/redmetrics.conf");
             } catch (IOException ex) {
                 System.err.println("Error, missing redmetrics.conf");
                 return;
             }
         }
-        
-        new Server(Integer.parseInt(config.get("listenPort")),
-                                    new Db(config.get("databaseURL"), 
-                                           config.get("dbusername"),
-                                           config.get("dbassword")))
-                .start();
+
+        Db db = new Db(config.get("databaseURL"), config.get("dbusername"), config.get("dbassword"));
+        Server server = new Server(Integer.parseInt(config.get("listenPort")), db);
+        server.start();
     }
 
 }
