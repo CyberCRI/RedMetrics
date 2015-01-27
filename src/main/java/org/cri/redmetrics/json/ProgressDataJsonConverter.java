@@ -8,12 +8,15 @@ import org.cri.redmetrics.model.GameVersion;
 import org.cri.redmetrics.model.Player;
 import org.cri.redmetrics.model.ProgressData;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class ProgressDataJsonConverter<E extends ProgressData> extends EntityJsonConverter<E> {
 
-    ProgressDataJsonConverter(Class<E> entityType, Gson gson, JsonParser jsonParser) {
-        super(entityType, gson, jsonParser);
+    ProgressDataJsonConverter(Class<E> entityType, Type listOfEntityType, Gson gson, JsonParser jsonParser) {
+        super(entityType, listOfEntityType, gson, jsonParser);
     }
 
     @Override
