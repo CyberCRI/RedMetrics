@@ -8,6 +8,9 @@ public enum Gender {
     MALE,
 
     @DatabaseField
-    FEMALE
+    FEMALE,
+
+    @DatabaseField
+    OTHER,
 
 }
