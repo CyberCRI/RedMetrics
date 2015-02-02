@@ -13,7 +13,7 @@ public class SnapshotJsonConverter extends ProgressDataJsonConverter<Snapshot> {
 
     @Inject
     SnapshotJsonConverter(@Named("ProgressData") Gson gson, JsonParser jsonParser) {
-        super(Snapshot.class, new TypeToken<Collection<Snapshot>>(){}.getType(), gson, jsonParser);
+        super(Snapshot.class, gson, jsonParser);
     }
 
 }

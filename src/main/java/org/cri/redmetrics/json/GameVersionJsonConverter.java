@@ -18,7 +18,7 @@ public class GameVersionJsonConverter extends EntityJsonConverter<GameVersion> {
 
     @Inject
     GameVersionJsonConverter(@Named("GameVersion") Gson gson, JsonParser jsonParser) {
-        super(GameVersion.class, new TypeToken<Collection<GameVersion>>(){}.getType(), gson, jsonParser);
+        super(GameVersion.class, gson, jsonParser);
     }
 
     @Override

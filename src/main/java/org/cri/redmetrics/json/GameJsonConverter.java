@@ -12,7 +12,7 @@ public class GameJsonConverter extends EntityJsonConverter<Game> {
 
     @Inject
     GameJsonConverter(Gson gson, JsonParser jsonParser) {
-        super(Game.class, new TypeToken<Collection<Game>>(){}.getType(), gson, jsonParser);
+        super(Game.class, gson, jsonParser);
     }
 
 }

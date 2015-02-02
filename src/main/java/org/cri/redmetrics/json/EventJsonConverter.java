@@ -14,7 +14,7 @@ public class EventJsonConverter extends ProgressDataJsonConverter<Event> {
 
     @Inject
     EventJsonConverter(@Named("ProgressData") Gson gson, JsonParser jsonParser) {
-        super(Event.class, new TypeToken<Collection<Event>>(){}.getType(), gson, jsonParser);
+        super(Event.class, gson, jsonParser);
     }
 
     @Override

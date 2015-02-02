@@ -11,6 +11,6 @@ public class GroupJsonConverter extends EntityJsonConverter<Group>{
     
     @Inject
     GroupJsonConverter(Gson gson, JsonParser jsonParser) {
-        super(Group.class, Group[].class, gson, jsonParser);
+        super(Group.class, gson, jsonParser);
     }
 }

@@ -18,9 +18,17 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
     public static final String basePath = "/v1/";
 
+    // Minimal wrapper class around an entity ID
+    private class IdWrapper {
+        IdWrapper(UUID id) { this.id = id; }
+        public UUID id;
+    }
+
+
     protected final String path;
     protected final DAO dao;
     protected final JsonConverter<E> jsonConverter;
+
 
     Controller(String path, DAO dao, JsonConverter<E> jsonConverter) {
         this.path = basePath + path;
@@ -53,11 +61,12 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
                 Collection<E> entities = jsonConverter.parseCollection(request.body());
                 for(E entity : entities) {
                     beforeCreation(entity, request, response);
-                    create(entity); 
+                    create(entity);
                 }
 
-                response.status(201); // Created
-                return null;
+                // Return created status and list of entity IDs
+                response.status(201);
+                return entities.stream().map(e -> new IdWrapper(e.getId())).toArray();
             } catch(JsonSyntaxException e) {
                 E entity = jsonConverter.parse(request.body());
                 beforeCreation(entity, request, response);
