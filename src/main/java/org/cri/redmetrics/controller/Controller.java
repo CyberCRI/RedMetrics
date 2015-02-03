@@ -20,6 +20,7 @@ import static spark.Spark.*;
 public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
     public static final String basePath = "/v1/";
+    public static final long defaultListCount = 50;
     public static final long maxListCount = 200;
 
     protected final String path;
@@ -78,9 +79,9 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
         Route listRoute = (Request request, Response response) -> {
             // Figure out how many entities to return
-            long startAt = request.queryMap("start").hasValue() ? request.queryMap("start").longValue() : 0;
-            long count = request.queryMap("count").hasValue() ? request.queryMap("count").longValue() : maxListCount;
-            ResultsPage<E> resultsPage = list(startAt, count);
+            long page = request.queryMap("page").hasValue() ? request.queryMap("page").longValue() : 0;
+            long perPage = Long.min(maxListCount, request.queryMap("perPage").hasValue() ? request.queryMap("perPage").longValue() : defaultListCount);
+            ResultsPage<E> resultsPage = list(page, perPage);
 
             // Send the pagination headers
             response.header("X-Total-Count", Long.toString(resultsPage.total));
@@ -137,7 +138,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         return dao.update(entity);
     }
 
-    protected ResultsPage<E> list(long startAt, long count) { return dao.list(startAt, count); }
+    protected ResultsPage<E> list(long page, long perPage) { return dao.list(page, perPage); }
 
     protected void publishSpecific() {
     }
@@ -149,21 +150,19 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         final String prefix = Server.hostName + path + "/";
 
         ArrayList<String> linkHeaderArray = new ArrayList<String>();
-        if (resultsPage.start > 0) {
+        if (resultsPage.page > 0) {
             // Add first header
-            linkHeaderArray.add(prefix + "?start=0&count=" + resultsPage.count + "; rel=first");
+            linkHeaderArray.add(prefix + "?page=0&perPage=" + resultsPage.perPage + "; rel=first");
             // Add previous header
-            long previousStart = Long.max(0, resultsPage.start - resultsPage.count);
-            linkHeaderArray.add(prefix + "?start=" + previousStart + "&count=" + resultsPage.count + "; rel=prev");
+            linkHeaderArray.add(prefix + "?page=" + (resultsPage.page - 1) + "&perPage=" + resultsPage.perPage + "; rel=prev");
         }
 
-        if (resultsPage.start + resultsPage.count < resultsPage.total) {
+        if (resultsPage.page * resultsPage.perPage < resultsPage.total) {
             // Add next header
-            long nextStart = resultsPage.start + resultsPage.count;
-            linkHeaderArray.add(prefix + "?start=" + nextStart + "&count=" + resultsPage.count + "; rel=next");
+            linkHeaderArray.add(prefix + "?page=" + (resultsPage.page + 1) + "&perPage=" + resultsPage.perPage + "; rel=next");
             // Add last header
-            long lastStart = resultsPage.total - resultsPage.count;
-            linkHeaderArray.add(prefix + "?start=" + lastStart + "&count=" + resultsPage.count + "; rel=last");
+            long lastPage = resultsPage.total / resultsPage.perPage;
+            linkHeaderArray.add(prefix + "?page=" + lastPage + "&perPage=" + resultsPage.perPage + "; rel=last");
         }
 
         return linkHeaderArray.stream().collect(Collectors.joining(", "));

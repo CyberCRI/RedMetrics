@@ -66,11 +66,11 @@ public abstract class EntityDao<E extends Entity> {
         }
     }
 
-    public ResultsPage<E> list(long startAt, long count) {
+    public ResultsPage<E> list(long page, long perPage) {
         try {
             long total = orm.countOf();
-            List<E> results = orm.queryBuilder().offset(startAt).limit(count).query();
-            return new ResultsPage<E>(total, startAt, count, results);
+            List<E> results = orm.queryBuilder().offset(page * perPage).limit(perPage).query();
+            return new ResultsPage<E>(total, page, perPage, results);
         } catch (SQLException e) {
             throw new DbException(e);
         }
