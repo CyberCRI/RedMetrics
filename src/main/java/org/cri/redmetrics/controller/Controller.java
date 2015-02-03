@@ -3,6 +3,7 @@ package org.cri.redmetrics.controller;
 import org.cri.redmetrics.dao.EntityDao;
 import org.cri.redmetrics.json.JsonConverter;
 import org.cri.redmetrics.model.Entity;
+import org.cri.redmetrics.model.ResultsPage;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -118,7 +119,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         return dao.update(entity);
     }
 
-    protected List<E> list(Request request) {
+    protected ResultsPage<E> list(Request request) {
         long startAt = request.queryMap("start").hasValue() ? request.queryMap("start").longValue() : 0;
         long count = request.queryMap("count").hasValue() ? request.queryMap("count").longValue() : maxListCount;
         return dao.list(startAt, count);

@@ -5,6 +5,7 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import org.cri.redmetrics.model.Entity;
+import org.cri.redmetrics.model.ResultsPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,16 +66,11 @@ public abstract class EntityDao<E extends Entity> {
         }
     }
 
-    public Map<String, Object> list(long startAt, long count) {
+    public ResultsPage<E> list(long startAt, long count) {
         try {
             long total = orm.countOf();
             List<E> results = orm.queryBuilder().offset(startAt).limit(count).query();
-            HashMap<String, Object> map = new HashMap<String, Object>();
-            map.put("total", total);
-            map.put("start", startAt);
-            map.put("count", count);
-            map.put("data", results);
-            return map;
+            return new ResultsPage<E>(total, startAt, count, results);
         } catch (SQLException e) {
             throw new DbException(e);
         }
