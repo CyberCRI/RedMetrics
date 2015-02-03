@@ -1,5 +1,6 @@
 package org.cri.redmetrics.controller;
 
+import org.cri.redmetrics.Server;
 import org.cri.redmetrics.dao.EntityDao;
 import org.cri.redmetrics.json.JsonConverter;
 import org.cri.redmetrics.model.Entity;
@@ -8,8 +9,11 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static spark.Spark.*;
 
@@ -72,7 +76,21 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         get(path + "/:id", getByIdRoute, jsonConverter);
         get(path + "/:id/", getByIdRoute, jsonConverter);
 
-        get(path + "/", (request, response) -> list(request), jsonConverter);
+        Route listRoute = (Request request, Response response) -> {
+            // Figure out how many entities to return
+            long startAt = request.queryMap("start").hasValue() ? request.queryMap("start").longValue() : 0;
+            long count = request.queryMap("count").hasValue() ? request.queryMap("count").longValue() : maxListCount;
+            ResultsPage<E> resultsPage = list(startAt, count);
+
+            // Send the pagination headers
+            response.header("X-Total-Count", Long.toString(resultsPage.total));
+            response.header("Link", makeLinkHeaders(resultsPage));
+
+            // Return the actual results (to be converted to JSON)
+            return resultsPage;
+        };
+
+        get(path + "/", listRoute, jsonConverter);
 
 
         // PUT
@@ -119,15 +137,35 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         return dao.update(entity);
     }
 
-    protected ResultsPage<E> list(Request request) {
-        long startAt = request.queryMap("start").hasValue() ? request.queryMap("start").longValue() : 0;
-        long count = request.queryMap("count").hasValue() ? request.queryMap("count").longValue() : maxListCount;
-        return dao.list(startAt, count);
-    }
+    protected ResultsPage<E> list(long startAt, long count) { return dao.list(startAt, count); }
 
     protected void publishSpecific() {
     }
 
     protected void beforeCreation(E entity, Request request, Response response) {
+    }
+
+    String makeLinkHeaders(ResultsPage<E> resultsPage) {
+        final String prefix = Server.hostName + path + "/";
+
+        ArrayList<String> linkHeaderArray = new ArrayList<String>();
+        if (resultsPage.start > 0) {
+            // Add first header
+            linkHeaderArray.add(prefix + "?start=0&count=" + resultsPage.count + "; rel=first");
+            // Add previous header
+            long previousStart = Long.max(0, resultsPage.start - resultsPage.count);
+            linkHeaderArray.add(prefix + "?start=" + previousStart + "&count=" + resultsPage.count + "; rel=prev");
+        }
+
+        if (resultsPage.start + resultsPage.count < resultsPage.total) {
+            // Add next header
+            long nextStart = resultsPage.start + resultsPage.count;
+            linkHeaderArray.add(prefix + "?start=" + nextStart + "&count=" + resultsPage.count + "; rel=next");
+            // Add last header
+            long lastStart = resultsPage.total - resultsPage.count;
+            linkHeaderArray.add(prefix + "?start=" + lastStart + "&count=" + resultsPage.count + "; rel=last");
+        }
+
+        return linkHeaderArray.stream().collect(Collectors.joining(", "));
     }
 }

@@ -22,7 +22,7 @@ public class EventController extends ProgressDataController<Event, EventDao> {
 
     @Inject
     EventController(EventDao dao, EventJsonConverter jsonConverter) {
-        super("/event", dao, jsonConverter);
+        super("event", dao, jsonConverter);
     }
 
     @Override

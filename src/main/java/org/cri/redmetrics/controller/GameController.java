@@ -26,8 +26,8 @@ public class GameController extends Controller<Game, GameDao> {
     }
 
     @Override
-    protected ResultsPage<Game> list(Request request) {
-        ResultsPage<Game> allGames = super.list(request);
+    protected ResultsPage<Game> list(long start, long count) {
+        ResultsPage<Game> allGames = super.list(start, count);
         allGames.results.forEach((game) -> game.setAdminKey(null));
         return allGames;
     }
