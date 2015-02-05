@@ -26,9 +26,10 @@ import org.cri.redmetrics.db.Db;
 public class HttpBackend<E extends TestEntity> {
 
     private final String path;
-    private static final int PORT_NUMBER = 4567;
-    protected static final String BASE_PATH = "http://api.redmetrics.io:" + PORT_NUMBER + Controller.basePath;
-    private static final Server server = new Server(PORT_NUMBER, new Db("jdbc:postgresql://localhost:5432/redmetrics", "cridev", "1234"));
+    private static final int PORT_NUMBER = 5050;
+    protected static final String BASE_PATH = "http://localhost:" + PORT_NUMBER + Controller.basePath;
+    //protected static final String BASE_PATH = "http://api.redmetrics.io:" + PORT_NUMBER + Controller.basePath;
+    //private static final Server server = new Server(PORT_NUMBER, new Db("jdbc:postgresql://localhost:5432/redmetrics", "cridev", "1234"));
 
     protected static final HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory((request) -> request.setParser(new JsonObjectParser(new GsonFactory())));
     protected final Class<E> type;

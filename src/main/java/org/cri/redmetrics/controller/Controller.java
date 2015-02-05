@@ -1,6 +1,9 @@
 package org.cri.redmetrics.controller;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.cri.redmetrics.Server;
+import com.google.gson.JsonSyntaxException;
 import org.cri.redmetrics.dao.EntityDao;
 import org.cri.redmetrics.json.JsonConverter;
 import org.cri.redmetrics.model.Entity;
@@ -11,6 +14,7 @@ import spark.Route;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -23,9 +27,17 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
     public static final long defaultListCount = 50;
     public static final long maxListCount = 200;
 
+    // Minimal wrapper class around an entity ID
+    private class IdWrapper {
+        IdWrapper(UUID id) { this.id = id; }
+        public UUID id;
+    }
+
+
     protected final String path;
     protected final DAO dao;
     protected final JsonConverter<E> jsonConverter;
+
 
     Controller(String path, DAO dao, JsonConverter<E> jsonConverter) {
         this.path = basePath + path;
@@ -53,13 +65,30 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         // POST
 
         Route postRoute = (request, response) -> {
-//            Console.log("Request body : " + request.body());
-            E entity = jsonConverter.parse(request.body());
-            beforeCreation(entity, request, response);
-            create(entity);
-            response.header("Location", path + "/" + entity.getId());
-            response.status(201); // Created
-            return entity;
+            // Is it a list or a single entity?
+            JsonElement jsonElement = new JsonParser().parse(request.body());
+            if(jsonElement.isJsonArray()) {
+                Collection<E> entities = jsonConverter.parseCollection(request.body());
+                for(E entity : entities) {
+                    beforeCreation(entity, request, response);
+                    create(entity);
+                }
+
+                // Return created status and list of entity IDs
+                response.status(201);
+                return entities.stream().map(e -> new IdWrapper(e.getId())).toArray();
+            } else if(jsonElement.isJsonObject()) {
+                E entity = jsonConverter.parse(request.body());
+                beforeCreation(entity, request, response);
+                create(entity);
+                response.header("Location", path + "/" + entity.getId());
+
+                response.status(201); // Created
+                return entity;
+            } else {
+                halt(400, "Expecting a JSON array or object");
+                return "";
+            }
         };
 
         post(path + "", postRoute, jsonConverter);

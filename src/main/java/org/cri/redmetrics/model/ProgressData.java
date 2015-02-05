@@ -29,7 +29,7 @@ public abstract class ProgressData extends Entity {
     @DatabaseField
     private Date userTime;
 
-    @DatabaseField
+    @DatabaseField(columnDefinition = "text")
     private String customData;
 
     @DatabaseField(persisterClass = LtreePersister.class, columnDefinition = "ltree")
