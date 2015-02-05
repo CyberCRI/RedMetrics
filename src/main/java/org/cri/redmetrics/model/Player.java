@@ -16,22 +16,22 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 public class Player extends Entity {
 
-    @DatabaseField(index = true, unique = true)
-    private String email;
-
-    @DatabaseField
-    private String firstName;
-
-    @DatabaseField
-    private String lastName;
-
     @DatabaseField
     private Date birthDate;
 
-    @DatabaseField(foreign = true)
-    private Address address;
+    @DatabaseField
+    private String postalCode;
+
+    @DatabaseField
+    private String country;
 
     @DatabaseField
     private Gender gender;
+
+    @DatabaseField(index = true)
+    private String externalId;
+
+    @DatabaseField(columnDefinition = "text")
+    private String customData;
 
 }
