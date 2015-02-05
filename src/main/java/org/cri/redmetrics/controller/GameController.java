@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import org.cri.redmetrics.dao.GameDao;
 import org.cri.redmetrics.json.GameJsonConverter;
 import org.cri.redmetrics.model.Game;
+import org.cri.redmetrics.model.ResultsPage;
+import spark.Request;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,9 +26,9 @@ public class GameController extends Controller<Game, GameDao> {
     }
 
     @Override
-    protected List<Game> list() {
-        List<Game> allGames = super.list();
-        allGames.forEach((game) -> game.setAdminKey(null));
+    protected ResultsPage<Game> list(long start, long count) {
+        ResultsPage<Game> allGames = super.list(start, count);
+        allGames.results.forEach((game) -> game.setAdminKey(null));
         return allGames;
     }
 }

@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args) throws SQLException {
                 
         Config<String, String> config;
-        String requiredOptions[] = {"databaseURL", "listenPort", "dbusername", "dbassword"};
+        String requiredOptions[] = {"databaseURL", "listenPort", "dbusername", "dbassword", "hostName"};
 
         try {
             config = Configs.getSimpleConfig(Paths.get("./redmetrics.conf"), requiredOptions);
@@ -28,6 +28,7 @@ public class Main {
         }
 
         Db db = new Db(config.get("databaseURL"), config.get("dbusername"), config.get("dbassword"));
+        Server.hostName = config.get("hostName");
         Server server = new Server(Integer.parseInt(config.get("listenPort")), db);
         server.start();
     }

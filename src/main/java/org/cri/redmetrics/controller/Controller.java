@@ -1,22 +1,31 @@
 package org.cri.redmetrics.controller;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import org.cri.redmetrics.Server;
 import com.google.gson.JsonSyntaxException;
 import org.cri.redmetrics.dao.EntityDao;
 import org.cri.redmetrics.json.JsonConverter;
 import org.cri.redmetrics.model.Entity;
+import org.cri.redmetrics.model.ResultsPage;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static spark.Spark.*;
 
 public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
     public static final String basePath = "/v1/";
+    public static final long defaultListCount = 50;
+    public static final long maxListCount = 200;
 
     // Minimal wrapper class around an entity ID
     private class IdWrapper {
@@ -56,8 +65,9 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         // POST
 
         Route postRoute = (request, response) -> {
-            // Try to parse it as a list. If it doesn't work, try as a single entity
-            try {
+            // Is it a list or a single entity?
+            JsonElement jsonElement = new JsonParser().parse(request.body());
+            if(jsonElement.isJsonArray()) {
                 Collection<E> entities = jsonConverter.parseCollection(request.body());
                 for(E entity : entities) {
                     beforeCreation(entity, request, response);
@@ -67,14 +77,17 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
                 // Return created status and list of entity IDs
                 response.status(201);
                 return entities.stream().map(e -> new IdWrapper(e.getId())).toArray();
-            } catch(JsonSyntaxException e) {
+            } else if(jsonElement.isJsonObject()) {
                 E entity = jsonConverter.parse(request.body());
                 beforeCreation(entity, request, response);
-                create(entity);                
-                response.header("Location", path + "/" + entity.getId()); 
+                create(entity);
+                response.header("Location", path + "/" + entity.getId());
 
                 response.status(201); // Created
                 return entity;
+            } else {
+                halt(400, "Expecting a JSON array or object");
+                return "";
             }
         };
 
@@ -93,7 +106,21 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         get(path + "/:id", getByIdRoute, jsonConverter);
         get(path + "/:id/", getByIdRoute, jsonConverter);
 
-        get(path + "/", (request, response) -> list(), jsonConverter);
+        Route listRoute = (Request request, Response response) -> {
+            // Figure out how many entities to return
+            long page = request.queryMap("page").hasValue() ? request.queryMap("page").longValue() : 0;
+            long perPage = Long.min(maxListCount, request.queryMap("perPage").hasValue() ? request.queryMap("perPage").longValue() : defaultListCount);
+            ResultsPage<E> resultsPage = list(page, perPage);
+
+            // Send the pagination headers
+            response.header("X-Total-Count", Long.toString(resultsPage.total));
+            response.header("Link", makeLinkHeaders(resultsPage));
+
+            // Return the actual results (to be converted to JSON)
+            return resultsPage;
+        };
+
+        get(path + "/", listRoute, jsonConverter);
 
 
         // PUT
@@ -140,13 +167,33 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         return dao.update(entity);
     }
 
-    protected List<E> list() {
-        return dao.list();
-    }
+    protected ResultsPage<E> list(long page, long perPage) { return dao.list(page, perPage); }
 
     protected void publishSpecific() {
     }
 
     protected void beforeCreation(E entity, Request request, Response response) {
+    }
+
+    String makeLinkHeaders(ResultsPage<E> resultsPage) {
+        final String prefix = Server.hostName + path + "/";
+
+        ArrayList<String> linkHeaderArray = new ArrayList<String>();
+        if (resultsPage.page > 0) {
+            // Add first header
+            linkHeaderArray.add(prefix + "?page=0&perPage=" + resultsPage.perPage + "; rel=first");
+            // Add previous header
+            linkHeaderArray.add(prefix + "?page=" + (resultsPage.page - 1) + "&perPage=" + resultsPage.perPage + "; rel=prev");
+        }
+
+        if (resultsPage.page * resultsPage.perPage < resultsPage.total) {
+            // Add next header
+            linkHeaderArray.add(prefix + "?page=" + (resultsPage.page + 1) + "&perPage=" + resultsPage.perPage + "; rel=next");
+            // Add last header
+            long lastPage = resultsPage.total / resultsPage.perPage;
+            linkHeaderArray.add(prefix + "?page=" + lastPage + "&perPage=" + resultsPage.perPage + "; rel=last");
+        }
+
+        return linkHeaderArray.stream().collect(Collectors.joining(", "));
     }
 }

@@ -17,6 +17,8 @@ import static spark.Spark.*;
 
 public class Server {
 
+    public static String hostName;
+
     private static void enableCORS(final String origin, final String methods, final String headers) {
         before((Request request, Response response) -> {
             response.header("Access-Control-Allow-Origin", origin);
@@ -24,6 +26,7 @@ public class Server {
             response.header("Access-Control-Allow-Headers", headers);
         });
     }
+
 
     private final int portNumber;
     private final Db database;

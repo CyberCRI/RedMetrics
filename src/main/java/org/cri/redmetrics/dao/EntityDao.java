@@ -5,10 +5,13 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import org.cri.redmetrics.model.Entity;
+import org.cri.redmetrics.model.ResultsPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -63,12 +66,13 @@ public abstract class EntityDao<E extends Entity> {
         }
     }
 
-    public List<E> list() {
+    public ResultsPage<E> list(long page, long perPage) {
         try {
-            return orm.queryForAll();
+            long total = orm.countOf();
+            List<E> results = orm.queryBuilder().offset(page * perPage).limit(perPage).query();
+            return new ResultsPage<E>(total, page, perPage, results);
         } catch (SQLException e) {
             throw new DbException(e);
         }
     }
-
 }

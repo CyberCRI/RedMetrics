@@ -4,6 +4,7 @@ import com.google.gson.*;
 
 import lombok.RequiredArgsConstructor;
 import org.cri.redmetrics.model.Entity;
+import org.cri.redmetrics.model.ResultsPage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.lang.reflect.Type;
@@ -47,8 +48,8 @@ abstract class EntityJsonConverter<E extends Entity> implements JsonConverter<E>
 
     @Override
     public final String render(Object model) {
-        if (model instanceof Collection) {
-            return stringifyCollection((Collection<E>) model);
+        if (model instanceof ResultsPage) {
+            return stringifyResultsPage((ResultsPage<E>) model);
         } else if(entityType.isInstance(model)) {
             return stringify((E) model);
         } else {
@@ -57,9 +58,9 @@ abstract class EntityJsonConverter<E extends Entity> implements JsonConverter<E>
         }
     }
 
-    private String stringifyCollection(Collection<E> collection) {
+    private String stringifyResultsPage(ResultsPage<E> resultsPage) {
         JsonArray jsonArray = new JsonArray();
-        collection.forEach((entity) -> jsonArray.add(toJsonObject(entity)));
+        resultsPage.results.forEach((entity) -> jsonArray.add(toJsonObject(entity)));
         return gson.toJson(jsonArray);
     }
 
