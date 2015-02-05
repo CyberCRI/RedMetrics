@@ -1,5 +1,6 @@
 package org.cri.redmetrics.json;
 
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -9,6 +10,8 @@ import com.google.inject.name.Named;
 import org.cri.redmetrics.model.Game;
 import org.cri.redmetrics.model.GameVersion;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 
 public class GameVersionJsonConverter extends EntityJsonConverter<GameVersion> {

@@ -1,5 +1,6 @@
 package org.cri.redmetrics.controller;
 
+import com.google.gson.JsonSyntaxException;
 import org.cri.redmetrics.dao.EntityDao;
 import org.cri.redmetrics.json.JsonConverter;
 import org.cri.redmetrics.model.Entity;
@@ -7,6 +8,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,9 +18,17 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
     public static final String basePath = "/v1/";
 
+    // Minimal wrapper class around an entity ID
+    private class IdWrapper {
+        IdWrapper(UUID id) { this.id = id; }
+        public UUID id;
+    }
+
+
     protected final String path;
     protected final DAO dao;
     protected final JsonConverter<E> jsonConverter;
+
 
     Controller(String path, DAO dao, JsonConverter<E> jsonConverter) {
         this.path = basePath + path;
@@ -46,13 +56,26 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         // POST
 
         Route postRoute = (request, response) -> {
-//            Console.log("Request body : " + request.body());
-            E entity = jsonConverter.parse(request.body());
-            beforeCreation(entity, request, response);
-            create(entity);
-            response.header("Location", path + "/" + entity.getId());
-            response.status(201); // Created
-            return entity;
+            // Try to parse it as a list. If it doesn't work, try as a single entity
+            try {
+                Collection<E> entities = jsonConverter.parseCollection(request.body());
+                for(E entity : entities) {
+                    beforeCreation(entity, request, response);
+                    create(entity);
+                }
+
+                // Return created status and list of entity IDs
+                response.status(201);
+                return entities.stream().map(e -> new IdWrapper(e.getId())).toArray();
+            } catch(JsonSyntaxException e) {
+                E entity = jsonConverter.parse(request.body());
+                beforeCreation(entity, request, response);
+                create(entity);                
+                response.header("Location", path + "/" + entity.getId()); 
+
+                response.status(201); // Created
+                return entity;
+            }
         };
 
         post(path + "", postRoute, jsonConverter);
