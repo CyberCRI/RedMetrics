@@ -54,8 +54,6 @@ public class MainModule extends AbstractModule {
         bind(SnapshotDao.class).asEagerSingleton();
         bind(SnapshotJsonConverter.class).asEagerSingleton();
 
-        bind(AddressDao.class).asEagerSingleton();
-
     }
 
     @Provides

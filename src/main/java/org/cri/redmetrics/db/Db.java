@@ -8,7 +8,6 @@ import java.sql.SQLException;
 public class Db {
 
     public static final Class[] ENTITY_TYPES = {
-            Address.class,
             Event.class,
             Snapshot.class,
             Game.class,

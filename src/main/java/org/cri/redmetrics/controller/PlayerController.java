@@ -18,43 +18,4 @@ public class PlayerController extends Controller<Player, PlayerDao> {
         super("player", dao, jsonConverter);
     }
 
-    @Override
-    protected void publishSpecific() {
-        Route getByEmailRoute = (request, response) -> {
-            String email = request.params(":email");
-            Player player = dao.findByEmail(email);
-            if (player == null) halt(404, "No player found for email : " + email);
-            return player;
-        };
-        get(path + "/email/:email", getByEmailRoute, jsonConverter);
-        get(path + "/email/:email/", getByEmailRoute, jsonConverter);
-    }
-
-    @Override
-    protected Player create(Player player) {
-        checkNoDuplicate(player.getEmail());
-        return super.create(player);
-    }
-
-    @Override
-    protected Player read(UUID id) {
-        Player player = super.read(id);
-        if(player == null) return null;
-
-        player.setEmail(null); // Hide email
-        return player;
-    }
-
-    @Override
-    protected Player update(Player player) {
-        checkNoDuplicate(player.getEmail());
-        return super.update(player);
-    }
-
-    protected void checkNoDuplicate(String email) {
-        Player duplicate = dao.findByEmail(email);
-        if (duplicate != null) {
-            halt(400, "A player already exists with the email " + email);
-        }
-    }
 }
