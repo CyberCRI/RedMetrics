@@ -12,20 +12,17 @@ import lombok.ToString;
 public class TestPlayer extends TestEntity {
 
     @Key
-    private String email;
-
-    @Key
-    private String firstName;
-
-    @Key
-    private String lastName;
-
-    @Key
     private String birthDate;
 
     @Key
-    private TestAddress address;
+    private String postalCode;
+
+    @Key
+    private String country;
 
     @Key
     private String gender;
+
+    @Key
+    private String externalId;
 }

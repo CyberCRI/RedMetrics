@@ -2,41 +2,20 @@ package org.cri.redmetrics.model;
 
 public class PlayerBuilder {
 
-    private String email;
-    private String firstName;
-    private String lastName;
     private String birthDate;
-    private TestAddress address;
+    private String postalCode;
+    private String country;
     private Gender gender;
+    private String externalId;
 
     public TestPlayer build() {
         TestPlayer player = new TestPlayer();
-        player.setEmail(email);
-        player.setFirstName(firstName);
-        player.setLastName(lastName);
         player.setBirthDate(birthDate);
-        player.setAddress(address);
+        player.setPostalCode(postalCode);
+        player.setCountry(country);
         player.setGender(gender.name());
+        player.setExternalId(externalId);
         return player;
-    }
-
-    public PlayerBuilder withEmail(String email) {
-        this.email = email;
-        return this;
-    }
-
-    public PlayerBuilder withNewRandomEmail() {
-        return withEmail(Math.random() + "test@test.com");
-    }
-
-    public PlayerBuilder withFirstName(String firstName) {
-        this.firstName = firstName;
-        return this;
-    }
-
-    public PlayerBuilder withLastName(String lastName) {
-        this.lastName = lastName;
-        return this;
     }
 
     public PlayerBuilder withBirthDate(String birthDate) {
@@ -44,10 +23,13 @@ public class PlayerBuilder {
         return this;
     }
 
-    public PlayerBuilder withAddress(String postalCode, String country) {
-        this.address = new TestAddress();
-        this.address.setPostalCode(postalCode);
-        this.address.setCountry(country);
+    public PlayerBuilder withPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+        return this;
+    }
+
+    public PlayerBuilder withCountry(String country) {
+        this.country = country;
         return this;
     }
 
@@ -56,4 +38,12 @@ public class PlayerBuilder {
         return this;
     }
 
+    public PlayerBuilder withExternalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
+    public PlayerBuilder withNewRandomExternalId() {
+        return withExternalId(Math.random() + "@test.com");
+    }
 }

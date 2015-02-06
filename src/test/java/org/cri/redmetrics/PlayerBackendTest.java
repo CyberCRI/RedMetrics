@@ -23,56 +23,36 @@ public class PlayerBackendTest {
         TestPlayer johnSnow = Players.newJohnSnow();
         TestPlayer savedPlayer = players.post(johnSnow);
         assertThat(savedPlayer.getId()).isNotNull().hasSize(36);
-        assertThat(savedPlayer.getEmail()).isEqualTo(johnSnow.getEmail());
-        assertThat(savedPlayer.getFirstName()).isEqualTo(johnSnow.getFirstName());
-        assertThat(savedPlayer.getLastName()).isEqualTo(johnSnow.getLastName());
         assertThat(savedPlayer.getBirthDate()).isEqualTo(johnSnow.getBirthDate());
         assertThat(savedPlayer.getGender()).isEqualTo(johnSnow.getGender());
-        // Comparing addresses
-        assertThat(savedPlayer.getAddress().getPostalCode()).isEqualTo(johnSnow.getAddress().getPostalCode());
-        assertThat(savedPlayer.getAddress().getCountry()).isEqualTo(johnSnow.getAddress().getCountry());
-    }
-
-    @Test
-    public void shouldHideEmail() throws IOException {
-        TestPlayer savedPlayer = players.post(Players.newJohnSnow());
-        TestPlayer fetchedPlayer = players.getById(savedPlayer.getId());
-        assertThat(fetchedPlayer.getEmail()).isNull();
-    }
-
-    @Test
-    public void shouldForbidCreationWhenDuplicateEmail() throws IOException {
-        TestPlayer savedPlayer = players.post(Players.newJohnSnow());
-        try {
-            players.post(savedPlayer);
-            failBecauseExceptionWasNotThrown(HttpResponseException.class);
-        } catch (HttpResponseException e) {
-            assertThat(e.getStatusCode()).isEqualTo(400);
-        }
+        assertThat(savedPlayer.getPostalCode()).isEqualTo(johnSnow.getPostalCode());
+        assertThat(savedPlayer.getCountry()).isEqualTo(johnSnow.getCountry());
+        assertThat(savedPlayer.getExternalId()).isEqualTo(johnSnow.getExternalId());
     }
 
     // READ
 
-    @Test
+/*    @Test
     public void canFindByEmail() throws IOException {
         TestPlayer savedPlayer = players.post(Players.newJohnSnow());
         TestPlayer foundPlayer = players.getById("email/" + savedPlayer.getEmail());
         assertThat(foundPlayer.getId()).isEqualTo(savedPlayer.getId());
     }
+*/
 
     // UPDATE
 
     @Test
-    public void shouldForbidUpdateWhenDuplicateEmail() throws IOException {
+    public void canUpdatePlayer() throws IOException {
         TestPlayer savedPlayer = players.post(Players.newJohnSnow());
-        TestPlayer anotherPlayer = Players.newJohnSnow();
-        try {
-            anotherPlayer.setEmail(savedPlayer.getEmail());
-            players.put(anotherPlayer);
-            failBecauseExceptionWasNotThrown(HttpResponseException.class);
-        } catch (HttpResponseException e) {
-            assertThat(e.getStatusCode()).isEqualTo(400);
-        }
+        savedPlayer.setPostalCode("99999");
+        TestPlayer updatedPlayer = players.put(savedPlayer);
+        assertThat(savedPlayer.getId()).isEqualTo(savedPlayer.getId());
+        assertThat(savedPlayer.getBirthDate()).isEqualTo(savedPlayer.getBirthDate());
+        assertThat(savedPlayer.getGender()).isEqualTo(savedPlayer.getGender());
+        assertThat(savedPlayer.getPostalCode()).isEqualTo(savedPlayer.getPostalCode());
+        assertThat(savedPlayer.getCountry()).isEqualTo(savedPlayer.getCountry());
+        assertThat(savedPlayer.getExternalId()).isEqualTo(savedPlayer.getExternalId());
     }
 
 }
