@@ -6,11 +6,13 @@ import org.cri.redmetrics.dao.SearchQuery;
 import org.cri.redmetrics.json.JsonConverter;
 import org.cri.redmetrics.model.Entity;
 import org.cri.redmetrics.model.ProgressData;
+import org.cri.redmetrics.model.ResultsPage;
 import org.cri.redmetrics.util.DateFormatter;
 import spark.Request;
 import spark.Response;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -41,20 +43,18 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
     }
 
     @Override
-    protected void publishSpecific() {
-        super.publishSpecific();
-
+    protected ResultsPage<E> list(Request request, long page, long perPage) {
         // SEARCH
-        get(path, (request, response) -> {
-            SearchQuery search = dao.search();
-            searchGame(request, search);
-            searchForeignEntities(request, search);
-            searchValues(request, search);
-            searchDates(request, search);
-            searchSections(request, search);
-            return search.execute();
-        }
-                , jsonConverter);
+        SearchQuery search = dao.search();
+        searchGame(request, search);
+        searchForeignEntities(request, search);
+        searchValues(request, search);
+        searchDates(request, search);
+        searchSections(request, search);
+        search.paginate(page, perPage);
+
+        List<E> results = search.execute();
+        return new ResultsPage<E>(dao.countAllEntities(), page, perPage, results);
     }
 
     private void searchGame(Request request, SearchQuery search) {

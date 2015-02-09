@@ -110,7 +110,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             // Figure out how many entities to return
             long page = request.queryMap("page").hasValue() ? request.queryMap("page").longValue() : 0;
             long perPage = Long.min(maxListCount, request.queryMap("perPage").hasValue() ? request.queryMap("perPage").longValue() : defaultListCount);
-            ResultsPage<E> resultsPage = list(page, perPage);
+            ResultsPage<E> resultsPage = list(request, page, perPage);
 
             // Send the pagination headers
             response.header("X-Total-Count", Long.toString(resultsPage.total));
@@ -120,6 +120,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             return resultsPage;
         };
 
+        get(path, listRoute, jsonConverter);
         get(path + "/", listRoute, jsonConverter);
 
 
@@ -167,7 +168,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         return dao.update(entity);
     }
 
-    protected ResultsPage<E> list(long page, long perPage) { return dao.list(page, perPage); }
+    protected ResultsPage<E> list(Request request, long page, long perPage) { return dao.list(page, perPage); }
 
     protected void publishSpecific() {
     }

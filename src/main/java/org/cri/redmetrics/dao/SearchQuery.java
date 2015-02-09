@@ -137,4 +137,13 @@ public class SearchQuery<E extends ProgressData> {
         return this;
     }
 
+    public SearchQuery paginate(long page, long perPage) {
+        try {
+            queryBuilder.offset(page * perPage).limit(perPage);
+            return this;
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
+
 }
