@@ -89,7 +89,6 @@ public class Server {
 
         exception(NumberFormatException.class, (e, request, response) -> {
             response.status(400);
-            e.printStackTrace();
             response.body("Unsupported JSON Format : A number was expected " + e.getMessage());
         });
 
@@ -98,6 +97,10 @@ public class Server {
             response.body(InconsistentDataException.class.getSimpleName() + " : " + e.getMessage());
         });
 
+        exception(IllegalArgumentException.class, (e, request, response) -> {
+            response.status(400);
+            response.body(e.getMessage());
+        });
     }
 
 }

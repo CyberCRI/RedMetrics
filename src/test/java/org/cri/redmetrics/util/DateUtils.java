@@ -1,6 +1,7 @@
 package org.cri.redmetrics.util;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -8,11 +9,12 @@ import java.util.Locale;
 
 public class DateUtils {
 
-    private static final DateTimeFormatter RFC1123_DATE_TIME_FORMATTER =
-            DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss 'UTC'").withLocale(Locale.US);
+    // ISO 8601 Extended Format
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(DateTimeZone.UTC);
 
     public static String print(DateTime date) {
-        return RFC1123_DATE_TIME_FORMATTER.print(date);
+        return DATE_FORMATTER.print(date);
     }
 
     public static String now() {

@@ -83,7 +83,7 @@ public class EventBackendTest {
     @Test
     public void generatesCreationDate() throws IOException {
         saveEvent();
-        assertThat(event.getServerTime().length()).isEqualTo(29);
+        assertThat(event.getServerTime().length()).isEqualTo(24);
     }
 
     // READ
