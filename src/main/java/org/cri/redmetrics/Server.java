@@ -19,11 +19,12 @@ public class Server {
 
     public static String hostName;
 
-    private static void enableCORS(final String origin, final String methods, final String headers) {
+    private static void enableCORS() {
         before((Request request, Response response) -> {
-            response.header("Access-Control-Allow-Origin", origin);
-            response.header("Access-Control-Allow-Methods", methods);
-            response.header("Access-Control-Allow-Headers", headers);
+            response.header("Access-Control-Allow-Origin", "*");
+            response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            response.header("Access-Control-Allow-Headers", "Content-Type");
+            response.header("Access-Control-Expose-Headers", "Content-Type, Location, Link, X-Total-Count");
         });
     }
 
@@ -49,7 +50,7 @@ public class Server {
 
         setPort(portNumber);
 
-        enableCORS("*", "GET, POST, PUT, DELETE, OPTIONS", "Content-Type");
+        enableCORS();
 
         Injector injector = Guice.createInjector(new MainModule(database));
 
