@@ -12,11 +12,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static spark.Spark.*;
@@ -117,7 +113,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             response.header("X-Page-Count", Long.toString(1 + resultsPage.total / perPage));
             response.header("X-Per-Page-Count", Long.toString(perPage));
             response.header("X-Page-Number", Long.toString(page));
-            response.header("Link", makeLinkHeaders(resultsPage));
+            response.header("Link", makeLinkHeaders(request, resultsPage));
 
             // Return the actual results (to be converted to JSON)
             return resultsPage;
@@ -179,24 +175,31 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
     protected void beforeCreation(E entity, Request request, Response response) {
     }
 
-    String makeLinkHeaders(ResultsPage<E> resultsPage) {
+    String makeLinkHeaders(Request request, ResultsPage<E> resultsPage) {
         final String prefix = Server.hostName + path + "/";
+
+        // Get non-page based parameters
+        String baseParameters = request.queryParams().stream()
+                .filter(paramName -> !paramName.equals("page") && !paramName.equals("perPage"))
+                .map(paramName -> paramName + "=" + request.queryParams(paramName))
+                .collect(Collectors.joining("&"));
+        String baseUrl = prefix + "?" + baseParameters;
 
         // Page numbers are 1-based
         ArrayList<String> linkHeaderArray = new ArrayList<String>();
         if (resultsPage.page > 1) {
             // Add first header
-            linkHeaderArray.add(prefix + "?page=0&perPage=" + resultsPage.perPage + "; rel=first");
+            linkHeaderArray.add(baseUrl + "&page=0&perPage=" + resultsPage.perPage + "; rel=first");
             // Add previous header
-            linkHeaderArray.add(prefix + "?page=" + (resultsPage.page - 1) + "&perPage=" + resultsPage.perPage + "; rel=prev");
+            linkHeaderArray.add(baseUrl + "&page=" + (resultsPage.page - 1) + "&perPage=" + resultsPage.perPage + "; rel=prev");
         }
 
         long lastPage = 1 + resultsPage.total / resultsPage.perPage;
         if (resultsPage.page < lastPage) {
             // Add next header
-            linkHeaderArray.add(prefix + "?page=" + (resultsPage.page + 1) + "&perPage=" + resultsPage.perPage + "; rel=next");
+            linkHeaderArray.add(baseUrl + "&page=" + (resultsPage.page + 1) + "&perPage=" + resultsPage.perPage + "; rel=next");
             // Add last header
-            linkHeaderArray.add(prefix + "?page=" + lastPage + "&perPage=" + resultsPage.perPage + "; rel=last");
+            linkHeaderArray.add(baseUrl + "&page=" + lastPage + "&perPage=" + resultsPage.perPage + "; rel=last");
         }
 
         return linkHeaderArray.stream().collect(Collectors.joining(", "));
