@@ -24,7 +24,7 @@ public class Server {
             response.header("Access-Control-Allow-Origin", "*");
             response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             response.header("Access-Control-Allow-Headers", "Content-Type");
-            response.header("Access-Control-Expose-Headers", "Content-Type, Location, Link, X-Total-Count");
+            response.header("Access-Control-Expose-Headers", "Content-Type, Location, Link, X-Total-Count, X-Page-Count, X-Per-Page-Count, X-Page-Number");
         });
     }
 
