@@ -51,10 +51,13 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         searchValues(request, search);
         searchDates(request, search);
         searchSections(request, search);
+
+        long totalResultCount = search.countResults();
+
         search.paginate(page, perPage);
 
         List<E> results = search.execute();
-        return new ResultsPage<E>(dao.countAllEntities(), page, perPage, results);
+        return new ResultsPage<E>(totalResultCount, page, perPage, results);
     }
 
     private void searchGame(Request request, SearchQuery search) {

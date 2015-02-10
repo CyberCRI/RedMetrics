@@ -1,5 +1,6 @@
 package org.cri.redmetrics.dao;
 
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import org.cri.redmetrics.model.GameVersion;
@@ -18,13 +19,15 @@ public class SearchQuery<E extends ProgressData> {
 
     private final QueryBuilder<E, UUID> queryBuilder;
     private final QueryBuilder<GameVersion, UUID> gameVersionQueryBuilder;
+    private final Dao<E, UUID> orm;
     private Where where;
     private final Where whereGameVersion;
 
     private boolean hasStatement = false;
     private boolean hasGameFilter = false;
 
-    SearchQuery(QueryBuilder<E, UUID> queryBuilder, QueryBuilder<GameVersion, UUID> gameVersionQueryBuilder) {
+    SearchQuery(Dao<E, UUID> orm, QueryBuilder<E, UUID> queryBuilder, QueryBuilder<GameVersion, UUID> gameVersionQueryBuilder) {
+        this.orm = orm;
         this.queryBuilder = queryBuilder;
         this.gameVersionQueryBuilder = gameVersionQueryBuilder;
         this.whereGameVersion = gameVersionQueryBuilder.where();
@@ -34,6 +37,17 @@ public class SearchQuery<E extends ProgressData> {
         if (!hasStatement && !hasGameFilter) halt(400, "No parameters were specified for search query");
         try {
             return queryBuilder.query();
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
+
+    public long countResults() {
+        try {
+            queryBuilder.setCountOf(true);
+            long count = orm.countOf(queryBuilder.prepare());
+            queryBuilder.setCountOf(false);
+            return count;
         } catch (SQLException e) {
             throw new DbException(e);
         }

@@ -15,7 +15,7 @@ public abstract class ProgressDataDao<E extends ProgressData> extends EntityDao<
     }
 
     public SearchQuery<E> search() {
-        return new SearchQuery<>(orm.queryBuilder(), gameVersionDao.orm.queryBuilder());
+        return new SearchQuery<>(orm, orm.queryBuilder(), gameVersionDao.orm.queryBuilder());
     }
 
 }
