@@ -108,13 +108,13 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
         Route listRoute = (Request request, Response response) -> {
             // Figure out how many entities to return
-            long page = request.queryMap("page").hasValue() ? request.queryMap("page").longValue() : 0;
+            long page = request.queryMap("page").hasValue() ? request.queryMap("page").longValue() : 1;
             long perPage = Long.min(maxListCount, request.queryMap("perPage").hasValue() ? request.queryMap("perPage").longValue() : defaultListCount);
             ResultsPage<E> resultsPage = list(request, page, perPage);
 
             // Send the pagination headers
             response.header("X-Total-Count", Long.toString(resultsPage.total));
-            response.header("X-Page-Count", Long.toString(resultsPage.total / perPage));
+            response.header("X-Page-Count", Long.toString(1 + resultsPage.total / perPage));
             response.header("X-Per-Page-Count", Long.toString(perPage));
             response.header("X-Page-Number", Long.toString(page));
             response.header("Link", makeLinkHeaders(resultsPage));
@@ -182,19 +182,20 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
     String makeLinkHeaders(ResultsPage<E> resultsPage) {
         final String prefix = Server.hostName + path + "/";
 
+        // Page numbers are 1-based
         ArrayList<String> linkHeaderArray = new ArrayList<String>();
-        if (resultsPage.page > 0) {
+        if (resultsPage.page > 1) {
             // Add first header
             linkHeaderArray.add(prefix + "?page=0&perPage=" + resultsPage.perPage + "; rel=first");
             // Add previous header
             linkHeaderArray.add(prefix + "?page=" + (resultsPage.page - 1) + "&perPage=" + resultsPage.perPage + "; rel=prev");
         }
 
-        if (resultsPage.page * resultsPage.perPage < resultsPage.total) {
+        long lastPage = 1 + resultsPage.total / resultsPage.perPage;
+        if (resultsPage.page < lastPage) {
             // Add next header
             linkHeaderArray.add(prefix + "?page=" + (resultsPage.page + 1) + "&perPage=" + resultsPage.perPage + "; rel=next");
             // Add last header
-            long lastPage = resultsPage.total / resultsPage.perPage;
             linkHeaderArray.add(prefix + "?page=" + lastPage + "&perPage=" + resultsPage.perPage + "; rel=last");
         }
 

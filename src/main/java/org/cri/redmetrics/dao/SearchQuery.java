@@ -153,7 +153,8 @@ public class SearchQuery<E extends ProgressData> {
 
     public SearchQuery paginate(long page, long perPage) {
         try {
-            queryBuilder.offset(page * perPage).limit(perPage);
+            // Page number is 1-based
+            queryBuilder.offset((page - 1) * perPage).limit(perPage);
             return this;
         } catch (SQLException e) {
             throw new DbException(e);

@@ -68,7 +68,7 @@ public abstract class EntityDao<E extends Entity> {
 
     public ResultsPage<E> list(long page, long perPage) {
         try {
-            List<E> results = orm.queryBuilder().offset(page * perPage).limit(perPage).query();
+            List<E> results = orm.queryBuilder().offset((page - 1) * perPage).limit(perPage).query();
             return new ResultsPage<E>(countAllEntities(), page, perPage, results);
         } catch (SQLException e) {
             throw new DbException(e);
