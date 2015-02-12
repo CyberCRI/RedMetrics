@@ -1,6 +1,7 @@
 package org.cri.redmetrics.controller;
 
 import com.google.inject.Inject;
+import org.cri.redmetrics.csv.CsvEntityConverter;
 import org.cri.redmetrics.dao.GameVersionDao;
 import org.cri.redmetrics.json.GameVersionJsonConverter;
 import org.cri.redmetrics.model.GameVersion;
@@ -16,8 +17,8 @@ import static spark.Spark.halt;
 public class GameVersionController extends Controller<GameVersion, GameVersionDao> {
 
     @Inject
-    GameVersionController(GameVersionDao dao, GameVersionJsonConverter jsonConverter) {
-        super("gameVersion", dao, jsonConverter);
+    GameVersionController(GameVersionDao dao, GameVersionJsonConverter jsonConverter, CsvEntityConverter<GameVersion> csvEntityConverter) {
+        super("gameVersion", dao, jsonConverter, csvEntityConverter);
     }
 
     @Override

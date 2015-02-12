@@ -2,6 +2,7 @@ package org.cri.redmetrics.controller;
 
 import com.google.common.collect.ObjectArrays;
 import com.google.inject.Inject;
+import org.cri.redmetrics.csv.CsvEntityConverter;
 import org.cri.redmetrics.dao.EventDao;
 import org.cri.redmetrics.dao.SearchQuery;
 import org.cri.redmetrics.json.EventJsonConverter;
@@ -21,8 +22,8 @@ public class EventController extends ProgressDataController<Event, EventDao> {
     }
 
     @Inject
-    EventController(EventDao dao, EventJsonConverter jsonConverter) {
-        super("event", dao, jsonConverter);
+    EventController(EventDao dao, EventJsonConverter jsonConverter, CsvEntityConverter<Event> csvEntityConverter) {
+        super("event", dao, jsonConverter, csvEntityConverter);
     }
 
     @Override

@@ -3,13 +3,15 @@ package org.cri.redmetrics.controller;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.cri.redmetrics.Server;
-import com.google.gson.JsonSyntaxException;
+import org.cri.redmetrics.csv.CsvEntityConverter;
+import org.cri.redmetrics.csv.CsvResponseTransformer;
 import org.cri.redmetrics.dao.EntityDao;
 import org.cri.redmetrics.json.JsonConverter;
 import org.cri.redmetrics.model.Entity;
 import org.cri.redmetrics.model.ResultsPage;
 import spark.Request;
 import spark.Response;
+import spark.ResponseTransformer;
 import spark.Route;
 
 import java.util.*;
@@ -29,16 +31,65 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         public UUID id;
     }
 
+    protected enum HttpVerb {
+        GET,
+        POST,
+        PUT,
+        DELETE,
+        OPTIONS
+    };
+
+    protected void publishRoute(HttpVerb verb, String path, Route route) {
+        publishRoute(verb, path, route, "application/json", jsonConverter);
+        publishRoute(verb, path, route, "text/csv", csvResponseTransformer);
+    }
+
+    private void publishRoute(HttpVerb verb, String path, Route route, String contentType, ResponseTransformer responseTransformer) {
+        // A wrapper route to set the correct content type
+        Route routeWrapper = (request, response) -> {
+            response.type(contentType);
+            return route.handle(request, response);
+        };
+
+        // Publish the routeWrapper with and without the trailing slash
+        switch (verb) {
+            case GET:
+                get(path, contentType, routeWrapper, responseTransformer);
+                get(path + "/", contentType, routeWrapper, responseTransformer);
+                break;
+            case POST:
+                post(path, contentType, routeWrapper, responseTransformer);
+                post(path + "/", contentType, routeWrapper, responseTransformer);
+                break;
+            case PUT:
+                put(path, contentType, routeWrapper, responseTransformer);
+                put(path + "/", contentType, routeWrapper, responseTransformer);
+                break;
+            case DELETE:
+                delete(path, contentType, routeWrapper, responseTransformer);
+                delete(path + "/", contentType, routeWrapper, responseTransformer);
+                break;
+            case OPTIONS:
+                options(path, contentType, routeWrapper, responseTransformer);
+                options(path + "/", contentType, routeWrapper, responseTransformer);
+                break;
+            default:
+                throw new RuntimeException("Unknown verb " + verb);
+        }
+    }
+
 
     protected final String path;
     protected final DAO dao;
     protected final JsonConverter<E> jsonConverter;
+    protected final CsvResponseTransformer<E> csvResponseTransformer;
 
 
-    Controller(String path, DAO dao, JsonConverter<E> jsonConverter) {
+    Controller(String path, DAO dao, JsonConverter<E> jsonConverter, CsvEntityConverter<E> csvEntityConverter) {
         this.path = basePath + path;
         this.dao = dao;
         this.jsonConverter = jsonConverter;
+        this.csvResponseTransformer = new CsvResponseTransformer<E>(csvEntityConverter);
     }
 
     public final void publish() {
@@ -57,9 +108,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
     }
 
     private void publishGeneric() {
-
         // POST
-
         Route postRoute = (request, response) -> {
             // Is it a list or a single entity?
             JsonElement jsonElement = new JsonParser().parse(request.body());
@@ -87,9 +136,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             }
         };
 
-        post(path + "", postRoute, jsonConverter);
-        post(path + "/", postRoute, jsonConverter);
-
+        publishRoute(HttpVerb.POST, path, postRoute);
 
         // GET
 
@@ -99,8 +146,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             return entity;
         };
 
-        get(path + "/:id", getByIdRoute, jsonConverter);
-        get(path + "/:id/", getByIdRoute, jsonConverter);
+        publishRoute(HttpVerb.GET, path + "/:id", getByIdRoute);
 
         Route listRoute = (Request request, Response response) -> {
             // Figure out how many entities to return
@@ -119,9 +165,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             return resultsPage;
         };
 
-        get(path, listRoute, jsonConverter);
-        get(path + "/", listRoute, jsonConverter);
-
+        publishRoute(HttpVerb.GET, path, listRoute);
 
         // PUT
 
@@ -136,23 +180,21 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             return update(entity);
         };
 
-        put(path + "/:id", putRoute, jsonConverter);
-        put(path + "/:id/", putRoute, jsonConverter);
-
+        publishRoute(HttpVerb.PUT, path + "/:id", putRoute);
 
         // DELETE
 
-        delete(path + "/:id", (request, response) -> dao.delete(idFromUrl(request)), jsonConverter);
-        delete(path + "/:id/", (request, response) -> dao.delete(idFromUrl(request)), jsonConverter);
+        Route deleteRoute = (request, response) -> dao.delete(idFromUrl(request));
 
+        publishRoute(HttpVerb.DELETE, path + "/:id", deleteRoute);
 
         // OPTIONS
         // Always return empty response with CORS headers
+        // TODO: options shouldn't return a particular content type
         Route optionsRoute = (request, response) -> { return "{}"; };
-        options(path + "", optionsRoute);
-        options(path + "/", optionsRoute);
-        options(path + "/:id", optionsRoute);
-        options(path + "/:id/", optionsRoute);
+
+        publishRoute(HttpVerb.OPTIONS, path, optionsRoute);
+        publishRoute(HttpVerb.OPTIONS, path + "/:id", optionsRoute);
     }
 
     protected E create(E entity) {
