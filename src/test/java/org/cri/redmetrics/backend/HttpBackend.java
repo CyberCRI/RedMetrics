@@ -2,6 +2,7 @@ package org.cri.redmetrics.backend;
 
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpContent;
+import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.http.json.JsonHttpContent;
@@ -31,7 +32,15 @@ public class HttpBackend<E extends TestEntity> {
     //protected static final String BASE_PATH = "http://api.redmetrics.io:" + PORT_NUMBER + Controller.basePath;
     //private static final Server server = new Server(PORT_NUMBER, new Db("jdbc:postgresql://localhost:5432/redmetrics", "cridev", "1234"));
 
-    protected static final HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory((request) -> request.setParser(new JsonObjectParser(new GsonFactory())));
+    protected static final HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory((request) -> {
+        // Ask for JSON
+        HttpHeaders headers = request.getHeaders();
+        headers.set("Accept", "application/json");
+        request.setHeaders(headers);
+
+        // Parse JSON
+        request.setParser(new JsonObjectParser(new GsonFactory()));
+    });
     protected final Class<E> type;
     protected final Type arrayType;
 

@@ -1,5 +1,6 @@
 package org.cri.redmetrics.csv;
 
+import au.com.bytecode.opencsv.CSVWriter;
 import org.cri.redmetrics.model.GameVersion;
 
 /**
@@ -7,9 +8,15 @@ import org.cri.redmetrics.model.GameVersion;
  */
 public class GameVersionCsvEntityConverter implements CsvEntityConverter<GameVersion> {
 
+
     @Override
-    public void writeToCsv(GameVersion model) {
-        // TODO
+    public void writeHeader(CSVWriter csvWriter) {
+        csvWriter.writeNext(new String[]{ "id" });
+    }
+
+    @Override
+    public void writeDataLine(CSVWriter csvWriter, GameVersion model) {
+        csvWriter.writeNext(new String[]{ model.getId().toString() });
     }
 }
 
