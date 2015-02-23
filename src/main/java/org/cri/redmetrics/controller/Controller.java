@@ -26,7 +26,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
     public static final String basePath = "/v1/";
     public static final long defaultListCount = 50;
-    public static final long maxListCount = 200;
+    public static final long maxListCount = 500;
 
     // Minimal wrapper class around an entity ID
     private class IdWrapper {
