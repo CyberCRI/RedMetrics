@@ -1,5 +1,6 @@
 package org.cri.redmetrics;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -7,11 +8,16 @@ import org.cri.redmetrics.controller.*;
 import org.cri.redmetrics.dao.DbException;
 import org.cri.redmetrics.dao.InconsistentDataException;
 import org.cri.redmetrics.guice.MainModule;
+import org.cri.redmetrics.json.ApplicationErrorJsonConverter;
+import org.cri.redmetrics.json.DefaultGsonProvider;
+import org.cri.redmetrics.model.ApplicationError;
+import spark.HaltException;
 import spark.Request;
 import spark.Response;
 
 import java.sql.SQLException;
 import org.cri.redmetrics.db.Db;
+import spark.ResponseTransformer;
 
 import static spark.Spark.*;
 
@@ -32,11 +38,16 @@ public class Server {
     private final int portNumber;
     private final Db database;
 
+    private ApplicationErrorJsonConverter applicationErrorJsonConverter;
+
     private boolean started;
 
     public Server(int portNumber, Db database) {
         this.portNumber = portNumber;
         this.database = database;
+
+        Gson gson = new DefaultGsonProvider().get();
+        this.applicationErrorJsonConverter = new ApplicationErrorJsonConverter(gson);
     }
     
     public int getPort(){
@@ -68,8 +79,7 @@ public class Server {
         }
 
         exception(JsonSyntaxException.class, (e, request, response) -> {
-            response.status(400);
-            response.body("Malformed JSON : " + e.getCause().getMessage());
+            writeError(response, 400, "Malformed JSON : " + e.getCause().getMessage());
         });
 
         exception(DbException.class, (e, request, response) -> {
@@ -83,23 +93,28 @@ public class Server {
                 message = exception.getMessage();
             }
             e.printStackTrace();
-            response.body("Server Error : " + message);
+
+            writeError(response, 500, message);
         });
 
         exception(NumberFormatException.class, (e, request, response) -> {
-            response.status(400);
-            response.body("Unsupported JSON Format : A number was expected " + e.getMessage());
+            writeError(response, 400, "Unsupported JSON Format : A number was expected " + e.getMessage());
         });
 
         exception(InconsistentDataException.class, (e, request, response) -> {
-            response.status(400);
-            response.body(InconsistentDataException.class.getSimpleName() + " : " + e.getMessage());
+            writeError(response, 400, InconsistentDataException.class.getSimpleName() + " : " + e.getMessage());
         });
 
         exception(IllegalArgumentException.class, (e, request, response) -> {
-            response.status(400);
-            response.body(e.getMessage());
+            writeError(response, 400, e.getMessage());
         });
     }
 
+    private void writeError(Response response, int code, String message) {
+        response.status(code);
+        
+        ApplicationError error = new ApplicationError(code, message);
+        response.type("application/json");
+        response.body(applicationErrorJsonConverter.render(error));
+    }
 }

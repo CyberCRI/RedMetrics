@@ -89,16 +89,21 @@ public class RouteHelper {
         };
 
         private String evaluateAndFormatResponse(ContentType contentType, Route route, Request request, Response response) {
+            // Set the content type after the evaluation to not mess up the content type of errors
+            String body;
             switch(contentType) {
                 case CSV:
+                    body = csvResponseTransformer.render(route.handle(request, response));
                     response.type("text/csv");
-                    return csvResponseTransformer.render(route.handle(request, response));
+                    break;
                 case JSON:
+                    body = jsonConverter.render(route.handle(request, response));
                     response.type("application/json");
-                    return jsonConverter.render(route.handle(request, response));
+                    break;
                 default:
                     throw new IllegalArgumentException("Unknown content type");
             }
+            return body;
         }
     }
 
