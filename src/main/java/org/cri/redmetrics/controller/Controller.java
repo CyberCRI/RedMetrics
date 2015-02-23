@@ -115,7 +115,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
             // Send the pagination headers
             response.header("X-Total-Count", Long.toString(resultsPage.total));
-            response.header("X-Page-Count", Long.toString(1 + resultsPage.total / perPage));
+            response.header("X-Page-Count", Long.toString((long) Math.ceil(resultsPage.total / (float) perPage)));
             response.header("X-Per-Page-Count", Long.toString(perPage));
             response.header("X-Page-Number", Long.toString(page));
             response.header("Link", makeLinkHeaders(request, resultsPage));
