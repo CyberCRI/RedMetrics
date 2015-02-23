@@ -11,4 +11,7 @@ public interface JsonConverter<E extends Entity> extends ResponseTransformer {
     
     Collection<E> parseCollection(String json);
 
+    // Remove the "throws Exception" declaration
+    @Override
+    public String render(Object model);
 }

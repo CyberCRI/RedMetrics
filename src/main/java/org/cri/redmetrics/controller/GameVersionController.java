@@ -5,6 +5,7 @@ import org.cri.redmetrics.csv.CsvEntityConverter;
 import org.cri.redmetrics.dao.GameVersionDao;
 import org.cri.redmetrics.json.GameVersionJsonConverter;
 import org.cri.redmetrics.model.GameVersion;
+import org.cri.redmetrics.util.RouteHelper;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -33,8 +34,8 @@ public class GameVersionController extends Controller<GameVersion, GameVersionDa
             UUID gameId = idFromUrl(request);
             return dao.searchByGameId(gameId);
         };
-        get(basePath + "game/:id/versions", findByGameId, jsonConverter);
-        get(basePath + "game/:id/versions/", findByGameId, jsonConverter);
+
+        routeHelper.publishRouteSet(RouteHelper.HttpVerb.GET, basePath + "game/:id/versions", findByGameId);
     }
 
 }

@@ -19,9 +19,8 @@ import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import org.cri.redmetrics.db.Db;
 
 public class HttpBackend<E extends TestEntity> {
@@ -35,7 +34,9 @@ public class HttpBackend<E extends TestEntity> {
     protected static final HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory((request) -> {
         // Ask for JSON
         HttpHeaders headers = request.getHeaders();
-        headers.set("Accept", "application/json");
+        List headerList = new ArrayList<String>();
+        headerList.add("application/json");
+        headers.set("Accept", headerList);
         request.setHeaders(headers);
 
         // Parse JSON
