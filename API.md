@@ -222,15 +222,16 @@ This is a list of example requests that shows the features of the API. The meani
 
  * code - Number describing the error.
 
- * message - String describing the error.
+ * description - String describing the error.
 
 * Status - Object with the following properties
 
  * apiVersion - Number describing the version, containing major and minor parts (such as 3.21)
 
- * build - String providing a SHA-1 hash corresponding to the deployed software
+ * build - String describing the build of the software
 
- * since - Date that the server was last started
+ * startedAt - Date that the server was last started
+
 
 ## Endpoints
 
@@ -246,7 +247,7 @@ Version 1:
 
  * GET - Lists PlayerMeta objects for all players who have ever used the service (see section on Paging below). Can be filtered by the following query parameters:
 
-  * email - Email. This is the way to search for registered players by their email address.
+  * externalId - String. This is the way to search for players that correspond to an external data source.
 
  * POST - Creates a new anonymous player and returns the server-generated ID.
 
@@ -356,7 +357,7 @@ To request a given page of data, use the `page` and `perPage` parameters. The `p
 
 ## Data Formats
 
-By default, all data is sent by the server in JSON. To request data in another format, the client can send the Accepts header along with the request, use the "format" query parameter with the format shortcode, or end their request with a dot followed the shortcode, such as `/v1/games.csv`. The following formats are provided:
+By default, all data is returned by the server in JSON. To request data in another format, the client can send the Accepts header along with the request, use the "format" query parameter with the format shortcode, or end their request with a dot followed the shortcode, such as `/v1/games.csv`. The following formats are provided:
 
 * JSON
 
@@ -371,6 +372,9 @@ By default, all data is sent by the server in JSON. To request data in another f
  * Shortcode: csv 
 
 The server attempts to compress all transmissions when allowed by client.
+
+It is not possible to _send_ data to the server in a format other than JSON, however.
+
 
 ## HTTP status codes
 

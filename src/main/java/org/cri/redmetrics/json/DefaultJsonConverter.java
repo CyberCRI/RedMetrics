@@ -8,12 +8,12 @@ import spark.ResponseTransformer;
 /**
  * Created by himmelattack on 23/02/15.
  */
-public class ApplicationErrorJsonConverter implements ResponseTransformer {
+public class DefaultJsonConverter implements ResponseTransformer {
 
     Gson gson;
 
     @Inject
-    public ApplicationErrorJsonConverter(Gson gson) {
+    public DefaultJsonConverter(Gson gson) {
         this.gson = gson;
     }
 
