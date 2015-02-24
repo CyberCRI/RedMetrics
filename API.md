@@ -16,22 +16,14 @@ This is a list of example requests that shows the features of the API. The meani
 
 * The game developer registers a version of the game
 
- * POST /v1/game/1/version/
-{ "name": “1.0”, “description”: “First public version” }
+ * POST /v1/gameVersion/
+{ "game": "1234", "name": “1.0”, “description”: “First public version” }
 
-* A game wants to start tracking a given player identified by mr@science.com:
-
- * They look if the player is already registered
-
-  * GET /v1/player/email/mr@science.com
-
-  * If the server returns 404, the player must be new. 
-
- * The game registers the player.
+* A game wants to start tracking a new player:
 
   * POST /v1/player
 
-{ "email": “[bob@bob.com](mailto:bob@bob.com)” }
+{ "country": "France", gender: "MALE" }
 
   * The server returns the player’s unique ID
 
@@ -40,17 +32,17 @@ This is a list of example requests that shows the features of the API. The meani
  * As the game starts:
 
   * POST /v1/event/
-{ "game": 123, “player”: 456, “type”: “start” }
+{ "gameVersion": "123", “player”: "456", “type”: “start” }
 
  * At the beginning of a level:
 
   * POST /v1/event/
-{ "game": 123, “player”: 456, “type”: “start”, “section”: [“level1”] }
+{ "gameVersion": "123", “player”: "456", “type”: “start”, “section”: [“level1”] }
 
  * The player picks up a coin:
 
   * POST /v1/event/
-{ "game": 123, “player”: 456, “type”: “gain”, “section”: [“level1”],
+{ "gameVersion": "123", “player”: "456", “type”: “gain”, “section”: [“level1”],
 
 "customData": { “thing”: “coin”, “amount”: 1 }
 
@@ -59,17 +51,17 @@ This is a list of example requests that shows the features of the API. The meani
  * The player wins the level
 
   * POST /v1/event/
-{ "game": 123, “player”: 456, “type”: “win”, “section”: [“level1”] }
+{ "gameVersion": "123", “player”: "456", “type”: “win”, “section”: [“level1”] }
 
  * The player dies
 
   * POST /v1/event/
-{ "game": 123, “player”: 456, “type”: “fail”, “section”: [“level2”],  “coordinates”: [103, 99] }
+{ "gameVersion": "123", “player”: "456", “type”: “fail”, “section”: [“level2”],  “coordinates”: [103, 99] }
 
  * The game ends
 
   * POST /v1/event/
-{ "game": 123, “player”: 456, “type”: “end” }
+{ "gameVersion": "123", “player”: "456", “type”: “end” }
 
 * A game wants to track its state:
 
@@ -77,7 +69,7 @@ This is a list of example requests that shows the features of the API. The meani
 
   * POST /v1/snapshot
 
-{ "game": 123, “player”: 456,
+{ "gameVersion": "123", “player”: "456",
 
 "customData": { “points”: 0, “lives”: 3, “mouseDown”: false }
 
@@ -87,7 +79,7 @@ This is a list of example requests that shows the features of the API. The meani
 
   * POST /v1/snapshot
 
-{ "game": 123, “player”: 456,
+{ "gameVersion": "123", “player”: "456",
 
 "customData": { “points”: 81, “lives”: 3, “mouseDown”: false }
 
@@ -109,15 +101,15 @@ This is a list of example requests that shows the features of the API. The meani
 
  * Progress data for one game across all players, as JSON:
 
-  * GET /v1/event?gameId=456
+  * GET /v1/event?game=456
 
  * State data for a single player across all games, in CSV format:
 
-  * GET /v1/snapshot?playerId=123&format=csv
+  * GET /v1/snapshot.csv?playerId=123
 
  * New progress data in a given group
 
-  * GET /v1/snapshot?groupId=789&after=Tue,+22+Oct+2013+18:46:15+UTC
+  * GET /v1/snapshot?groupId=789&after=2015-01-27T09:44:32.418Z
 
 
 ## Data Types
@@ -245,9 +237,7 @@ Version 1:
 
 * /v1/player/
 
- * GET - Lists PlayerMeta objects for all players who have ever used the service (see section on Paging below). Can be filtered by the following query parameters:
-
-  * externalId - String. This is the way to search for players that correspond to an external data source.
+ * GET - Lists PlayerMeta objects for all players who have ever used the service (see section on Paging below). 
 
  * POST - Creates a new anonymous player and returns the server-generated ID.
 
@@ -275,7 +265,7 @@ Version 1:
 
  * POST - Creates a new version of the game. A GameVersionMeta object should be sent in the body. The AdminKey must be sent with the adminKey parameter. The Location response header will contain the URL for the new game. 
 
-* /v1/game/:gameId/version/:versionId
+* /v1/gameVersion/:versionId
 
  * GET - Retrieves information about the game version as a GameVersionMeta object
 
