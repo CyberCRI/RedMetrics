@@ -24,7 +24,7 @@ public class GameVersionController extends Controller<GameVersion, GameVersionDa
 
     @Override
     protected void beforeCreation(GameVersion gameVersion, Request request, Response response) {
-        if (gameVersion.getGame() == null) halt(400, "game required (integer)");
+        if (gameVersion.getGame() == null) throw new IllegalArgumentException("game required");
     }
 
     @Override

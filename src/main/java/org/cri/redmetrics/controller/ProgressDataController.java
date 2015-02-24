@@ -37,10 +37,8 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
 
     @Override
     protected void beforeCreation(E progressData, Request request, Response response) {
-        if (progressData.getGameVersion() == null) halt(400, "game version required (integer)");
-        if (progressData.getPlayer() == null) halt(400, "player required (integer)");
-//        String adminKey = request.params("adminKey");
-//        if (adminKey == null) halt();
+        if (progressData.getGameVersion() == null) throw new IllegalArgumentException("game version required");
+        if (progressData.getPlayer() == null) throw new IllegalArgumentException("player required (integer)");
     }
 
     @Override

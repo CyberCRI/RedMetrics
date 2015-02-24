@@ -11,12 +11,7 @@ import static spark.Spark.halt;
 public abstract class Entity {
 
     public static UUID parseId(String id) {
-        try {
-            return UUID.fromString(id);
-        } catch (IllegalArgumentException e) {
-            halt(400, e.getMessage());
-            return null;
-        }
+        return UUID.fromString(id);
     }
 
     @DatabaseField(generatedId = true)

@@ -22,7 +22,7 @@ public class RouteHelper {
         PUT,
         DELETE,
         OPTIONS
-    };
+    }
 
     protected final JsonConverter jsonConverter;
     protected final CsvResponseTransformer csvResponseTransformer;
@@ -44,7 +44,7 @@ public class RouteHelper {
     protected enum ContentType {
         JSON,
         CSV
-    };
+    }
 
     // A wrapper route to deduce the correct content type
     protected class RouteWrapper implements Route {
@@ -72,7 +72,7 @@ public class RouteHelper {
                     return evaluateAndFormatResponse(ContentType.CSV, route, request, response);
                 }
 
-                halt(400, "Incorrect format requested. Only CSV or JSON is recognized.");
+                throw new IllegalArgumentException("Incorrect format requested. Only CSV or JSON is recognized");
             }
 
             // If the user requests a format in the header
@@ -86,7 +86,7 @@ public class RouteHelper {
 
             // No format specified, so default to JSON
             return evaluateAndFormatResponse(ContentType.JSON, route, request, response);
-        };
+        }
 
         private String evaluateAndFormatResponse(ContentType contentType, Route route, Request request, Response response) {
             // Set the content type after the evaluation to not mess up the content type of errors
