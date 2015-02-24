@@ -24,10 +24,10 @@ public class GameVersionBackendTest {
 
     @BeforeTest
     public void setUp() throws IOException {
-        resetCreatedVersionnedGame();
+        resetCreatedVersionedGame();
     }
 
-    void resetCreatedVersionnedGame() throws IOException {
+    void resetCreatedVersionedGame() throws IOException {
         for(int i=0 ; i< GAME_NAMES.length ; ++i){
             TestGame game = new TestGame();
             game.setName(GAME_NAMES[i]);
@@ -117,7 +117,7 @@ public class GameVersionBackendTest {
     @Test
     public void canDeleteGame() throws IOException {
         TestGame deletedGame = games.delete(createdGame.getId());
-        resetCreatedVersionnedGame();
+        resetCreatedVersionedGame();
         try {
             games.getById(deletedGame.getId());
             failBecauseExceptionWasNotThrown(HttpResponseException.class);

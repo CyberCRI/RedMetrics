@@ -83,7 +83,6 @@ public class Server {
         });
 
         exception(DbException.class, (e, request, response) -> {
-            response.status(500);
             SQLException exception = ((DbException) e).getSqlException();
             Throwable cause = exception.getCause();
             String message;
@@ -94,7 +93,7 @@ public class Server {
             }
             e.printStackTrace();
 
-            writeError(response, 500, message);
+            writeError(response, 400, message);
         });
 
         exception(NumberFormatException.class, (e, request, response) -> {

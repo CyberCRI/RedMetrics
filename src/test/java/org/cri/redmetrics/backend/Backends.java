@@ -35,6 +35,7 @@ public class Backends {
             TestGame game = newSavedGame();
             TestGameVersion gameVersion = new TestGameVersion();
             gameVersion.setGame(game.getId());
+            gameVersion.setName("version 1");
             gameVersion = GAME_VERSION.post(gameVersion);
             return gameVersion;
         } catch (IOException e) {
