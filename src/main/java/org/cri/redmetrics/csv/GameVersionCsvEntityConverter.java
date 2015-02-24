@@ -11,12 +11,13 @@ public class GameVersionCsvEntityConverter implements CsvEntityConverter<GameVer
 
     @Override
     public void writeHeader(CSVWriter csvWriter) {
-        csvWriter.writeNext(new String[]{ "id" });
+        csvWriter.writeNext(new String[]{ "id", "name", "description", "customData" });
     }
 
     @Override
     public void writeDataLine(CSVWriter csvWriter, GameVersion model) {
-        csvWriter.writeNext(new String[]{ model.getId().toString() });
+        csvWriter.writeNext(new String[]{ model.getId().toString(), model.getName(), model.getDescription(),
+                model.getCustomData() });
     }
 }
 

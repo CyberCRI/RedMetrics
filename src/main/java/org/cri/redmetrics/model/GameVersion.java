@@ -20,4 +20,13 @@ public class GameVersion extends Entity {
             columnDefinition = "VARCHAR, FOREIGN KEY (game_id) REFERENCES games(id)")
     private Game game;
 
+    @DatabaseField(canBeNull = false)
+    private String name;
+
+    @DatabaseField
+    private String author;
+
+    @DatabaseField
+    private String description;
+
 }

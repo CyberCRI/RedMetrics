@@ -2,7 +2,6 @@
 
 All communication between the server is done via JSON by default, although the client can request data in different formats (see the Data Formats section below). Following RESTful architecture, GET is used only to request data, POST creates resources, PUT replaces them, and DELETE removes them.
 
-The database should be protected against SQL Injection
 
 ## Use Cases
 
@@ -120,29 +119,28 @@ This is a list of example requests that shows the features of the API. The meani
 
   * GET /v1/snapshot?groupId=789&after=Tue,+22+Oct+2013+18:46:15+UTC
 
+
 ## Data Types
 
-* Date - String containing date and time, following the HTTP format. All times are in UTC.
-
-* Email - String that defines an email address. Hopefully this can be used across login providers, like Google, Facebook, and others.
+* Date - String containing date and time, following the ISO 8601 Extended format. It looks like `2015-01-27T09:44:32.418Z`. All times are in UTC, and include milliseconds.
 
 * Id - String containing a server-generated unique identifier.
 
 * AdminKey - String containing a password unique for each game, needed for game-specific requests. 
 
-* PlayerMeta - Object with the following properties (all are optional, except id)
+* PlayerMeta - Object with the following properties (all are optional, except id). Since RedMetrics data is open, is is vital that _no personally idenfiable information is stored about a player_.
 
  * id - Id
 
- * email - Email. Only exposed when registering a new player and searching for players by their email address.
+ * birthDate - Date. This date can be approximate to the nearest month or year.
 
- * gender - String (either "male" or “female”)
+ * postalCode - String
 
- * city - String
+ * gender - String (either "MALE", "FEMALE", or "OTHER")
 
- * country - String
+ * externalId - String that can be set by developers in order to link the player with another database. This _must not_ be a personally identifiable marker such as an email address.
 
- * birthday - Date
+ * customData - String containing JSON data associated with the player. This _must not_ be a personally identifiable marker such as name or exact address.
 
 * GameMeta - Object with the following properties (all are optional, except id and name)
 
@@ -154,15 +152,17 @@ This is a list of example requests that shows the features of the API. The meani
 
  * description - String
 
- * allowedDomains - Array of strings or null. If null, pages from any domain are allowed to post data about the game. Otherwise, the given domains are added to CORS headers that restrict which web pages can post data to the game.
+ * customData - String containing JSON data.
 
-* GameVersionMeta - Object with the following properties (all are optional, except id)
+* GameVersionMeta - Object with the following properties (all are optional, except id and name)
 
  * id - Id 
 
  * name - String
 
  * description - String
+
+ * customData - String containing JSON data.
 
 * GroupMeta - Object with the following properties (all are optional, except id)
 
@@ -340,39 +340,23 @@ Version 1:
 
  * POST - Adds more state information sent with the Snapshot object, or array of Shapshot objects. The gameId, playerId, and adminKey query parameters are required. The groupId parameter is optional. Since the snapshot object cannot be addressed by itself, no Location header will be returned.
 
+
 ## Paging
 
-Since a large number of values can be returned via GET requests for lists, a paging mechanism is put in place. The list is included in a JSON object that also specifies the index of the first item returned (start), the number of items returned in the response (count), and the total number of items recorded (total). For example, the third page of 50 items from a total of 213 items would look like this:
+Since a large number of values can be returned via GET requests for lists (such as a list of events, or snapshots), RedMetrics only returns a page of results at a time. The server returns a number of header fields that describe the what page has been requested, how many pages there are, and how many results per page: 
 
-{ 
+    * `X-Total-Count` - The number of results that fit the query.
+    * `X-Page-Count` - The total number of pages.
+    * `X-Per-Page-Count` - The number of results per page. 
+    * `X-Page-Number` - The current page (page numbering starts at 1). 
+    * `Link` - The link header provides URLs that allow you to access the first, next, previous, and last pages. The link header looks like this: `http://api.redwire.io/v1/game/?&page=0&perPage=3; rel=first, http://api.redwire.io/v1/game/?&page=1&perPage=3; rel=prev, http://api.redwire.io/v1/game/?&page=3&perPage=3; rel=next, http://api.redwire.io/v1/game/?&page=172&perPage=3; rel=last`
 
-  start: 100,
+To request a given page of data, use the `page` and `perPage` parameters. The `page` is the (1-based) number of the page requested. The `perPage` parameter is number of results desired per page. 
 
-  count: 50,
-
-  total: 213,
-
-  data: [ … ]
-
-} 
-
-To retrieve the next page of data, the client simply sends the start query parameter set to the next page (150 in this example). The count query can also be sent, but the server may not allow the count to exceed a certain maximum value.
 
 ## Data Formats
 
-By default, all data is sent by the server in JSON. To request data in another format, the client can send the Accepts header along with the request, or use the "format" query parameter with the format shortcode. The following formats are provided:
-
-* Comma-separated values (CSV) 
-
- * MIME type: text/csv
-
- * Shortcode: csv 
-
-* Tab-separated values (TSV) 
-
- * MIME type: text/tab-separated-values
-
- * Shortcode: tsv
+By default, all data is sent by the server in JSON. To request data in another format, the client can send the Accepts header along with the request, use the "format" query parameter with the format shortcode, or end their request with a dot followed the shortcode, such as `/v1/games.csv`. The following formats are provided:
 
 * JSON
 
@@ -380,13 +364,11 @@ By default, all data is sent by the server in JSON. To request data in another f
 
  * Shortcode: json
 
-* XML
+* Comma-separated values (CSV) 
 
- * MIME type: application/xml
+ * MIME type: text/csv
 
- * Shortcode: xml
-
-Whenever data is sent in a format other than JSON, the paging features do not apply.
+ * Shortcode: csv 
 
 The server attempts to compress all transmissions when allowed by client.
 
@@ -415,6 +397,7 @@ HTTP status codes are treated in the following way:
 * 500s - Server error
 
  * 500 Internal Server Error - The server has a bug. Impossible, of course!
+
 
 ## Cross-Origin Request (CORS)
 
