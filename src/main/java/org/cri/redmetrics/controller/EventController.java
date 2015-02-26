@@ -34,7 +34,7 @@ public class EventController extends ProgressDataController<Event, EventDao> {
     @Override
     protected void beforeCreation(Event event, Request request, Response response) {
         super.beforeCreation(event, request, response);
-        if (event.getType() == null) halt(400, "type is required (string)");
+        if (event.getType() == null) throw new IllegalArgumentException("type is required (string)");
     }
 
     protected void searchValues(Request request, SearchQuery search) {

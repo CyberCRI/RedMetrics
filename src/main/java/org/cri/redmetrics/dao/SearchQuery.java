@@ -34,7 +34,7 @@ public class SearchQuery<E extends ProgressData> {
     }
 
     public List<E> execute() {
-        if (!hasStatement && !hasGameFilter) halt(400, "No parameters were specified for search query");
+        if (!hasStatement && !hasGameFilter) throw new IllegalArgumentException("No parameters were specified for search query");
         try {
             return queryBuilder.query();
         } catch (SQLException e) {

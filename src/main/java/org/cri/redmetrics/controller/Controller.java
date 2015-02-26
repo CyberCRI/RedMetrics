@@ -2,8 +2,6 @@ package org.cri.redmetrics.controller;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.sun.javaws.exceptions.InvalidArgumentException;
-import com.sun.tools.corba.se.idl.InvalidArgument;
 import org.cri.redmetrics.Server;
 import org.cri.redmetrics.csv.CsvEntityConverter;
 import org.cri.redmetrics.csv.CsvResponseTransformer;
@@ -14,7 +12,6 @@ import org.cri.redmetrics.model.ResultsPage;
 import org.cri.redmetrics.util.RouteHelper;
 import spark.Request;
 import spark.Response;
-import spark.ResponseTransformer;
 import spark.Route;
 
 import java.util.*;
@@ -88,8 +85,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
                 response.status(201); // Created
                 return entity;
             } else {
-                halt(400, "Expecting a JSON array or object");
-                return "";
+                throw new IllegalArgumentException("Expecting a JSON array or object");
             }
         };
 
@@ -133,7 +129,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             E entity = jsonConverter.parse(request.body());
             UUID id = idFromUrl(request);
             if (entity.getId() != null && !entity.getId().equals(id)) {
-                halt(400, "IDs in URL and body do not match");
+                throw new IllegalArgumentException("IDs in URL and body do not match");
             } else {
                 entity.setId(id);
             }
