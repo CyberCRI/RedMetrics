@@ -2,7 +2,6 @@
 
 All communication between the server is done via JSON by default, although the client can request data in different formats (see the Data Formats section below). Following RESTful architecture, GET is used only to request data, POST creates resources, PUT replaces them, and DELETE removes them.
 
-The database should be protected against SQL Injection
 
 ## Use Cases
 
@@ -17,22 +16,14 @@ This is a list of example requests that shows the features of the API. The meani
 
 * The game developer registers a version of the game
 
- * POST /v1/game/1/version/
-{ "name": “1.0”, “description”: “First public version” }
+ * POST /v1/gameVersion/
+{ "game": "1234", "name": “1.0”, “description”: “First public version” }
 
-* A game wants to start tracking a given player identified by mr@science.com:
-
- * They look if the player is already registered
-
-  * GET /v1/player/email/mr@science.com
-
-  * If the server returns 404, the player must be new. 
-
- * The game registers the player.
+* A game wants to start tracking a new player:
 
   * POST /v1/player
 
-{ "email": “[bob@bob.com](mailto:bob@bob.com)” }
+{ "country": "France", gender: "MALE" }
 
   * The server returns the player’s unique ID
 
@@ -41,17 +32,17 @@ This is a list of example requests that shows the features of the API. The meani
  * As the game starts:
 
   * POST /v1/event/
-{ "game": 123, “player”: 456, “type”: “start” }
+{ "gameVersion": "123", “player”: "456", “type”: “start” }
 
  * At the beginning of a level:
 
   * POST /v1/event/
-{ "game": 123, “player”: 456, “type”: “start”, “section”: [“level1”] }
+{ "gameVersion": "123", “player”: "456", “type”: “start”, “section”: [“level1”] }
 
  * The player picks up a coin:
 
   * POST /v1/event/
-{ "game": 123, “player”: 456, “type”: “gain”, “section”: [“level1”],
+{ "gameVersion": "123", “player”: "456", “type”: “gain”, “section”: [“level1”],
 
 "customData": { “thing”: “coin”, “amount”: 1 }
 
@@ -60,17 +51,17 @@ This is a list of example requests that shows the features of the API. The meani
  * The player wins the level
 
   * POST /v1/event/
-{ "game": 123, “player”: 456, “type”: “win”, “section”: [“level1”] }
+{ "gameVersion": "123", “player”: "456", “type”: “win”, “section”: [“level1”] }
 
  * The player dies
 
   * POST /v1/event/
-{ "game": 123, “player”: 456, “type”: “fail”, “section”: [“level2”],  “coordinates”: [103, 99] }
+{ "gameVersion": "123", “player”: "456", “type”: “fail”, “section”: [“level2”],  “coordinates”: [103, 99] }
 
  * The game ends
 
   * POST /v1/event/
-{ "game": 123, “player”: 456, “type”: “end” }
+{ "gameVersion": "123", “player”: "456", “type”: “end” }
 
 * A game wants to track its state:
 
@@ -78,7 +69,7 @@ This is a list of example requests that shows the features of the API. The meani
 
   * POST /v1/snapshot
 
-{ "game": 123, “player”: 456,
+{ "gameVersion": "123", “player”: "456",
 
 "customData": { “points”: 0, “lives”: 3, “mouseDown”: false }
 
@@ -88,7 +79,7 @@ This is a list of example requests that shows the features of the API. The meani
 
   * POST /v1/snapshot
 
-{ "game": 123, “player”: 456,
+{ "gameVersion": "123", “player”: "456",
 
 "customData": { “points”: 81, “lives”: 3, “mouseDown”: false }
 
@@ -110,39 +101,38 @@ This is a list of example requests that shows the features of the API. The meani
 
  * Progress data for one game across all players, as JSON:
 
-  * GET /v1/event?gameId=456
+  * GET /v1/event?game=456
 
  * State data for a single player across all games, in CSV format:
 
-  * GET /v1/snapshot?playerId=123&format=csv
+  * GET /v1/snapshot.csv?playerId=123
 
  * New progress data in a given group
 
-  * GET /v1/snapshot?groupId=789&after=Tue,+22+Oct+2013+18:46:15+UTC
+  * GET /v1/snapshot?groupId=789&after=2015-01-27T09:44:32.418Z
+
 
 ## Data Types
 
-* Date - String containing date and time, following the HTTP format. All times are in UTC.
-
-* Email - String that defines an email address. Hopefully this can be used across login providers, like Google, Facebook, and others.
+* Date - String containing date and time, following the ISO 8601 Extended format. It looks like `2015-01-27T09:44:32.418Z`. All times are in UTC, and include milliseconds.
 
 * Id - String containing a server-generated unique identifier.
 
 * AdminKey - String containing a password unique for each game, needed for game-specific requests. 
 
-* PlayerMeta - Object with the following properties (all are optional, except id)
+* PlayerMeta - Object with the following properties (all are optional, except id). Since RedMetrics data is open, is is vital that _no personally idenfiable information is stored about a player_.
 
  * id - Id
 
- * email - Email. Only exposed when registering a new player and searching for players by their email address.
+ * birthDate - Date. This date can be approximate to the nearest month or year.
 
- * gender - String (either "male" or “female”)
+ * postalCode - String
 
- * city - String
+ * gender - String (either "MALE", "FEMALE", or "OTHER")
 
- * country - String
+ * externalId - String that can be set by developers in order to link the player with another database. This _must not_ be a personally identifiable marker such as an email address.
 
- * birthday - Date
+ * customData - String containing JSON data associated with the player. This _must not_ be a personally identifiable marker such as name or exact address.
 
 * GameMeta - Object with the following properties (all are optional, except id and name)
 
@@ -154,15 +144,17 @@ This is a list of example requests that shows the features of the API. The meani
 
  * description - String
 
- * allowedDomains - Array of strings or null. If null, pages from any domain are allowed to post data about the game. Otherwise, the given domains are added to CORS headers that restrict which web pages can post data to the game.
+ * customData - String containing JSON data.
 
-* GameVersionMeta - Object with the following properties (all are optional, except id)
+* GameVersionMeta - Object with the following properties (all are optional, except id and name)
 
  * id - Id 
 
  * name - String
 
  * description - String
+
+ * customData - String containing JSON data.
 
 * GroupMeta - Object with the following properties (all are optional, except id)
 
@@ -222,15 +214,16 @@ This is a list of example requests that shows the features of the API. The meani
 
  * code - Number describing the error.
 
- * message - String describing the error.
+ * description - String describing the error.
 
 * Status - Object with the following properties
 
  * apiVersion - Number describing the version, containing major and minor parts (such as 3.21)
 
- * build - String providing a SHA-1 hash corresponding to the deployed software
+ * build - String describing the build of the software
 
- * since - Date that the server was last started
+ * startedAt - Date that the server was last started
+
 
 ## Endpoints
 
@@ -244,9 +237,7 @@ Version 1:
 
 * /v1/player/
 
- * GET - Lists PlayerMeta objects for all players who have ever used the service (see section on Paging below). Can be filtered by the following query parameters:
-
-  * email - Email. This is the way to search for registered players by their email address.
+ * GET - Lists PlayerMeta objects for all players who have ever used the service (see section on Paging below). 
 
  * POST - Creates a new anonymous player and returns the server-generated ID.
 
@@ -274,7 +265,7 @@ Version 1:
 
  * POST - Creates a new version of the game. A GameVersionMeta object should be sent in the body. The AdminKey must be sent with the adminKey parameter. The Location response header will contain the URL for the new game. 
 
-* /v1/game/:gameId/version/:versionId
+* /v1/gameVersion/:versionId
 
  * GET - Retrieves information about the game version as a GameVersionMeta object
 
@@ -340,39 +331,23 @@ Version 1:
 
  * POST - Adds more state information sent with the Snapshot object, or array of Shapshot objects. The gameId, playerId, and adminKey query parameters are required. The groupId parameter is optional. Since the snapshot object cannot be addressed by itself, no Location header will be returned.
 
+
 ## Paging
 
-Since a large number of values can be returned via GET requests for lists, a paging mechanism is put in place. The list is included in a JSON object that also specifies the index of the first item returned (start), the number of items returned in the response (count), and the total number of items recorded (total). For example, the third page of 50 items from a total of 213 items would look like this:
+Since a large number of values can be returned via GET requests for lists (such as a list of events, or snapshots), RedMetrics only returns a page of results at a time. The server returns a number of header fields that describe the what page has been requested, how many pages there are, and how many results per page: 
 
-{ 
+    * `X-Total-Count` - The number of results that fit the query.
+    * `X-Page-Count` - The total number of pages.
+    * `X-Per-Page-Count` - The number of results per page. 
+    * `X-Page-Number` - The current page (page numbering starts at 1). 
+    * `Link` - The link header provides URLs that allow you to access the first, next, previous, and last pages. The link header looks like this: `http://api.redwire.io/v1/game/?&page=0&perPage=3; rel=first, http://api.redwire.io/v1/game/?&page=1&perPage=3; rel=prev, http://api.redwire.io/v1/game/?&page=3&perPage=3; rel=next, http://api.redwire.io/v1/game/?&page=172&perPage=3; rel=last`
 
-  start: 100,
+To request a given page of data, use the `page` and `perPage` parameters. The `page` is the (1-based) number of the page requested. The `perPage` parameter is number of results desired per page. 
 
-  count: 50,
-
-  total: 213,
-
-  data: [ … ]
-
-} 
-
-To retrieve the next page of data, the client simply sends the start query parameter set to the next page (150 in this example). The count query can also be sent, but the server may not allow the count to exceed a certain maximum value.
 
 ## Data Formats
 
-By default, all data is sent by the server in JSON. To request data in another format, the client can send the Accepts header along with the request, or use the "format" query parameter with the format shortcode. The following formats are provided:
-
-* Comma-separated values (CSV) 
-
- * MIME type: text/csv
-
- * Shortcode: csv 
-
-* Tab-separated values (TSV) 
-
- * MIME type: text/tab-separated-values
-
- * Shortcode: tsv
+By default, all data is returned by the server in JSON. To request data in another format, the client can send the Accepts header along with the request, use the "format" query parameter with the format shortcode, or end their request with a dot followed the shortcode, such as `/v1/games.csv`. The following formats are provided:
 
 * JSON
 
@@ -380,15 +355,16 @@ By default, all data is sent by the server in JSON. To request data in another f
 
  * Shortcode: json
 
-* XML
+* Comma-separated values (CSV) 
 
- * MIME type: application/xml
+ * MIME type: text/csv
 
- * Shortcode: xml
-
-Whenever data is sent in a format other than JSON, the paging features do not apply.
+ * Shortcode: csv 
 
 The server attempts to compress all transmissions when allowed by client.
+
+It is not possible to _send_ data to the server in a format other than JSON, however.
+
 
 ## HTTP status codes
 
@@ -415,6 +391,7 @@ HTTP status codes are treated in the following way:
 * 500s - Server error
 
  * 500 Internal Server Error - The server has a bug. Impossible, of course!
+
 
 ## Cross-Origin Request (CORS)
 

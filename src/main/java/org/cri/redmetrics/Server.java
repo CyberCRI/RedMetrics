@@ -8,16 +8,18 @@ import org.cri.redmetrics.controller.*;
 import org.cri.redmetrics.dao.DbException;
 import org.cri.redmetrics.dao.InconsistentDataException;
 import org.cri.redmetrics.guice.MainModule;
-import org.cri.redmetrics.json.ApplicationErrorJsonConverter;
+import org.cri.redmetrics.json.DefaultJsonConverter;
 import org.cri.redmetrics.json.DefaultGsonProvider;
 import org.cri.redmetrics.model.ApplicationError;
-import spark.HaltException;
+import org.cri.redmetrics.model.Status;
 import spark.Request;
 import spark.Response;
 
 import java.sql.SQLException;
+import java.util.Date;
+
 import org.cri.redmetrics.db.Db;
-import spark.ResponseTransformer;
+import spark.Route;
 
 import static spark.Spark.*;
 
@@ -38,7 +40,8 @@ public class Server {
     private final int portNumber;
     private final Db database;
 
-    private ApplicationErrorJsonConverter applicationErrorJsonConverter;
+    private DefaultJsonConverter defaultJsonConverter;
+    private Date startDate = new Date();
 
     private boolean started;
 
@@ -47,7 +50,7 @@ public class Server {
         this.database = database;
 
         Gson gson = new DefaultGsonProvider().get();
-        this.applicationErrorJsonConverter = new ApplicationErrorJsonConverter(gson);
+        this.defaultJsonConverter = new DefaultJsonConverter(gson);
     }
     
     public int getPort(){
@@ -78,12 +81,21 @@ public class Server {
             controller.publish();
         }
 
+        // Status route
+        Route statusRoute = (request, response) -> {
+            Status status = new Status("1", "", startDate);
+            response.type("application/json");
+            return defaultJsonConverter.render(status);
+        };
+        get("/status", statusRoute);
+        get("/status/", statusRoute);
+
+        // Setup exceptions
         exception(JsonSyntaxException.class, (e, request, response) -> {
             writeError(response, 400, "Malformed JSON : " + e.getCause().getMessage());
         });
 
         exception(DbException.class, (e, request, response) -> {
-            response.status(500);
             SQLException exception = ((DbException) e).getSqlException();
             Throwable cause = exception.getCause();
             String message;
@@ -94,7 +106,7 @@ public class Server {
             }
             e.printStackTrace();
 
-            writeError(response, 500, message);
+            writeError(response, 400, message);
         });
 
         exception(NumberFormatException.class, (e, request, response) -> {
@@ -115,6 +127,6 @@ public class Server {
         
         ApplicationError error = new ApplicationError(code, message);
         response.type("application/json");
-        response.body(applicationErrorJsonConverter.render(error));
+        response.body(defaultJsonConverter.render(error));
     }
 }

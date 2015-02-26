@@ -27,7 +27,7 @@ public class Game extends Entity {
     @DatabaseField
     private String author;
 
-    @DatabaseField(dataType = DataType.SERIALIZABLE)
-    private String[] credits;
+    @DatabaseField
+    private String description;
 
 }

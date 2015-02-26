@@ -31,7 +31,4 @@ public class Player extends Entity {
     @DatabaseField(index = true)
     private String externalId;
 
-    @DatabaseField(columnDefinition = "text")
-    private String customData;
-
 }

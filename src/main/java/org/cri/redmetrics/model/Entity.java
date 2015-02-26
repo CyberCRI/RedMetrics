@@ -17,4 +17,7 @@ public abstract class Entity {
     @DatabaseField(generatedId = true)
     private UUID id;
 
+    @DatabaseField(columnDefinition = "text")
+    private String customData;
+
 }

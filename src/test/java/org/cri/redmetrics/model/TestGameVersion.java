@@ -13,4 +13,7 @@ public class TestGameVersion extends TestEntity {
     @Key
     private String game;
 
+    @Key
+    private String name = "v1";
+
 }
