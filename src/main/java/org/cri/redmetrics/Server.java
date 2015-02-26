@@ -67,8 +67,6 @@ public class Server {
             controller.publish();
         }
 
-        after((request, response) -> response.type("application/json"));
-
         exception(JsonSyntaxException.class, (e, request, response) -> {
             response.status(400);
             response.body("Malformed JSON : " + e.getCause().getMessage());

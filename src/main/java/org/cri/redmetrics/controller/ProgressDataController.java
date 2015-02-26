@@ -1,6 +1,7 @@
 package org.cri.redmetrics.controller;
 
 import com.google.common.base.Splitter;
+import org.cri.redmetrics.csv.CsvEntityConverter;
 import org.cri.redmetrics.dao.ProgressDataDao;
 import org.cri.redmetrics.dao.SearchQuery;
 import org.cri.redmetrics.json.JsonConverter;
@@ -28,8 +29,8 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
             .trimResults()
             .omitEmptyStrings();
 
-    ProgressDataController(String path, DAO dao, JsonConverter<E> jsonConverter) {
-        super(path, dao, jsonConverter);
+    ProgressDataController(String path, DAO dao, JsonConverter<E> jsonConverter, CsvEntityConverter<E> csvEntityConverter) {
+        super(path, dao, jsonConverter, csvEntityConverter);
     }
 
     protected abstract String[] searchableValues();

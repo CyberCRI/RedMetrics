@@ -1,9 +1,11 @@
 package org.cri.redmetrics.controller;
 
 import com.google.inject.Inject;
+import org.cri.redmetrics.csv.CsvEntityConverter;
 import org.cri.redmetrics.dao.GameVersionDao;
 import org.cri.redmetrics.json.GameVersionJsonConverter;
 import org.cri.redmetrics.model.GameVersion;
+import org.cri.redmetrics.util.RouteHelper;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -16,8 +18,8 @@ import static spark.Spark.halt;
 public class GameVersionController extends Controller<GameVersion, GameVersionDao> {
 
     @Inject
-    GameVersionController(GameVersionDao dao, GameVersionJsonConverter jsonConverter) {
-        super("gameVersion", dao, jsonConverter);
+    GameVersionController(GameVersionDao dao, GameVersionJsonConverter jsonConverter, CsvEntityConverter<GameVersion> csvEntityConverter) {
+        super("gameVersion", dao, jsonConverter, csvEntityConverter);
     }
 
     @Override
@@ -32,8 +34,8 @@ public class GameVersionController extends Controller<GameVersion, GameVersionDa
             UUID gameId = idFromUrl(request);
             return dao.searchByGameId(gameId);
         };
-        get(basePath + "game/:id/versions", findByGameId, jsonConverter);
-        get(basePath + "game/:id/versions/", findByGameId, jsonConverter);
+
+        routeHelper.publishRouteSet(RouteHelper.HttpVerb.GET, basePath + "game/:id/versions", findByGameId);
     }
 
 }

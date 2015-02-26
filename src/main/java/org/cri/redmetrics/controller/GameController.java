@@ -1,6 +1,7 @@
 package org.cri.redmetrics.controller;
 
 import com.google.inject.Inject;
+import org.cri.redmetrics.csv.CsvEntityConverter;
 import org.cri.redmetrics.dao.GameDao;
 import org.cri.redmetrics.json.GameJsonConverter;
 import org.cri.redmetrics.model.Game;
@@ -14,8 +15,8 @@ import java.util.UUID;
 public class GameController extends Controller<Game, GameDao> {
 
     @Inject
-    GameController(GameDao dao, GameJsonConverter jsonConverter) {
-        super("game", dao, jsonConverter);
+    GameController(GameDao dao, GameJsonConverter jsonConverter, CsvEntityConverter<Game> csvEntityConverter) {
+        super("game", dao, jsonConverter, csvEntityConverter);
     }
 
     @Override

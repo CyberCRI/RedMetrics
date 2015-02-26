@@ -2,14 +2,19 @@ package org.cri.redmetrics.controller;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.sun.javaws.exceptions.InvalidArgumentException;
+import com.sun.tools.corba.se.idl.InvalidArgument;
 import org.cri.redmetrics.Server;
-import com.google.gson.JsonSyntaxException;
+import org.cri.redmetrics.csv.CsvEntityConverter;
+import org.cri.redmetrics.csv.CsvResponseTransformer;
 import org.cri.redmetrics.dao.EntityDao;
 import org.cri.redmetrics.json.JsonConverter;
 import org.cri.redmetrics.model.Entity;
 import org.cri.redmetrics.model.ResultsPage;
+import org.cri.redmetrics.util.RouteHelper;
 import spark.Request;
 import spark.Response;
+import spark.ResponseTransformer;
 import spark.Route;
 
 import java.util.*;
@@ -21,7 +26,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
     public static final String basePath = "/v1/";
     public static final long defaultListCount = 50;
-    public static final long maxListCount = 200;
+    public static final long maxListCount = 500;
 
     // Minimal wrapper class around an entity ID
     private class IdWrapper {
@@ -29,16 +34,19 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         public UUID id;
     }
 
-
     protected final String path;
     protected final DAO dao;
     protected final JsonConverter<E> jsonConverter;
+    /*protected final CsvResponseTransformer<E> csvResponseTransformer;*/
+    protected final RouteHelper routeHelper;
 
 
-    Controller(String path, DAO dao, JsonConverter<E> jsonConverter) {
+    Controller(String path, DAO dao, JsonConverter<E> jsonConverter, CsvEntityConverter<E> csvEntityConverter) {
         this.path = basePath + path;
         this.dao = dao;
         this.jsonConverter = jsonConverter;
+        /*this.csvResponseTransformer = new CsvResponseTransformer<E>(csvEntityConverter);*/
+        this.routeHelper = new RouteHelper(jsonConverter, new CsvResponseTransformer<E>(csvEntityConverter));
     }
 
     public final void publish() {
@@ -57,9 +65,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
     }
 
     private void publishGeneric() {
-
         // POST
-
         Route postRoute = (request, response) -> {
             // Is it a list or a single entity?
             JsonElement jsonElement = new JsonParser().parse(request.body());
@@ -87,8 +93,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             }
         };
 
-        post(path + "", postRoute, jsonConverter);
-        post(path + "/", postRoute, jsonConverter);
+        routeHelper.publishRouteSet(RouteHelper.HttpVerb.POST, path, postRoute);
 
 
         // GET
@@ -99,8 +104,8 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             return entity;
         };
 
-        get(path + "/:id", getByIdRoute, jsonConverter);
-        get(path + "/:id/", getByIdRoute, jsonConverter);
+        routeHelper.publishRouteSet(RouteHelper.HttpVerb.GET, path + "/:id", getByIdRoute);
+
 
         Route listRoute = (Request request, Response response) -> {
             // Figure out how many entities to return
@@ -110,7 +115,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
             // Send the pagination headers
             response.header("X-Total-Count", Long.toString(resultsPage.total));
-            response.header("X-Page-Count", Long.toString(1 + resultsPage.total / perPage));
+            response.header("X-Page-Count", Long.toString((long) Math.ceil(resultsPage.total / (float) perPage)));
             response.header("X-Per-Page-Count", Long.toString(perPage));
             response.header("X-Page-Number", Long.toString(page));
             response.header("Link", makeLinkHeaders(request, resultsPage));
@@ -119,8 +124,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             return resultsPage;
         };
 
-        get(path, listRoute, jsonConverter);
-        get(path + "/", listRoute, jsonConverter);
+        routeHelper.publishRouteSet(RouteHelper.HttpVerb.GET, path, listRoute);
 
 
         // PUT
@@ -136,23 +140,23 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             return update(entity);
         };
 
-        put(path + "/:id", putRoute, jsonConverter);
-        put(path + "/:id/", putRoute, jsonConverter);
+        routeHelper.publishRouteSet(RouteHelper.HttpVerb.PUT, path + "/:id", putRoute);
 
 
         // DELETE
 
-        delete(path + "/:id", (request, response) -> dao.delete(idFromUrl(request)), jsonConverter);
-        delete(path + "/:id/", (request, response) -> dao.delete(idFromUrl(request)), jsonConverter);
+        Route deleteRoute = (request, response) -> dao.delete(idFromUrl(request));
+
+        routeHelper.publishRouteSet(RouteHelper.HttpVerb.DELETE, path + "/:id", deleteRoute);
 
 
         // OPTIONS
         // Always return empty response with CORS headers
+        // TODO: options shouldn't return a particular content type
         Route optionsRoute = (request, response) -> { return "{}"; };
-        options(path + "", optionsRoute);
-        options(path + "/", optionsRoute);
-        options(path + "/:id", optionsRoute);
-        options(path + "/:id/", optionsRoute);
+
+        routeHelper.publishRouteSet(RouteHelper.HttpVerb.OPTIONS, path, optionsRoute);
+        routeHelper.publishRouteSet(RouteHelper.HttpVerb.OPTIONS, path + "/:id", optionsRoute);
     }
 
     protected E create(E entity) {
