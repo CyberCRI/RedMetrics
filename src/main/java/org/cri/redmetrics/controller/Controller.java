@@ -23,7 +23,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
     public static final String basePath = "/v1/";
     public static final long defaultListCount = 50;
-    public static final long maxListCount = 200;
+    public static final long maxListCount = 500;
 
     // Minimal wrapper class around an entity ID
     private class IdWrapper {
@@ -111,7 +111,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
             // Send the pagination headers
             response.header("X-Total-Count", Long.toString(resultsPage.total));
-            response.header("X-Page-Count", Long.toString(1 + resultsPage.total / perPage));
+            response.header("X-Page-Count", Long.toString((long) Math.ceil(resultsPage.total / (float) perPage)));
             response.header("X-Per-Page-Count", Long.toString(perPage));
             response.header("X-Page-Number", Long.toString(page));
             response.header("Link", makeLinkHeaders(request, resultsPage));
