@@ -96,15 +96,17 @@ This is a list of example requests that shows the features of the API. The meani
 
     * id - Id
 
-    * birthDate - Date. This date can be approximate to the nearest month or year.
+    * birthDate - Date. This date _must not_ be more exact than the nearest month and year.
 
-    * postalCode - String
+    * region - String
+
+    * country - String
 
     * gender - String (either "MALE", "FEMALE", or "OTHER")
 
     * externalId - String that can be set by developers in order to link the player with another database. This _must not_ be a personally identifiable marker such as an email address.
 
-    * customData - String containing JSON data associated with the player. This _must not_ be a personally identifiable marker such as name or exact address.
+    * customData - String containing JSON data associated with the player. This _must not_ be contain personally identifiable markers such as name or exact address.
 
 * GameMeta - Object with the following properties (all are optional, except id and name)
 
@@ -156,7 +158,7 @@ This is a list of example requests that shows the features of the API. The meani
 
     * "lose"
 
-* Coordinate - Array of 2 or 3 numbers describing where the event occurred in "game space".
+* Coordinate - Array of 2 or 3 integers describing where the event occurred in "game space".
 
 * Section - String describing what "level" the player was in when the event occured. Adding more elements separated by points specifiy the section within a hierarchy. For example, “level1.section2.subsection3”
 

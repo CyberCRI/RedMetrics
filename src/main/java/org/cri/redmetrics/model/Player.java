@@ -20,7 +20,7 @@ public class Player extends Entity {
     private Date birthDate;
 
     @DatabaseField
-    private String postalCode;
+    private String region;
 
     @DatabaseField
     private String country;
