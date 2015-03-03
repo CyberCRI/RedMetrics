@@ -11,14 +11,22 @@ public class PlayerCsvEntityConverter implements CsvEntityConverter<Player> {
 
     @Override
     public void writeHeader(CSVWriter csvWriter) {
-        csvWriter.writeNext(new String[]{ "id", "birthDate", "region", "country", "gender", "externalId", "customData" });
+        csvWriter.writeNext(new String[]{
+                "id",
+                "birthDate",
+                "region",
+                "country",
+                "gender",
+                "externalId",
+                "customData"
+        });
     }
 
     @Override
     public void writeDataLine(CSVWriter csvWriter, Player model) {
         csvWriter.writeNext(new String[]{
                 model.getId().toString(),
-                model.getBirthDate() != null ? DateFormatter.print(model.getBirthDate()) : null,
+                CsvHelper.formatDate(model.getBirthDate()),
                 model.getRegion(),
                 model.getCountry(),
                 model.getGender() != null ? model.getGender().name() : null,

@@ -82,4 +82,12 @@ public abstract class EntityDao<E extends Entity> {
             throw new DbException(e);
         }
     }
+
+    public void refresh(E entity) {
+        try {
+            orm.refresh(entity);
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
 }

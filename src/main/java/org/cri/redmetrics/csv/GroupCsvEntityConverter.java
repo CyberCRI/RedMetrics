@@ -20,13 +20,13 @@ public class GroupCsvEntityConverter implements CsvEntityConverter<Group> {
 
     @Override
     public void writeDataLine(CSVWriter csvWriter, Group model) {
-        String openText = model.isOpen() ? "true" : "false";
         csvWriter.writeNext(new String[]{
                 model.getId().toString(),
                 model.getName(),
                 model.getDescription(),
                 model.getCreator(),
-                openText });
+                CsvHelper.formatBoolean(model.isOpen())
+        });
     }
 
 }
