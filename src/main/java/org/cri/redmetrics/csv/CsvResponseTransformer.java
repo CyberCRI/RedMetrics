@@ -7,7 +7,9 @@ import spark.ResponseTransformer;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -46,8 +48,7 @@ public class CsvResponseTransformer<E extends Entity> implements ResponseTransfo
     }
 
     private void stringifyResultsPage(CSVWriter csvWriter, ResultsPage<E> resultsPage) {
-        csvEntityConverter.writeHeader(csvWriter);
-        resultsPage.results.forEach((entity) -> csvEntityConverter.writeDataLine(csvWriter, entity));
+        csvEntityConverter.write(csvWriter, resultsPage.results);
     }
 
     // Write single column of ids
@@ -58,7 +59,9 @@ public class CsvResponseTransformer<E extends Entity> implements ResponseTransfo
     }
 
     private void stringifyEntity(CSVWriter csvWriter, E entity) {
-        csvEntityConverter.writeHeader(csvWriter);
-        csvEntityConverter.writeDataLine(csvWriter, entity);
+        List<E> singleElementList = new ArrayList<E>();
+        singleElementList.add(entity);
+
+        csvEntityConverter.write(csvWriter, singleElementList);
     }
 }

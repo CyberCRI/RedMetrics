@@ -7,6 +7,8 @@ import org.cri.redmetrics.model.Event;
 import org.cri.redmetrics.model.Snapshot;
 import org.cri.redmetrics.util.DateFormatter;
 
+import java.util.List;
+
 /**
  * Created by himmelattack on 12/02/15.
  */
@@ -18,7 +20,8 @@ public class SnapshotCsvEntityConverter implements CsvEntityConverter<Snapshot> 
         this.playerDao = playerDao;
     }
 
-    public void writeHeader(CSVWriter csvWriter) {
+    @Override
+    public void write(CSVWriter csvWriter, List<Snapshot> models) {
         csvWriter.writeNext(new String[]{
                 "id",
                 "serverTime",
@@ -33,28 +36,27 @@ public class SnapshotCsvEntityConverter implements CsvEntityConverter<Snapshot> 
                 "playerCustomData",
                 "section",
                 "customData" });
-    }
 
-    @Override
-    public void writeDataLine(CSVWriter csvWriter, Snapshot model) {
-        // We need to include additional fields of the player
-        // OPT: does this force a new request each time? if so we should join automatically
-        playerDao.refresh(model.getPlayer());
+        for(Snapshot model : models) {
+            // We need to include additional fields of the player
+            // OPT: does this force a new request each time? if so we should join automatically
+            playerDao.refresh(model.getPlayer());
 
-        csvWriter.writeNext(new String[]{
-                model.getId().toString(),
-                CsvHelper.formatDate(model.getServerTime()),
-                CsvHelper.formatDate(model.getUserTime()),
-                model.getGameVersion().getId().toString(),
-                model.getPlayer().getId().toString(),
-                CsvHelper.formatDate(model.getPlayer().getBirthDate()),
-                model.getPlayer().getRegion(),
-                model.getPlayer().getCountry(),
-                CsvHelper.formatGender(model.getPlayer().getGender()),
-                model.getPlayer().getExternalId(),
-                model.getPlayer().getCustomData(),
-                model.getSections(),
-                model.getCustomData()
-        });
+            csvWriter.writeNext(new String[]{
+                    model.getId().toString(),
+                    CsvHelper.formatDate(model.getServerTime()),
+                    CsvHelper.formatDate(model.getUserTime()),
+                    model.getGameVersion().getId().toString(),
+                    model.getPlayer().getId().toString(),
+                    CsvHelper.formatDate(model.getPlayer().getBirthDate()),
+                    model.getPlayer().getRegion(),
+                    model.getPlayer().getCountry(),
+                    CsvHelper.formatGender(model.getPlayer().getGender()),
+                    model.getPlayer().getExternalId(),
+                    model.getPlayer().getCustomData(),
+                    model.getSections(),
+                    model.getCustomData()
+            });
+        }
     }
 }
