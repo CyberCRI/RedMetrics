@@ -1,7 +1,6 @@
 package org.cri.redmetrics.json;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import spark.ResponseTransformer;
 

@@ -1,13 +1,12 @@
 package org.cri.redmetrics.json;
 
 import com.google.gson.*;
-
 import lombok.RequiredArgsConstructor;
 import org.cri.redmetrics.model.Entity;
 import org.cri.redmetrics.model.ResultsPage;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import java.lang.reflect.Type;
 import java.util.List;
 
 @RequiredArgsConstructor

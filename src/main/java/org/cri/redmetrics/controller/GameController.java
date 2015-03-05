@@ -8,7 +8,6 @@ import org.cri.redmetrics.model.Game;
 import org.cri.redmetrics.model.ResultsPage;
 import spark.Request;
 
-import java.util.List;
 import java.util.UUID;
 
 

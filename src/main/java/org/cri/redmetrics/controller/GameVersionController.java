@@ -12,9 +12,6 @@ import spark.Route;
 
 import java.util.UUID;
 
-import static spark.Spark.get;
-import static spark.Spark.halt;
-
 public class GameVersionController extends Controller<GameVersion, GameVersionDao> {
 
     @Inject

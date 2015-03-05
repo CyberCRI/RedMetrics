@@ -2,7 +2,6 @@ package org.cri.redmetrics.csv;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import org.cri.redmetrics.model.Player;
-import org.cri.redmetrics.util.DateFormatter;
 
 import java.util.List;
 

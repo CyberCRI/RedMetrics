@@ -4,14 +4,9 @@ import au.com.bytecode.opencsv.CSVWriter;
 import com.google.inject.Inject;
 import org.cri.redmetrics.dao.PlayerDao;
 import org.cri.redmetrics.model.Event;
-import org.cri.redmetrics.util.DateFormatter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by himmelattack on 12/02/15.

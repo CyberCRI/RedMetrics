@@ -3,9 +3,7 @@ package org.cri.redmetrics.csv;
 import au.com.bytecode.opencsv.CSVWriter;
 import com.google.inject.Inject;
 import org.cri.redmetrics.dao.PlayerDao;
-import org.cri.redmetrics.model.Event;
 import org.cri.redmetrics.model.Snapshot;
-import org.cri.redmetrics.util.DateFormatter;
 
 import java.util.List;
 import java.util.Map;

@@ -14,10 +14,12 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static spark.Spark.*;
+import static spark.Spark.halt;
 
 public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 

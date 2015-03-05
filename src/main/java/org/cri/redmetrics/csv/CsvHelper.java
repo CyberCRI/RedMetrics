@@ -3,8 +3,6 @@ package org.cri.redmetrics.csv;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.oracle.javafx.jmx.json.JSONReader;
-import jdk.nashorn.internal.ir.debug.JSONWriter;
 import org.cri.redmetrics.model.Entity;
 import org.cri.redmetrics.model.Gender;
 import org.cri.redmetrics.util.DateFormatter;

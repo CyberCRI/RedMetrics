@@ -7,19 +7,18 @@ import com.google.inject.Injector;
 import org.cri.redmetrics.controller.*;
 import org.cri.redmetrics.dao.DbException;
 import org.cri.redmetrics.dao.InconsistentDataException;
+import org.cri.redmetrics.db.Db;
 import org.cri.redmetrics.guice.MainModule;
-import org.cri.redmetrics.json.DefaultJsonConverter;
 import org.cri.redmetrics.json.DefaultGsonProvider;
+import org.cri.redmetrics.json.DefaultJsonConverter;
 import org.cri.redmetrics.model.ApplicationError;
 import org.cri.redmetrics.model.Status;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 
 import java.sql.SQLException;
 import java.util.Date;
-
-import org.cri.redmetrics.db.Db;
-import spark.Route;
 
 import static spark.Spark.*;
 

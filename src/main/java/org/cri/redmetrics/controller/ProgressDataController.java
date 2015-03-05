@@ -17,9 +17,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static spark.Spark.get;
-import static spark.Spark.halt;
-
 public abstract class ProgressDataController<E extends ProgressData, DAO extends ProgressDataDao<E>> extends Controller<E, DAO> {
 
     protected static final String[] FOREIGN_ENTITIES = {"gameVersion", "player"};

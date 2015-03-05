@@ -5,8 +5,6 @@ import lombok.Data;
 
 import java.util.UUID;
 
-import static spark.Spark.halt;
-
 @Data
 public abstract class Entity {
 

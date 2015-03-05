@@ -3,9 +3,7 @@ package org.cri.redmetrics.csv;
 import au.com.bytecode.opencsv.CSVWriter;
 import org.cri.redmetrics.model.Game;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by himmelattack on 12/02/15.

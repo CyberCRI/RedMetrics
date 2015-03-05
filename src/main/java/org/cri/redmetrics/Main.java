@@ -1,9 +1,9 @@
 package org.cri.redmetrics;
 
-import java.sql.SQLException;
-
 import org.cri.configurator.Config;
 import org.cri.redmetrics.db.Db;
+
+import java.sql.SQLException;
 
 public class Main {
 

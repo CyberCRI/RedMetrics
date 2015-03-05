@@ -8,9 +8,6 @@ import org.cri.redmetrics.model.GameVersion;
 import org.cri.redmetrics.model.Player;
 import org.cri.redmetrics.model.ProgressData;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class ProgressDataJsonConverter<E extends ProgressData> extends EntityJsonConverter<E> {

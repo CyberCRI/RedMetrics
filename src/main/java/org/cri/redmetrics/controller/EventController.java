@@ -10,8 +10,6 @@ import org.cri.redmetrics.model.Event;
 import spark.Request;
 import spark.Response;
 
-import static spark.Spark.halt;
-
 public class EventController extends ProgressDataController<Event, EventDao> {
 
     private static final String[] VALUES;

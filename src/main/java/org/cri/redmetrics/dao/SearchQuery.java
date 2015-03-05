@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static spark.Spark.halt;
-
 public class SearchQuery<E extends ProgressData> {
 
     private final QueryBuilder<E, UUID> queryBuilder;
