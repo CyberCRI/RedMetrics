@@ -45,19 +45,19 @@ public class CsvHelper {
         UnpackedCustomData unpackedCustomData = new UnpackedCustomData();
         entityList.forEach(entity -> {
             Map<String, String> rowValues = new HashMap<String, String>();
-            JsonElement jsonElement = new JsonParser().parse(entity.getCustomData());
-            if(jsonElement.isJsonObject()) {
-                JsonObject jsonObject = jsonElement.getAsJsonObject();
-                jsonObject.entrySet().forEach(entry -> {
-                    String columnName = "customData." + entry.getKey();
-                    unpackedCustomData.columnNames.add(columnName);
-                    rowValues.put(columnName, entry.getValue().toString());
-                });
-            }
-            else
-            {
-                unpackedCustomData.columnNames.add("customData");
-                rowValues.put("customData", entity.getCustomData());
+            if(entity.getCustomData() != null) {
+                JsonElement jsonElement = new JsonParser().parse(entity.getCustomData());
+                if (jsonElement.isJsonObject()) {
+                    JsonObject jsonObject = jsonElement.getAsJsonObject();
+                    jsonObject.entrySet().forEach(entry -> {
+                        String columnName = "customData." + entry.getKey();
+                        unpackedCustomData.columnNames.add(columnName);
+                        rowValues.put(columnName, entry.getValue().toString());
+                    });
+                } else {
+                    unpackedCustomData.columnNames.add("customData");
+                    rowValues.put("customData", entity.getCustomData());
+                }
             }
 
             unpackedCustomData.rowValues.add(rowValues);
