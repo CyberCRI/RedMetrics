@@ -56,6 +56,7 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         search.paginate(page, perPage);
 
         List<E> results = search.execute();
+
         return new ResultsPage<E>(totalResultCount, page, perPage, results);
     }
 
