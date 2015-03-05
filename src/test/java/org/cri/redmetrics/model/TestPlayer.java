@@ -15,7 +15,7 @@ public class TestPlayer extends TestEntity {
     private String birthDate;
 
     @Key
-    private String postalCode;
+    private String region;
 
     @Key
     private String country;

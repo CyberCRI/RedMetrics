@@ -25,7 +25,7 @@ public class PlayerBackendTest {
         assertThat(savedPlayer.getId()).isNotNull().hasSize(36);
         assertThat(savedPlayer.getBirthDate()).isEqualTo(johnSnow.getBirthDate());
         assertThat(savedPlayer.getGender()).isEqualTo(johnSnow.getGender());
-        assertThat(savedPlayer.getPostalCode()).isEqualTo(johnSnow.getPostalCode());
+        assertThat(savedPlayer.getRegion()).isEqualTo(johnSnow.getRegion());
         assertThat(savedPlayer.getCountry()).isEqualTo(johnSnow.getCountry());
         assertThat(savedPlayer.getExternalId()).isEqualTo(johnSnow.getExternalId());
     }
@@ -45,12 +45,12 @@ public class PlayerBackendTest {
     @Test
     public void canUpdatePlayer() throws IOException {
         TestPlayer savedPlayer = players.post(Players.newJohnSnow());
-        savedPlayer.setPostalCode("99999");
+        savedPlayer.setRegion("99999");
         TestPlayer updatedPlayer = players.put(savedPlayer);
         assertThat(savedPlayer.getId()).isEqualTo(savedPlayer.getId());
         assertThat(savedPlayer.getBirthDate()).isEqualTo(savedPlayer.getBirthDate());
         assertThat(savedPlayer.getGender()).isEqualTo(savedPlayer.getGender());
-        assertThat(savedPlayer.getPostalCode()).isEqualTo(savedPlayer.getPostalCode());
+        assertThat(savedPlayer.getRegion()).isEqualTo(savedPlayer.getRegion());
         assertThat(savedPlayer.getCountry()).isEqualTo(savedPlayer.getCountry());
         assertThat(savedPlayer.getExternalId()).isEqualTo(savedPlayer.getExternalId());
     }

@@ -3,7 +3,7 @@ package org.cri.redmetrics.model;
 public class PlayerBuilder {
 
     private String birthDate;
-    private String postalCode;
+    private String region;
     private String country;
     private Gender gender;
     private String externalId;
@@ -11,7 +11,7 @@ public class PlayerBuilder {
     public TestPlayer build() {
         TestPlayer player = new TestPlayer();
         player.setBirthDate(birthDate);
-        player.setPostalCode(postalCode);
+        player.setRegion(region);
         player.setCountry(country);
         player.setGender(gender.name());
         player.setExternalId(externalId);
@@ -23,8 +23,8 @@ public class PlayerBuilder {
         return this;
     }
 
-    public PlayerBuilder withPostalCode(String postalCode) {
-        this.postalCode = postalCode;
+    public PlayerBuilder withRegion(String region) {
+        this.region = region;
         return this;
     }
 
