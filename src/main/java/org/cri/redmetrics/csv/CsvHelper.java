@@ -69,7 +69,7 @@ public class CsvHelper {
     }
 
     public static String[] concatenateArrays(String[] a, String[] b) {
-        return (String[]) Stream.concat(Arrays.stream(a), Arrays.stream(b)).toArray();
+        return Stream.concat(Arrays.stream(a), Arrays.stream(b)).toArray(String[]::new);
 
     }
 }

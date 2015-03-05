@@ -45,7 +45,7 @@ public class EventCsvEntityConverter implements CsvEntityConverter<Event> {
 
         CsvHelper.UnpackedCustomData unpackedCustomData = CsvHelper.unpackCustomData(models);
 
-        String[] customDataColumnNames = (String[]) unpackedCustomData.columnNames.toArray();
+        String[] customDataColumnNames = unpackedCustomData.columnNames.toArray(new String[0]);
         String[] allColumnNames = CsvHelper.concatenateArrays(staticColumnNames, customDataColumnNames);
 
         csvWriter.writeNext(allColumnNames);
@@ -72,13 +72,12 @@ public class EventCsvEntityConverter implements CsvEntityConverter<Event> {
                     model.getPlayer().getCustomData(),
                     model.getType(),
                     CsvHelper.formatCoordinates(model.getCoordinates()),
-                    model.getSections(),
-                    model.getCustomData()
+                    model.getSections()
             };
 
             // Write out the custom data in order, skipping fields with no data
             Map<String, String> rowValues = unpackedCustomData.rowValues.get(i);
-            String[] customDataRowValues = (String[]) unpackedCustomData.columnNames.stream().map(columnName -> rowValues.get(columnName)).toArray();
+            String[] customDataRowValues = unpackedCustomData.columnNames.stream().map(columnName -> rowValues.get(columnName)).toArray(String[]::new);
             String[] allRowValues = CsvHelper.concatenateArrays(staticRowValues, customDataRowValues);
 
             csvWriter.writeNext(allRowValues);
