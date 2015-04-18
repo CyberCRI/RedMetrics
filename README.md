@@ -67,7 +67,9 @@ Set language level to Java 8.0
 
 ### Deploying 
 
-To deploy, simply create a packaged JAR file that contains all the dependencies, upload it onto your server.
+To deploy, simply create a packaged JAR file that contains all the dependencies, and upload it onto your server.
+
+In the command line, use `mvn package` (or `mvn package -Dmaven.test.skip=true` to skip the unit tests). The packaged JAR is in the `target` directory, called `redmetrics-0.1-jar-with-dependencies.jar`. 
 
 ### Configuration
 
