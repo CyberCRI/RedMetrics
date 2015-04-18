@@ -36,6 +36,8 @@ public class Server {
     }
 
 
+    private static final String crossDomainText = "<?xml version=\"1.0\"?><cross-domain-policy><allow-access-from domain=\"*\"/></cross-domain-policy>";
+
     private final int portNumber;
     private final Db database;
 
@@ -86,8 +88,16 @@ public class Server {
             response.type("application/json");
             return defaultJsonConverter.render(status);
         };
+        get("/", statusRoute);
         get("/status", statusRoute);
         get("/status/", statusRoute);
+
+        // crossdomain.xml route (for Flash and Unity web player)
+        Route crossDomainXmlRoute = (request, response) -> {
+            response.type("application/xml");
+            return crossDomainText;
+        };
+        get("/crossdomain.xml", crossDomainXmlRoute);
 
         // Setup exceptions
         exception(JsonSyntaxException.class, (e, request, response) -> {
