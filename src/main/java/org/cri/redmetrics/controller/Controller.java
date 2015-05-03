@@ -16,6 +16,7 @@ import spark.Route;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,7 +37,6 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
     protected final String path;
     protected final DAO dao;
     protected final JsonConverter<E> jsonConverter;
-    /*protected final CsvResponseTransformer<E> csvResponseTransformer;*/
     protected final RouteHelper routeHelper;
 
 
@@ -44,7 +44,6 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         this.path = basePath + path;
         this.dao = dao;
         this.jsonConverter = jsonConverter;
-        /*this.csvResponseTransformer = new CsvResponseTransformer<E>(csvEntityConverter);*/
         this.routeHelper = new RouteHelper(jsonConverter, new CsvResponseTransformer<E>(csvEntityConverter));
     }
 
@@ -106,20 +105,25 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
 
 
         Route listRoute = (Request request, Response response) -> {
-            // Figure out how many entities to return
-            long page = request.queryMap("page").hasValue() ? request.queryMap("page").longValue() : 1;
-            long perPage = Long.min(maxListCount, request.queryMap("perPage").hasValue() ? request.queryMap("perPage").longValue() : defaultListCount);
-            ResultsPage<E> resultsPage = list(request, page, perPage);
+            // Don't paginate with CSV
+            if(RouteHelper.determineContentType(request) == RouteHelper.ContentType.CSV) {
+                return listAll();
+            } else {
+                // Figure out how many entities to return
+                long page = request.queryMap("page").hasValue() ? request.queryMap("page").longValue() : 1;
+                long perPage = Long.min(maxListCount, request.queryMap("perPage").hasValue() ? request.queryMap("perPage").longValue() : defaultListCount);
+                ResultsPage<E> resultsPage = list(request, page, perPage);
 
-            // Send the pagination headers
-            response.header("X-Total-Count", Long.toString(resultsPage.total));
-            response.header("X-Page-Count", Long.toString((long) Math.ceil(resultsPage.total / (float) perPage)));
-            response.header("X-Per-Page-Count", Long.toString(perPage));
-            response.header("X-Page-Number", Long.toString(page));
-            response.header("Link", makeLinkHeaders(request, resultsPage));
+                // Send the pagination headers
+                response.header("X-Total-Count", Long.toString(resultsPage.total));
+                response.header("X-Page-Count", Long.toString((long) Math.ceil(resultsPage.total / (float) perPage)));
+                response.header("X-Per-Page-Count", Long.toString(perPage));
+                response.header("X-Page-Number", Long.toString(page));
+                response.header("Link", makeLinkHeaders(request, resultsPage));
 
-            // Return the actual results (to be converted to JSON)
-            return resultsPage;
+                // Return the actual results (to be converted to JSON)
+                return resultsPage;
+            }
         };
 
         routeHelper.publishRouteSet(RouteHelper.HttpVerb.GET, path, listRoute);
@@ -168,6 +172,8 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
     protected E update(E entity) {
         return dao.update(entity);
     }
+
+    protected List<E> listAll() { return dao.listAll(); }
 
     protected ResultsPage<E> list(Request request, long page, long perPage) { return dao.list(page, perPage); }
 

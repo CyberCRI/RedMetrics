@@ -24,6 +24,46 @@ public class RouteHelper {
         OPTIONS
     }
 
+    public enum ContentType {
+        JSON,
+        CSV
+    }
+
+    public static ContentType determineContentType(Request request) {
+        // If the user requests a format in the URL
+        if(request.url().endsWith(".json")) {
+            return ContentType.JSON;
+        }
+        else if(request.url().endsWith(".csv")) {
+            return ContentType.CSV;
+        }
+
+        // If the user requests a format in the query string
+        if(request.queryMap("format").hasValue()) {
+            if ("json".equalsIgnoreCase(request.queryMap("format").value())) {
+                return ContentType.JSON;
+            }
+            if ("csv".equalsIgnoreCase(request.queryMap("format").value())) {
+                return ContentType.CSV;
+            }
+
+            throw new IllegalArgumentException("Incorrect format requested. Only CSV or JSON is recognized");
+        }
+
+        // If the user requests a format in the header
+        List<String> acceptedContentTypes = Arrays.asList(request.headers("Accept").split(","));
+        if(acceptedContentTypes.contains("application/json")) {
+            return ContentType.JSON;
+        }
+        if(acceptedContentTypes.contains("text/csv")) {
+            return ContentType.CSV;
+        }
+
+        // No format specified, so default to JSON
+        return ContentType.JSON;
+    }
+
+
     protected final JsonConverter jsonConverter;
     protected final CsvResponseTransformer csvResponseTransformer;
 
@@ -41,11 +81,6 @@ public class RouteHelper {
     }
 
 
-    protected enum ContentType {
-        JSON,
-        CSV
-    }
-
     // A wrapper route to deduce the correct content type
     protected class RouteWrapper implements Route {
         private Route route;
@@ -55,38 +90,10 @@ public class RouteHelper {
         }
 
         public Object handle(Request request, Response response) {
-            // If the user requests a format in the URL
-            if(request.url().endsWith(".json")) {
-                return evaluateAndFormatResponse(ContentType.JSON, route, request, response);
-            }
-            else if(request.url().endsWith(".csv")) {
-                return evaluateAndFormatResponse(ContentType.CSV, route, request, response);
-            }
-
-            // If the user requests a format in the query string
-            if(request.queryMap("format").hasValue()) {
-                if ("json".equalsIgnoreCase(request.queryMap("format").value())) {
-                    return evaluateAndFormatResponse(ContentType.JSON, route, request, response);
-                }
-                if ("csv".equalsIgnoreCase(request.queryMap("format").value())) {
-                    return evaluateAndFormatResponse(ContentType.CSV, route, request, response);
-                }
-
-                throw new IllegalArgumentException("Incorrect format requested. Only CSV or JSON is recognized");
-            }
-
-            // If the user requests a format in the header
-            List<String> acceptedContentTypes = Arrays.asList(request.headers("Accept").split(","));
-            if(acceptedContentTypes.contains("application/json")) {
-                return evaluateAndFormatResponse(ContentType.JSON, route, request, response);
-            }
-            if(acceptedContentTypes.contains("text/csv")) {
-                return evaluateAndFormatResponse(ContentType.CSV, route, request, response);
-            }
-
-            // No format specified, so default to JSON
-            return evaluateAndFormatResponse(ContentType.JSON, route, request, response);
+            ContentType contentType = RouteHelper.determineContentType(request);
+            return evaluateAndFormatResponse(contentType, route, request, response);
         }
+
 
         private String evaluateAndFormatResponse(ContentType contentType, Route route, Request request, Response response) {
             // Set the content type after the evaluation to not mess up the content type of errors

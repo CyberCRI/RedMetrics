@@ -49,6 +49,8 @@ abstract class EntityJsonConverter<E extends Entity> implements JsonConverter<E>
     public final String render(Object model) {
         if (model instanceof ResultsPage) {
             return stringifyResultsPage((ResultsPage<E>) model);
+        } else if (model instanceof List) {
+            return stringifyList((List<E>) model);
         } else if(entityType.isInstance(model)) {
             return stringify((E) model);
         } else {
@@ -63,4 +65,9 @@ abstract class EntityJsonConverter<E extends Entity> implements JsonConverter<E>
         return gson.toJson(jsonArray);
     }
 
+    private String stringifyList(List<E> results) {
+        JsonArray jsonArray = new JsonArray();
+        results.forEach((entity) -> jsonArray.add(toJsonObject(entity)));
+        return gson.toJson(jsonArray);
+    }
 }

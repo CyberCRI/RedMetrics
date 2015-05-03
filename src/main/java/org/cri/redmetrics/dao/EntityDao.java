@@ -64,6 +64,14 @@ public abstract class EntityDao<E extends Entity> {
         }
     }
 
+    public List<E> listAll() {
+        try {
+            return orm.queryForAll();
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
+
     public ResultsPage<E> list(long page, long perPage) {
         try {
             List<E> results = orm.queryBuilder().offset((page - 1) * perPage).limit(perPage).query();

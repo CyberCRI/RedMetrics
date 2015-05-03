@@ -32,6 +32,8 @@ public class CsvResponseTransformer<E extends Entity> implements ResponseTransfo
         // Depending on the data passed, call the right method to serialize it
         if (model instanceof ResultsPage) {
             stringifyResultsPage(csvWriter, (ResultsPage<E>) model);
+        } else if(model instanceof List) {
+            stringifyList(csvWriter, (List<E>) model);
         } else if(model instanceof UUID[]) {
             stringifyUuidList(csvWriter, (UUID[]) model);
         } else {
@@ -49,6 +51,10 @@ public class CsvResponseTransformer<E extends Entity> implements ResponseTransfo
 
     private void stringifyResultsPage(CSVWriter csvWriter, ResultsPage<E> resultsPage) {
         csvEntityConverter.write(csvWriter, resultsPage.results);
+    }
+
+    private void stringifyList(CSVWriter csvWriter, List<E> results) {
+        csvEntityConverter.write(csvWriter, results);
     }
 
     // Write single column of ids
