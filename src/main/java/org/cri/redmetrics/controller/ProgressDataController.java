@@ -46,7 +46,7 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         searchForeignEntities(request, search);
         searchValues(request, search);
         searchDates(request, search);
-        searchSections(request, search);
+        searchSection(request, search);
 
         long totalResultCount = search.countResults();
 
@@ -115,11 +115,11 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         }
     }
 
-    private void searchSections(Request request, SearchQuery search) {
-        String sectionsParam = request.queryParams("sections");
-        if (sectionsParam != null && !sectionsParam.isEmpty()) {
-            sectionsParam = sectionsParam.trim();
-            search.sections(sectionsParam);
+    private void searchSection(Request request, SearchQuery search) {
+        String sectionParam = request.queryParams("section");
+        if (sectionParam != null && !sectionParam.isEmpty()) {
+            sectionParam = sectionParam.trim();
+            search.section(sectionParam);
         }
     }
 

@@ -155,8 +155,8 @@ public class HttpBackend<E extends TestEntity> {
             return with("coordinates", coordinates.toString());
         }
 
-        public SearchQueryBuilder withSections(String sections) {
-            return with("sections", sections);
+        public SearchQueryBuilder withSection(String section) {
+            return with("section", section);
         }
 
         public List<E> execute() throws IOException {

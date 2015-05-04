@@ -27,6 +27,6 @@ public class TestProgressData extends TestEntity {
     private GenericJson customData;
 
     @Key
-    private String sections;
+    private String section;
 
 }

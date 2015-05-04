@@ -143,9 +143,9 @@ public class SearchQuery<E extends ProgressData> {
         }
     }
 
-    public SearchQuery sections(String sections) {
+    public SearchQuery section(String section) {
         addAndIfNecessary();
-        where.raw("sections ~ '" + sections + "'");
+        where.raw("section ~ '" + section + "'");
         return this;
     }
 

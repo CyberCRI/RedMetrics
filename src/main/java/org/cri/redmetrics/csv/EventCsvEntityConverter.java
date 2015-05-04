@@ -67,7 +67,7 @@ public class EventCsvEntityConverter implements CsvEntityConverter<Event> {
                     model.getPlayer().getCustomData(),
                     model.getType(),
                     CsvHelper.formatCoordinates(model.getCoordinates()),
-                    model.getSections()
+                    model.getSection()
             };
 
             // Write out the custom data in order, skipping fields with no data

@@ -63,7 +63,7 @@ public class SnapshotCsvEntityConverter implements CsvEntityConverter<Snapshot> 
                     CsvHelper.formatGender(model.getPlayer().getGender()),
                     model.getPlayer().getExternalId(),
                     model.getPlayer().getCustomData(),
-                    model.getSections()
+                    model.getSection()
             };
 
             // Write out the custom data in order, skipping fields with no data

@@ -54,11 +54,11 @@ public class EventBackendTest {
     // CREATE
 
     @Test
-    public void canSaveSections() throws IOException {
-        String sections = "level1";
-        event.setSections(sections);
+    public void canSaveSection() throws IOException {
+        String section = "level1";
+        event.setSection(section);
         saveEvent();
-        assertThat(event.getSections()).isEqualTo("level1");
+        assertThat(event.getSection()).isEqualTo("level1");
     }
 
     @Test
@@ -278,16 +278,16 @@ public class EventBackendTest {
     public void findsBySection() throws IOException {
         resetGameVersion();
 
-        event.setSections("nosections");
+        event.setSection("nosection");
         saveEvent();
 
         resetEvent();
-        String sections = "level1.section1.subsection1";
-        event.setSections(sections);
+        String section = "level1.section1.subsection1";
+        event.setSection(section);
         saveEvent();
 
         List<TestEvent> foundEvents = events.search()
-                .withSections("level1.*")
+                .withSection("level1.*")
                 .withGameVersion(gameVersion.getId())
                 .execute();
         assertThat(foundEvents).hasSize(1);
@@ -318,13 +318,13 @@ public class EventBackendTest {
     }
 
     @Test
-    public void searchShouldIgnoreEmptySectionsParam() throws IOException {
+    public void searchShouldIgnoreEmptySectionParam() throws IOException {
         resetGameVersion();
         saveEvent();
 
         List<TestEvent> foundEvents = events.search()
                 .withGameVersion(gameVersion.getId())
-                .withSections("")
+                .withSection("")
                 .execute();
         assertThat(foundEvents).hasSize(1);
     }
