@@ -4,7 +4,7 @@ RedMetrics offers open source game analytics. It is made up of a RESTful web ser
 
 Check it out at [redmetrics.io](http://redmetrics.io). 
 
-To use it for your game, check out the [RESTful web service API](API.md).
+To use it for your game, check out the [RESTful web service API](API.md). If your game runs in a browser, you can use [RedMetrics.js](https://github.com/CyberCRI/RedMetrics.js) to connect it.
 
 ## Features
 
