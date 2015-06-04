@@ -1,6 +1,6 @@
 # RedMetrics
 
-RedMetrics offers open source game analytics. It is made up of a RESTful web service and a [web app](https://github.com/CyberCRI/RedMetrics-client) that allows teachers and researchers to track game metrics, then download the raw data for offline analysis. Limited support for groups is also available.
+RedMetrics offers open source game analytics. It is made up of a RESTful web service and a [web app](https://github.com/CyberCRI/RedMetrics-Web) that allows teachers and researchers to track game metrics, then download the raw data for offline analysis. Limited support for groups is also available.
 
 Check it out at [redmetrics.io](http://redmetrics.io). 
 
