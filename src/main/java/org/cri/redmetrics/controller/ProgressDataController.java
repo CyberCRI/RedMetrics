@@ -57,6 +57,19 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         return new ResultsPage<E>(totalResultCount, page, perPage, results);
     }
 
+    @Override
+    protected List<E> listAllPages(Request request) {
+        // SEARCH
+        SearchQuery search = dao.search();
+        searchGame(request, search);
+        searchForeignEntities(request, search);
+        searchValues(request, search);
+        searchDates(request, search);
+        searchSection(request, search);
+
+        return search.execute();
+    }
+
     private void searchGame(Request request, SearchQuery search) {
         String params = request.queryParams("game");
         if (params != null) {

@@ -107,7 +107,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         Route listRoute = (Request request, Response response) -> {
             // Don't paginate with CSV
             if(RouteHelper.determineContentType(request) == RouteHelper.ContentType.CSV) {
-                return listAll();
+                return listAllPages(request);
             } else {
                 // Figure out how many entities to return
                 long page = request.queryMap("page").hasValue() ? request.queryMap("page").longValue() : 1;
@@ -176,6 +176,8 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
     protected List<E> listAll() { return dao.listAll(); }
 
     protected ResultsPage<E> list(Request request, long page, long perPage) { return dao.list(page, perPage); }
+
+    protected List<E> listAllPages(Request request) { return dao.listAll(); }
 
     protected void publishSpecific() {
     }
