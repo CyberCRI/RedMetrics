@@ -1,0 +1,5 @@
+## RedMetrics Privacy Policy
+
+You will not (and will not allow any third party to) use RedMetrics to track, collect or upload any data that personally identifies an individual (such as a name, email address or billing information), or other data which can be reasonably linked to such information. You will have and abide by an appropriate Privacy Policy and will comply with all applicable laws, policies, and regulations relating to the collection of information from Visitors. You must post a Privacy Policy and that Privacy Policy must provide notice of Your use of cookies that are used to collect data. You must disclose the use of RedMetrics, and how it collects and processes data. You will use commercially reasonable efforts to ensure that a Visitor is provided with clear and comprehensive information about, and consents to, the storing and accessing of cookies or other information on the Visitor’s device where such activity occurs in connection with RedMetrics and where providing such information and obtaining such consent is required by law.
+
+You must not circumvent any privacy features that are part of RedMetrics.
