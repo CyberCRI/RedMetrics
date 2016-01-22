@@ -6,13 +6,14 @@ Check it out at [redmetrics.io](http://redmetrics.io).
 
 To use it for your game, check out the [RESTful web service API](API.md). If your game works in Unity, check out [RedMetrics-Unity](https://github.com/CyberCRI/RedMetrics-Unity). If your game runs in a browser, you can use [RedMetrics.js](https://github.com/CyberCRI/RedMetrics.js) to connect it.
 
+We take privacy seriously! You may not use RedMetrics to store personally identifiable information about users, such as email address or full names. Please see the [RedMetrics Privacy Policy](PRIVACY.MD) for more information.
+
 ## Features
 
 * Game metrics
     * Time played, levels, progression
     * Replay (drill-down)
     * Export raw metrics data for download
-    * Teacher- or researcher-created created groups for players to join
 * Player information
     * Stores information about players
     * Associates players with anonymous IDs 
