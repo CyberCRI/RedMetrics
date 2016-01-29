@@ -45,30 +45,27 @@ abstract class EntityJsonConverter<E extends Entity> implements JsonConverter<E>
         return gson.toJson(toJsonObject(entity));
     }
 
+    // TODO: remove this unused method?
     @Override
     public final String render(Object model) {
-        /*if (model instanceof ResultsPage) {
-            return renderResultsPage((ResultsPage<E>) model);
-        } else if (model instanceof List) {
-            return renderEntityList((List<E>) model);
-        } else if(entityType.isInstance(model)) {
-            return stringify((E) model);
-        } else {*/
-            // Serialize generically (e.g. used for lists of entity IDs)
-            return gson.toJson(model);
-        //}
+        return gson.toJson(model);
     }
 
     public String render(RouteHelper.DataType dataType, Object data) {
         switch(dataType) {
             case ENTITY:
                 return renderEntity((E) data);
-            case ENTITY_LIST:
-                return renderEntityList((List<E>) data);
-            case ENTITY_RESULTS_PAGE:
-                return renderResultsPage((ResultsPage<E>) data);
-            case ID_LIST:
-                return renderIdList((UUID[]) data);
+            case ENTITY_LIST_OR_RESULTS_PAGE:
+                if(data instanceof List)
+                    return renderEntityList((List<E>) data);
+                else
+                    return renderResultsPage((ResultsPage<E>) data);
+            case ENTITY_OR_ID_LIST:
+                if(data instanceof Entity) {
+                    return renderEntity((E) data);
+                } else {
+                    return renderIdList(data);
+                }
         }
 
         throw new RuntimeException("Cannot handle dataType ");
@@ -93,10 +90,10 @@ abstract class EntityJsonConverter<E extends Entity> implements JsonConverter<E>
     }
 
     private String renderEntity(E model) {
-        return stringify((E) model);
+        return stringify(model);
     }
 
-    private String renderIdList(UUID[] idList) {
+    private String renderIdList(Object idList) {
         return gson.toJson(idList);
     }
 

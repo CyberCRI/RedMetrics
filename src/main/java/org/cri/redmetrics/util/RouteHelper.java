@@ -31,10 +31,8 @@ public class RouteHelper {
 
     public enum DataType {
         ENTITY,
-        ENTITY_LIST,
-        ENTITY_RESULTS_PAGE,
-        ID_LIST,
         ENTITY_OR_ID_LIST,
+        ENTITY_LIST_OR_RESULTS_PAGE,
         BIN_COUNT_LIST
     }
 

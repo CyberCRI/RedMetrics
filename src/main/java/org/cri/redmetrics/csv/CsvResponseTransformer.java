@@ -24,30 +24,9 @@ public class CsvResponseTransformer<E extends Entity> implements ResponseTransfo
         this.csvEntityConverter = csvEntityConverter;
     }
 
+    // TODO: remove this unused method?
     @Override
     public String render(Object model) {
-        // Write into a String
-        /*StringWriter stringWriter = new StringWriter();
-        CSVWriter csvWriter = new CSVWriter(stringWriter); // Defaults to CSV with double-quotes
-
-        // Depending on the data passed, call the right method to serialize it
-        if (model instanceof ResultsPage) {
-            renderResultsPage(csvWriter, (ResultsPage<E>) model);
-        } else if(model instanceof List) {
-            renderEntityList(csvWriter, (List<E>) model);
-        } else if(model instanceof UUID[]) {
-            renderIdList(csvWriter, (UUID[]) model);
-        } else {
-            renderEntity(csvWriter, (E) model);
-        }
-
-        // Return whatever the StringWriter has buffered
-        try {
-            csvWriter.close();
-            return stringWriter.toString();
-        } catch(IOException e) {
-            throw new RuntimeException("Cannot write to CSV", e);
-        }*/
         return "";
     }
 
@@ -60,20 +39,20 @@ public class CsvResponseTransformer<E extends Entity> implements ResponseTransfo
         // All data needs to be converted into lists
         switch(dataType) {
             case ENTITY:
-                List<E> singleElementList = new ArrayList<E>();
-                singleElementList.add((E) data);
-
-                csvEntityConverter.write(csvWriter, singleElementList);
+                writeEntity(csvWriter, (E) data);
                 break;
-            case ENTITY_LIST:
-                csvEntityConverter.write(csvWriter, (List<E>) data);
+            case ENTITY_LIST_OR_RESULTS_PAGE:
+                if(data instanceof List)
+                    csvEntityConverter.write(csvWriter, (List<E>) data);
+                else
+                    csvEntityConverter.write(csvWriter, ((ResultsPage<E>) data).results);
                 break;
-            case ENTITY_RESULTS_PAGE:
-                csvEntityConverter.write(csvWriter,  ((ResultsPage<E>) data).results);
-                break;
-            case ID_LIST:
-                csvWriter.writeNext(new String[]{ "id" });
-                Arrays.stream((UUID[]) data).forEach((uuid) -> csvWriter.writeNext(new String[]{ uuid.toString() }));
+            case ENTITY_OR_ID_LIST:
+                if(data instanceof Entity) {
+                    writeEntity(csvWriter, (E) data);
+                } else {
+                    writeIdList(csvWriter, (UUID[]) data);
+                }
                 break;
         }
 
@@ -86,26 +65,17 @@ public class CsvResponseTransformer<E extends Entity> implements ResponseTransfo
         }
     }
 
-    /*public String renderResultsPage(ResultsPage<E> resultsPage) {
-        csvEntityConverter.write(csvWriter, resultsPage.results);
-    }
-
-    public String renderEntityList(CSVWriter csvWriter, List<E> results) {
-        csvEntityConverter.write(csvWriter, results);
-    }
-
     // Write single column of ids
-    public String renderIdList(CSVWriter csvWriter, UUID[] uuidList) {
+    public void writeIdList(CSVWriter csvWriter, UUID[] uuidList) {
         csvWriter.writeNext(new String[]{ "id" });
         Arrays.stream(uuidList).forEach((uuid) -> csvWriter.writeNext(new String[]{ uuid.toString() }));
-
     }
 
-    public String renderEntity(CSVWriter csvWriter, E entity) {
+    public void writeEntity(CSVWriter csvWriter, E entity) {
         List<E> singleElementList = new ArrayList<E>();
         singleElementList.add(entity);
 
         csvEntityConverter.write(csvWriter, singleElementList);
-    }*/
+    }
 
 }
