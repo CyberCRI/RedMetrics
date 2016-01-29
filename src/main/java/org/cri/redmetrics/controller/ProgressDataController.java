@@ -5,10 +5,12 @@ import org.cri.redmetrics.csv.CsvEntityConverter;
 import org.cri.redmetrics.dao.ProgressDataDao;
 import org.cri.redmetrics.dao.SearchQuery;
 import org.cri.redmetrics.json.JsonConverter;
+import org.cri.redmetrics.model.BinResult;
 import org.cri.redmetrics.model.Entity;
 import org.cri.redmetrics.model.ProgressData;
 import org.cri.redmetrics.model.ResultsPage;
 import org.cri.redmetrics.util.DateFormatter;
+import org.cri.redmetrics.util.RouteHelper;
 import spark.Request;
 import spark.Response;
 
@@ -16,6 +18,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
+
+import static spark.Spark.halt;
 
 public abstract class ProgressDataController<E extends ProgressData, DAO extends ProgressDataDao<E>> extends Controller<E, DAO> {
 
@@ -70,6 +74,25 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         return search.execute();
     }
 
+    protected List<BinResult> countResultsOverTime(Request request) {
+        // SEARCH
+        SearchQuery search = dao.search();
+        searchGame(request, search);
+        searchForeignEntities(request, search);
+        searchValues(request, search);
+        searchDates(request, search);
+        searchSection(request, search);
+
+        return search.countResultsOverTime();
+    }
+
+    @Override
+    protected void publishSpecific() {
+        routeHelper.publishRouteSet(RouteHelper.HttpVerb.GET, path + "-count", (request, response) -> {
+            return countResultsOverTime(request);
+        });
+    }
+
     private void searchGame(Request request, SearchQuery search) {
         String params = request.queryParams("game");
         if (params != null) {
@@ -105,25 +128,25 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         // BEFORE
         String beforeParam = request.queryParams("before");
         if (beforeParam != null) {
-            Date date = DateFormatter.parse(beforeParam);
+            Date date = DateFormatter.parseIso(beforeParam);
             search.before(date);
         }
         // AFTER
         String afterParam = request.queryParams("after");
         if (afterParam != null) {
-            Date date = DateFormatter.parse(afterParam);
+            Date date = DateFormatter.parseIso(afterParam);
             search.after(date);
         }
         // BEFORE USER TIME
         String beforeUserTime = request.queryParams("beforeUserTime");
         if (beforeUserTime != null) {
-            Date date = DateFormatter.parse(beforeUserTime);
+            Date date = DateFormatter.parseIso(beforeUserTime);
             search.beforeUserTime(date);
         }
         // AFTER USER TIME
         String afterUserTime = request.queryParams("afterUserTime");
         if (afterUserTime != null) {
-            Date date = DateFormatter.parse(afterUserTime);
+            Date date = DateFormatter.parseIso(afterUserTime);
             search.afterUserTime(date);
         }
     }

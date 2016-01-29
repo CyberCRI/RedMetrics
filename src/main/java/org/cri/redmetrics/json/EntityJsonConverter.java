@@ -2,6 +2,7 @@ package org.cri.redmetrics.json;
 
 import com.google.gson.*;
 import lombok.RequiredArgsConstructor;
+import org.cri.redmetrics.model.BinResult;
 import org.cri.redmetrics.model.Entity;
 import org.cri.redmetrics.model.ResultsPage;
 
@@ -62,6 +63,12 @@ abstract class EntityJsonConverter<E extends Entity> implements JsonConverter<E>
     private String stringifyResultsPage(ResultsPage<E> resultsPage) {
         JsonArray jsonArray = new JsonArray();
         resultsPage.results.forEach((entity) -> jsonArray.add(toJsonObject(entity)));
+        return gson.toJson(jsonArray);
+    }
+
+    private String stringifyBinResult(BinResult binResult) {
+        JsonArray jsonArray = new JsonArray();
+        //resultsPage.results.forEach((entity) -> jsonArray.add(toJsonObject(entity)));
         return gson.toJson(jsonArray);
     }
 

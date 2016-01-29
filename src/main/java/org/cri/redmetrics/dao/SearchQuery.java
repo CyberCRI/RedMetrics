@@ -1,16 +1,16 @@
 package org.cri.redmetrics.dao;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
+import org.cri.redmetrics.model.BinResult;
 import org.cri.redmetrics.model.GameVersion;
 import org.cri.redmetrics.model.ProgressData;
+import org.cri.redmetrics.util.DateFormatter;
 
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class SearchQuery<E extends ProgressData> {
@@ -46,6 +46,25 @@ public class SearchQuery<E extends ProgressData> {
             long count = orm.countOf(queryBuilder.prepare());
             queryBuilder.setCountOf(false);
             return count;
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
+
+    public  List<BinResult> countResultsOverTime() {
+        try {
+            queryBuilder.selectRaw("date_trunc('day', \"serverTime\") as day", "count(*) as count");
+            queryBuilder.groupByRaw("day");
+            GenericRawResults<String[]> rawResults = orm.queryRaw(queryBuilder.prepareStatementString());
+
+            List<BinResult> bins = new ArrayList<>();
+            for (String[] rawResult : rawResults) {
+                bins.add(new BinResult(
+                        DateFormatter.parseDbDay(rawResult[0]),
+                        Long.parseLong(rawResult[1])));
+            }
+
+            return bins;
         } catch (SQLException e) {
             throw new DbException(e);
         }

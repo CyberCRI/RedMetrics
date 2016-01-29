@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 public class CsvHelper {
 
     public static String formatDate(Date date) {
-        return date != null ? DateFormatter.print(date) : null;
+        return date != null ? DateFormatter.printIso(date) : null;
     }
 
     public static String formatCoordinates(Integer[] coordinates) {

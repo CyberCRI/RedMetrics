@@ -48,8 +48,8 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
     }
 
     public final void publish() {
-        publishGeneric();
         publishSpecific();
+        publishGeneric();
     }
 
     protected UUID idFromUrl(Request request) {
