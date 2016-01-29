@@ -83,7 +83,26 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         searchDates(request, search);
         searchSection(request, search);
 
-        return search.countResultsOverTime(new Date(2016 - 1900, 0, 0), new Date(), 100);
+        Date minDate = getMinDate(request);
+        if(minDate == null) {
+            // Need to repeat this whole process in order to follow builder pattern
+
+            SearchQuery dateSearch = dao.search();
+            searchGame(request, dateSearch);
+            searchForeignEntities(request, dateSearch);
+            searchValues(request, dateSearch);
+            searchDates(request, dateSearch);
+            searchSection(request, dateSearch);
+
+            minDate = dateSearch.getMinTime();
+        }
+
+        // TODO: is this in UTC time?
+        Date maxDate = getMaxDate(request);
+        if(maxDate == null) maxDate = new Date();
+
+        return search.countResultsOverTime(minDate, maxDate, 10);
+        //return search.countResultsOverTime(new Date(2015 - 1900, 11, 0), maxDate, 10);
     }
 
     @Override
@@ -161,4 +180,33 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         }
     }
 
+    private Date getMinDate(Request request) {
+        // BEFORE
+        String beforeParam = request.queryParams("before");
+        if (beforeParam != null) {
+            return DateFormatter.parseIso(beforeParam);
+        }
+        // BEFORE USER TIME
+        String beforeUserTime = request.queryParams("beforeUserTime");
+        if (beforeUserTime != null) {
+            return DateFormatter.parseIso(beforeUserTime);
+        }
+
+        return null;
+    }
+
+    private Date getMaxDate(Request request) {
+        // AFTER
+        String afterParam = request.queryParams("after");
+        if (afterParam != null) {
+            return DateFormatter.parseIso(afterParam);
+        }
+        // AFTER USER TIME
+        String afterUserTime = request.queryParams("afterUserTime");
+        if (afterUserTime != null) {
+            return DateFormatter.parseIso(afterUserTime);
+        }
+
+        return null;
+    }
 }

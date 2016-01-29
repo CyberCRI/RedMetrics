@@ -51,21 +51,20 @@ public class SearchQuery<E extends ProgressData> {
         }
     }
 
-    public  List<BinCount> countResultsOverTime(Date minTime, Date maxTime, int binCount) {
+    public List<BinCount> countResultsOverTime(Date minTime, Date maxTime, int binCount) {
         try {
+            double minTimeSeconds = DateFormatter.dateToSeconds(minTime);
+            double maxTimeSeconds = DateFormatter.dateToSeconds(maxTime);
+
             /*  Request looks like:
                 select width_bucket(extract(epoch from coalesce("userTime", "serverTime")), 1449439417.264, 1449601447.176, 10) as bucket,
                     count(*)
                 from events
                 group by bucket
                 order by bucket */
-            double minTimeSeconds = DateFormatter.dateToSeconds(minTime);
-            double maxTimeSeconds = DateFormatter.dateToSeconds(maxTime);
-
-            queryBuilder.selectRaw("width_bucket(extract(epoch from coalesce(\"userTime\", \"serverTime\")), " + minTimeSeconds + ", " + maxTimeSeconds + ", " + binCount + ") as bucket",
+            queryBuilder.selectRaw("width_bucket(extract(epoch from \"serverTime\"), " + minTimeSeconds + ", " + maxTimeSeconds + ", " + binCount + ") as bucket",
                     "count(*) as count");
             queryBuilder.groupByRaw("bucket");
-            queryBuilder.orderByRaw("count");
             GenericRawResults<String[]> rawResults = orm.queryRaw(queryBuilder.prepareStatementString());
 
             // Initialize the list of empty bins
@@ -78,13 +77,27 @@ public class SearchQuery<E extends ProgressData> {
 
             // Copy the count data to the bins
             for (String[] rawResult : rawResults) {
+                // Bins equal to 0 or greater than the count are out of range
                 int binIndex = Integer.parseInt(rawResult[0]);
-                if(binIndex < 0 || binIndex >= binCount) continue;
+                if(binIndex <= 0 || binIndex > binCount) continue;
 
-                bins.get(Integer.parseInt(rawResult[0])).count = Long.parseLong(rawResult[1]);
+                bins.get(binIndex - 1).count = Long.parseLong(rawResult[1]);
             }
 
             return bins;
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
+
+    public Date getMinTime() {
+        try {
+            queryBuilder.selectRaw("min(extract(epoch from \"serverTime\"))");
+            GenericRawResults<String[]> rawResults = orm.queryRaw(queryBuilder.prepareStatementString());
+
+            List<String[]> results = rawResults.getResults();
+            String[] resultArray = results.get(0);
+            return DateFormatter.secondsToDate(Double.parseDouble(resultArray[0]));
         } catch (SQLException e) {
             throw new DbException(e);
         }
