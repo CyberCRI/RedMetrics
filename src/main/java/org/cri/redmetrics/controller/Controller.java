@@ -67,7 +67,27 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
         Route postRoute = (request, response) -> {
             // Is it a list or a single entity?
             JsonElement jsonElement = new JsonParser().parse(request.body());
+
+            // If a single element is provided, turn it into a single-element list
+            Collection<E> entities;
             if(jsonElement.isJsonArray()) {
+                entities = jsonConverter.parseCollection(request.body());
+            } else if(jsonElement.isJsonObject()) {
+                entities = new ArrayList<E>();
+                entities.add(jsonConverter.parse(request.body()));
+            } else {
+                throw new IllegalArgumentException("Expecting a JSON array or object");
+            }
+            for(E entity : entities) {
+                beforeCreation(entity, request, response);
+                create(entity);
+            }
+
+            // Return created status and list of entity IDs
+            response.status(201);
+            return entities.stream().map(e -> new IdWrapper(e.getId())).toArray();
+
+            /*if(jsonElement.isJsonArray()) {
                 Collection<E> entities = jsonConverter.parseCollection(request.body());
                 for(E entity : entities) {
                     beforeCreation(entity, request, response);
@@ -87,10 +107,10 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
                 return entity;
             } else {
                 throw new IllegalArgumentException("Expecting a JSON array or object");
-            }
+            }*/
         };
 
-        routeHelper.publishRouteSet(RouteHelper.HttpVerb.POST, path, postRoute);
+        routeHelper.publishRouteSet(RouteHelper.HttpVerb.POST, RouteHelper.DataType.ID_LIST, path, postRoute);
 
 
         // GET
@@ -101,7 +121,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             return entity;
         };
 
-        routeHelper.publishRouteSet(RouteHelper.HttpVerb.GET, path + "/:id", getByIdRoute);
+        routeHelper.publishRouteSet(RouteHelper.HttpVerb.GET, RouteHelper.DataType.ENTITY, path + "/:id", getByIdRoute);
 
 
         Route listRoute = (Request request, Response response) -> {
@@ -126,7 +146,7 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             }
         };
 
-        routeHelper.publishRouteSet(RouteHelper.HttpVerb.GET, path, listRoute);
+        routeHelper.publishRouteSet(RouteHelper.HttpVerb.GET, RouteHelper.DataType.ENTITY_RESULTS_PAGE, path, listRoute);
 
 
         // PUT
@@ -142,23 +162,18 @@ public abstract class Controller<E extends Entity, DAO extends EntityDao<E>> {
             return update(entity);
         };
 
-        routeHelper.publishRouteSet(RouteHelper.HttpVerb.PUT, path + "/:id", putRoute);
+        routeHelper.publishRouteSet(RouteHelper.HttpVerb.PUT, RouteHelper.DataType.ENTITY, path + "/:id", putRoute);
 
 
         // DELETE
 
         Route deleteRoute = (request, response) -> dao.delete(idFromUrl(request));
 
-        routeHelper.publishRouteSet(RouteHelper.HttpVerb.DELETE, path + "/:id", deleteRoute);
-
+        routeHelper.publishRouteSet(RouteHelper.HttpVerb.DELETE, RouteHelper.DataType.ENTITY, path + "/:id", deleteRoute);
 
         // OPTIONS
-        // Always return empty response with CORS headers
-        // TODO: options shouldn't return a particular content type
-        Route optionsRoute = (request, response) -> { return "{}"; };
-
-        routeHelper.publishRouteSet(RouteHelper.HttpVerb.OPTIONS, path, optionsRoute);
-        routeHelper.publishRouteSet(RouteHelper.HttpVerb.OPTIONS, path + "/:id", optionsRoute);
+        routeHelper.publishOptionsRouteSet(path);
+        routeHelper.publishOptionsRouteSet(path + "/:id");
     }
 
     protected E create(E entity) {

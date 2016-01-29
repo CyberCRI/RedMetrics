@@ -5,7 +5,7 @@ import org.cri.redmetrics.csv.CsvEntityConverter;
 import org.cri.redmetrics.dao.ProgressDataDao;
 import org.cri.redmetrics.dao.SearchQuery;
 import org.cri.redmetrics.json.JsonConverter;
-import org.cri.redmetrics.model.BinResult;
+import org.cri.redmetrics.model.BinCount;
 import org.cri.redmetrics.model.Entity;
 import org.cri.redmetrics.model.ProgressData;
 import org.cri.redmetrics.model.ResultsPage;
@@ -74,7 +74,7 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         return search.execute();
     }
 
-    protected List<BinResult> countResultsOverTime(Request request) {
+    protected List<BinCount> countResultsOverTime(Request request) {
         // SEARCH
         SearchQuery search = dao.search();
         searchGame(request, search);
@@ -88,9 +88,11 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
 
     @Override
     protected void publishSpecific() {
-        routeHelper.publishRouteSet(RouteHelper.HttpVerb.GET, path + "-count", (request, response) -> {
+        routeHelper.publishRouteSet(RouteHelper.HttpVerb.GET, RouteHelper.DataType.BIN_COUNT_LIST, path + "-count", (request, response) -> {
             return countResultsOverTime(request);
         });
+
+        routeHelper.publishOptionsRouteSet(path + "-count");
     }
 
     private void searchGame(Request request, SearchQuery search) {

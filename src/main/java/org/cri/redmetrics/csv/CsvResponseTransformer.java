@@ -3,6 +3,7 @@ package org.cri.redmetrics.csv;
 import au.com.bytecode.opencsv.CSVWriter;
 import org.cri.redmetrics.model.Entity;
 import org.cri.redmetrics.model.ResultsPage;
+import org.cri.redmetrics.util.RouteHelper;
 import spark.ResponseTransformer;
 
 import java.io.IOException;
@@ -26,18 +27,54 @@ public class CsvResponseTransformer<E extends Entity> implements ResponseTransfo
     @Override
     public String render(Object model) {
         // Write into a String
-        StringWriter stringWriter = new StringWriter();
+        /*StringWriter stringWriter = new StringWriter();
         CSVWriter csvWriter = new CSVWriter(stringWriter); // Defaults to CSV with double-quotes
 
         // Depending on the data passed, call the right method to serialize it
         if (model instanceof ResultsPage) {
-            stringifyResultsPage(csvWriter, (ResultsPage<E>) model);
+            renderResultsPage(csvWriter, (ResultsPage<E>) model);
         } else if(model instanceof List) {
-            stringifyList(csvWriter, (List<E>) model);
+            renderEntityList(csvWriter, (List<E>) model);
         } else if(model instanceof UUID[]) {
-            stringifyUuidList(csvWriter, (UUID[]) model);
+            renderIdList(csvWriter, (UUID[]) model);
         } else {
-            stringifyEntity(csvWriter, (E) model);
+            renderEntity(csvWriter, (E) model);
+        }
+
+        // Return whatever the StringWriter has buffered
+        try {
+            csvWriter.close();
+            return stringWriter.toString();
+        } catch(IOException e) {
+            throw new RuntimeException("Cannot write to CSV", e);
+        }*/
+        return "";
+    }
+
+    public String render(RouteHelper.DataType dataType, Object data) {
+        // Write into a String
+        StringWriter stringWriter = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(stringWriter); // Defaults to CSV with double-quotes
+
+        // Depending on the data passed, call the right method to serialize it
+        // All data needs to be converted into lists
+        switch(dataType) {
+            case ENTITY:
+                List<E> singleElementList = new ArrayList<E>();
+                singleElementList.add((E) data);
+
+                csvEntityConverter.write(csvWriter, singleElementList);
+                break;
+            case ENTITY_LIST:
+                csvEntityConverter.write(csvWriter, (List<E>) data);
+                break;
+            case ENTITY_RESULTS_PAGE:
+                csvEntityConverter.write(csvWriter,  ((ResultsPage<E>) data).results);
+                break;
+            case ID_LIST:
+                csvWriter.writeNext(new String[]{ "id" });
+                Arrays.stream((UUID[]) data).forEach((uuid) -> csvWriter.writeNext(new String[]{ uuid.toString() }));
+                break;
         }
 
         // Return whatever the StringWriter has buffered
@@ -49,25 +86,26 @@ public class CsvResponseTransformer<E extends Entity> implements ResponseTransfo
         }
     }
 
-    private void stringifyResultsPage(CSVWriter csvWriter, ResultsPage<E> resultsPage) {
+    /*public String renderResultsPage(ResultsPage<E> resultsPage) {
         csvEntityConverter.write(csvWriter, resultsPage.results);
     }
 
-    private void stringifyList(CSVWriter csvWriter, List<E> results) {
+    public String renderEntityList(CSVWriter csvWriter, List<E> results) {
         csvEntityConverter.write(csvWriter, results);
     }
 
     // Write single column of ids
-    private void stringifyUuidList(CSVWriter csvWriter, UUID[] uuidList) {
+    public String renderIdList(CSVWriter csvWriter, UUID[] uuidList) {
         csvWriter.writeNext(new String[]{ "id" });
         Arrays.stream(uuidList).forEach((uuid) -> csvWriter.writeNext(new String[]{ uuid.toString() }));
 
     }
 
-    private void stringifyEntity(CSVWriter csvWriter, E entity) {
+    public String renderEntity(CSVWriter csvWriter, E entity) {
         List<E> singleElementList = new ArrayList<E>();
         singleElementList.add(entity);
 
         csvEntityConverter.write(csvWriter, singleElementList);
-    }
+    }*/
+
 }

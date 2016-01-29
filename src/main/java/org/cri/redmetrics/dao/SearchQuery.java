@@ -4,7 +4,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
-import org.cri.redmetrics.model.BinResult;
+import org.cri.redmetrics.model.BinCount;
 import org.cri.redmetrics.model.GameVersion;
 import org.cri.redmetrics.model.ProgressData;
 import org.cri.redmetrics.util.DateFormatter;
@@ -51,15 +51,15 @@ public class SearchQuery<E extends ProgressData> {
         }
     }
 
-    public  List<BinResult> countResultsOverTime() {
+    public  List<BinCount> countResultsOverTime() {
         try {
             queryBuilder.selectRaw("date_trunc('day', \"serverTime\") as day", "count(*) as count");
             queryBuilder.groupByRaw("day");
             GenericRawResults<String[]> rawResults = orm.queryRaw(queryBuilder.prepareStatementString());
 
-            List<BinResult> bins = new ArrayList<>();
+            List<BinCount> bins = new ArrayList<>();
             for (String[] rawResult : rawResults) {
-                bins.add(new BinResult(
+                bins.add(new BinCount(
                         DateFormatter.parseDbDay(rawResult[0]),
                         Long.parseLong(rawResult[1])));
             }

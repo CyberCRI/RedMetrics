@@ -32,7 +32,7 @@ public class GameVersionController extends Controller<GameVersion, GameVersionDa
             return dao.searchByGameId(gameId);
         };
 
-        routeHelper.publishRouteSet(RouteHelper.HttpVerb.GET, basePath + "game/:id/versions", findByGameId);
+        routeHelper.publishRouteSet(RouteHelper.HttpVerb.GET, RouteHelper.DataType.ENTITY_LIST, basePath + "game/:id/versions", findByGameId);
     }
 
 }
