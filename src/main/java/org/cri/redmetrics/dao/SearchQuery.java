@@ -51,17 +51,37 @@ public class SearchQuery<E extends ProgressData> {
         }
     }
 
-    public  List<BinCount> countResultsOverTime() {
+    public  List<BinCount> countResultsOverTime(Date minTime, Date maxTime, int binCount) {
         try {
-            queryBuilder.selectRaw("date_trunc('day', \"serverTime\") as day", "count(*) as count");
-            queryBuilder.groupByRaw("day");
+            /*  Request looks like:
+                select width_bucket(extract(epoch from coalesce("userTime", "serverTime")), 1449439417.264, 1449601447.176, 10) as bucket,
+                    count(*)
+                from events
+                group by bucket
+                order by bucket */
+            double minTimeSeconds = DateFormatter.dateToSeconds(minTime);
+            double maxTimeSeconds = DateFormatter.dateToSeconds(maxTime);
+
+            queryBuilder.selectRaw("width_bucket(extract(epoch from coalesce(\"userTime\", \"serverTime\")), " + minTimeSeconds + ", " + maxTimeSeconds + ", " + binCount + ") as bucket",
+                    "count(*) as count");
+            queryBuilder.groupByRaw("bucket");
+            queryBuilder.orderByRaw("count");
             GenericRawResults<String[]> rawResults = orm.queryRaw(queryBuilder.prepareStatementString());
 
-            List<BinCount> bins = new ArrayList<>();
+            // Initialize the list of empty bins
+            double timePerBucket = (maxTimeSeconds - minTimeSeconds) / binCount;
+            ArrayList<BinCount> bins = new ArrayList<BinCount>(binCount);
+            for(int i = 0; i < binCount; i++) {
+                double bucketTime = minTimeSeconds + i * timePerBucket;
+                bins.add(new BinCount(DateFormatter.secondsToDate(bucketTime), 0));
+            }
+
+            // Copy the count data to the bins
             for (String[] rawResult : rawResults) {
-                bins.add(new BinCount(
-                        DateFormatter.parseDbDay(rawResult[0]),
-                        Long.parseLong(rawResult[1])));
+                int binIndex = Integer.parseInt(rawResult[0]);
+                if(binIndex < 0 || binIndex >= binCount) continue;
+
+                bins.get(Integer.parseInt(rawResult[0])).count = Long.parseLong(rawResult[1]);
             }
 
             return bins;

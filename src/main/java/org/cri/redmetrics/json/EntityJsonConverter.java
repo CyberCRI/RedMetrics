@@ -66,6 +66,9 @@ abstract class EntityJsonConverter<E extends Entity> implements JsonConverter<E>
                 } else {
                     return renderIdList(data);
                 }
+
+            case BIN_COUNT_LIST:
+                return renderBinCounts((List<BinCount>) data);
         }
 
         throw new RuntimeException("Cannot handle dataType ");
@@ -77,9 +80,9 @@ abstract class EntityJsonConverter<E extends Entity> implements JsonConverter<E>
         return gson.toJson(jsonArray);
     }
 
-    private String renderBinResult(BinCount binCount) {
+    private String renderBinCounts(List<BinCount> binCounts) {
         JsonArray jsonArray = new JsonArray();
-        //resultsPage.results.forEach((entity) -> jsonArray.add(toJsonObject(entity)));
+        binCounts.forEach((binCount) -> jsonArray.add(gson.toJsonTree(binCount).getAsJsonObject()));
         return gson.toJson(jsonArray);
     }
 

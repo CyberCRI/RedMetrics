@@ -83,7 +83,7 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         searchDates(request, search);
         searchSection(request, search);
 
-        return search.countResultsOverTime();
+        return search.countResultsOverTime(new Date(2016 - 1900, 0, 0), new Date(), 100);
     }
 
     @Override

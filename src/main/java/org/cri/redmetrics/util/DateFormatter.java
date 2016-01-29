@@ -32,4 +32,11 @@ public class DateFormatter {
         return DB_DAY_DATE_FORMATTER.print(new DateTime(date.getTime()));
     }
 
+    public static double dateToSeconds(Date date) {
+        return date.getTime() / 1000;
+    }
+
+    public static Date secondsToDate(double seconds) {
+        return new Date((long) seconds * 1000);
+    }
 }
