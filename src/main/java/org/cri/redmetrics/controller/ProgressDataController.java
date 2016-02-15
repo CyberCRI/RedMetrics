@@ -91,7 +91,6 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
             searchGame(request, dateSearch);
             searchForeignEntities(request, dateSearch);
             searchValues(request, dateSearch);
-            searchDates(request, dateSearch);
             searchSection(request, dateSearch);
 
             minDate = dateSearch.getMinTime();
@@ -101,8 +100,7 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         Date maxDate = getMaxDate(request);
         if(maxDate == null) maxDate = new Date();
 
-        return search.countResultsOverTime(minDate, maxDate, 10);
-        //return search.countResultsOverTime(new Date(2015 - 1900, 11, 0), maxDate, 10);
+        return search.countResultsOverTime(minDate, maxDate, 50);
     }
 
     @Override
@@ -181,21 +179,6 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
     }
 
     private Date getMinDate(Request request) {
-        // BEFORE
-        String beforeParam = request.queryParams("before");
-        if (beforeParam != null) {
-            return DateFormatter.parseIso(beforeParam);
-        }
-        // BEFORE USER TIME
-        String beforeUserTime = request.queryParams("beforeUserTime");
-        if (beforeUserTime != null) {
-            return DateFormatter.parseIso(beforeUserTime);
-        }
-
-        return null;
-    }
-
-    private Date getMaxDate(Request request) {
         // AFTER
         String afterParam = request.queryParams("after");
         if (afterParam != null) {
@@ -205,6 +188,21 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         String afterUserTime = request.queryParams("afterUserTime");
         if (afterUserTime != null) {
             return DateFormatter.parseIso(afterUserTime);
+        }
+
+        return null;
+    }
+
+    private Date getMaxDate(Request request) {
+        // BEFORE
+        String beforeParam = request.queryParams("before");
+        if (beforeParam != null) {
+            return DateFormatter.parseIso(beforeParam);
+        }
+        // BEFORE USER TIME
+        String beforeUserTime = request.queryParams("beforeUserTime");
+        if (beforeUserTime != null) {
+            return DateFormatter.parseIso(beforeUserTime);
         }
 
         return null;

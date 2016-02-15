@@ -66,7 +66,7 @@ public class SearchQuery<E extends ProgressData> {
                     "count(*) as count");
             queryBuilder.groupByRaw("bucket");
             GenericRawResults<String[]> rawResults = orm.queryRaw(queryBuilder.prepareStatementString());
-
+            queryBuilder.prepareStatementInfo().getArgList()
             // Initialize the list of empty bins
             double timePerBucket = (maxTimeSeconds - minTimeSeconds) / binCount;
             ArrayList<BinCount> bins = new ArrayList<BinCount>(binCount);
