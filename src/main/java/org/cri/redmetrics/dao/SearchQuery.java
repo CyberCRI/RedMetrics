@@ -2,6 +2,7 @@ package org.cri.redmetrics.dao;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.stmt.ArgumentHolder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import org.cri.redmetrics.model.BinCount;
@@ -65,8 +66,9 @@ public class SearchQuery<E extends ProgressData> {
             queryBuilder.selectRaw("width_bucket(extract(epoch from \"serverTime\"), " + minTimeSeconds + ", " + maxTimeSeconds + ", " + binCount + ") as bucket",
                     "count(*) as count");
             queryBuilder.groupByRaw("bucket");
+
             GenericRawResults<String[]> rawResults = orm.queryRaw(queryBuilder.prepareStatementString());
-            queryBuilder.prepareStatementInfo().getArgList()
+
             // Initialize the list of empty bins
             double timePerBucket = (maxTimeSeconds - minTimeSeconds) / binCount;
             ArrayList<BinCount> bins = new ArrayList<BinCount>(binCount);

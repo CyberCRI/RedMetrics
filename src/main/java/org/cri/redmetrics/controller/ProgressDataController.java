@@ -80,7 +80,6 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         searchGame(request, search);
         searchForeignEntities(request, search);
         searchValues(request, search);
-        searchDates(request, search);
         searchSection(request, search);
 
         Date minDate = getMinDate(request);
