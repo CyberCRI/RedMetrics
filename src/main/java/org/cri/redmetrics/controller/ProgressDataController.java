@@ -93,13 +93,17 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
             searchSection(request, dateSearch);
 
             minDate = dateSearch.getMinTime();
+
+            // If there is no minimum date, then there's no data!
+            // For now, just return the first possible date
+            if(minDate == null) minDate = new Date(0);
         }
 
         // TODO: is this in UTC time?
         Date maxDate = getMaxDate(request);
         if(maxDate == null) maxDate = new Date();
 
-        return search.countResultsOverTime(minDate, maxDate, 50);
+        return search.countResultsOverTime(minDate, maxDate, 100);
     }
 
     @Override

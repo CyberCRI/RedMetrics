@@ -99,6 +99,8 @@ public class SearchQuery<E extends ProgressData> {
 
             List<String[]> results = rawResults.getResults();
             String[] resultArray = results.get(0);
+            if(resultArray[0] == null) return null;
+
             return DateFormatter.secondsToDate(Double.parseDouble(resultArray[0]));
         } catch (SQLException e) {
             throw new DbException(e);

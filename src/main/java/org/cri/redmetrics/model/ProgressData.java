@@ -32,4 +32,7 @@ public abstract class ProgressData extends Entity {
     @DatabaseField(persisterClass = LtreePersister.class, columnDefinition = "ltree")
     private String section;
 
+    @DatabaseField(canBeNull = false)
+    private String type;
+    
 }
