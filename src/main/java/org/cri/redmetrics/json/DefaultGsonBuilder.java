@@ -10,12 +10,12 @@ class DefaultGsonBuilder {
 
     private static final JsonSerializer<Date> DATE_SERIALIZER = (Date date, Type typeOfSrc, JsonSerializationContext context) -> {
         if (date == null) return null;
-        else return new JsonPrimitive(DateFormatter.print(date));
+        else return new JsonPrimitive(DateFormatter.printIso(date));
     };
 
     private static final JsonDeserializer<Date> DATE_DESERIALIZER = (JsonElement json, Type typeOfT, JsonDeserializationContext context) -> {
         if (json == null) return null;
-        else return DateFormatter.parse(json.getAsString());
+        else return DateFormatter.parseIso(json.getAsString());
     };
 
     static GsonBuilder get() {

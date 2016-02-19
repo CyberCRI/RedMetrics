@@ -29,6 +29,13 @@ public class RouteHelper {
         CSV
     }
 
+    public enum DataType {
+        ENTITY,
+        ENTITY_OR_ID_LIST,
+        ENTITY_LIST_OR_RESULTS_PAGE,
+        BIN_COUNT_LIST
+    }
+
     public static ContentType determineContentType(Request request) {
         // If the user requests a format in the URL
         if(request.url().endsWith(".json")) {
@@ -72,20 +79,32 @@ public class RouteHelper {
         this.csvResponseTransformer = csvResponseTransformer;
     }
 
-    public void publishRouteSet(HttpVerb verb, String path, Route route) {
+    public void publishRouteSet(HttpVerb verb, DataType dataType, String path, Route route) {
         // Publish a set of routes with or without a slash and with a provided format
-        publishSingleRoute(verb, path, route);
-        publishSingleRoute(verb, path + "/", route);
-        publishSingleRoute(verb, path + ".json", route);
-        publishSingleRoute(verb, path + ".csv", route);
+        publishSingleRoute(verb, dataType, path, route);
+        publishSingleRoute(verb, dataType, path + "/", route);
+        publishSingleRoute(verb, dataType, path + ".json", route);
+        publishSingleRoute(verb, dataType, path + ".csv", route);
+    }
+
+    public void publishOptionsRouteSet(String path) {
+        // Always return empty response with CORS headers
+        Route route = (request, response) -> { return ""; };
+
+        options(path, route);
+        options(path + "/", route);
+        options(path + ".json", route);
+        options(path + ".csv", route);
     }
 
 
     // A wrapper route to deduce the correct content type
     protected class RouteWrapper implements Route {
+        private DataType dataType;
         private Route route;
 
-        public RouteWrapper(Route route) {
+        public RouteWrapper(DataType dataType, Route route) {
+            this.dataType = dataType;
             this.route = route;
         }
 
@@ -100,11 +119,11 @@ public class RouteHelper {
             String body;
             switch(contentType) {
                 case CSV:
-                    body = csvResponseTransformer.render(route.handle(request, response));
+                    body = csvResponseTransformer.render(dataType, route.handle(request, response));
                     response.type("text/csv");
                     break;
                 case JSON:
-                    body = jsonConverter.render(route.handle(request, response));
+                    body = jsonConverter.render(dataType, route.handle(request, response));
                     response.type("application/json");
                     break;
                 default:
@@ -114,8 +133,8 @@ public class RouteHelper {
         }
     }
 
-    private void publishSingleRoute(HttpVerb verb, String path, Route route) {
-        RouteWrapper routeWrapper = new RouteWrapper(route);
+    private void publishSingleRoute(HttpVerb verb, DataType dataType, String path, Route route) {
+        RouteWrapper routeWrapper = new RouteWrapper(dataType, route);
 
         switch (verb) {
             case GET:
@@ -129,9 +148,6 @@ public class RouteHelper {
                 break;
             case DELETE:
                 delete(path, routeWrapper);
-                break;
-            case OPTIONS:
-                options(path, routeWrapper);
                 break;
             default:
                 throw new RuntimeException("Unknown verb " + verb);

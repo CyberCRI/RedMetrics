@@ -1,16 +1,17 @@
 package org.cri.redmetrics.dao;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.stmt.ArgumentHolder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
+import org.cri.redmetrics.model.BinCount;
 import org.cri.redmetrics.model.GameVersion;
 import org.cri.redmetrics.model.ProgressData;
+import org.cri.redmetrics.util.DateFormatter;
 
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class SearchQuery<E extends ProgressData> {
@@ -46,6 +47,61 @@ public class SearchQuery<E extends ProgressData> {
             long count = orm.countOf(queryBuilder.prepare());
             queryBuilder.setCountOf(false);
             return count;
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
+
+    public List<BinCount> countResultsOverTime(Date minTime, Date maxTime, int binCount) {
+        try {
+            double minTimeSeconds = DateFormatter.dateToSeconds(minTime);
+            double maxTimeSeconds = DateFormatter.dateToSeconds(maxTime);
+
+            /*  Request looks like:
+                select width_bucket(extract(epoch from coalesce("userTime", "serverTime")), 1449439417.264, 1449601447.176, 10) as bucket,
+                    count(*)
+                from events
+                group by bucket
+                order by bucket */
+            queryBuilder.selectRaw("width_bucket(extract(epoch from \"serverTime\"), " + minTimeSeconds + ", " + maxTimeSeconds + ", " + binCount + ") as bucket",
+                    "count(*) as count");
+            queryBuilder.groupByRaw("bucket");
+
+            GenericRawResults<String[]> rawResults = orm.queryRaw(queryBuilder.prepareStatementString());
+
+            // Initialize the list of empty bins
+            double timePerBucket = (maxTimeSeconds - minTimeSeconds) / binCount;
+            ArrayList<BinCount> bins = new ArrayList<BinCount>(binCount);
+            for(int i = 0; i < binCount; i++) {
+                double bucketTime = minTimeSeconds + i * timePerBucket;
+                bins.add(new BinCount(DateFormatter.secondsToDate(bucketTime), 0));
+            }
+
+            // Copy the count data to the bins
+            for (String[] rawResult : rawResults) {
+                // Bins equal to 0 or greater than the count are out of range
+                int binIndex = Integer.parseInt(rawResult[0]);
+                if(binIndex <= 0 || binIndex > binCount) continue;
+
+                bins.get(binIndex - 1).count = Long.parseLong(rawResult[1]);
+            }
+
+            return bins;
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
+
+    public Date getMinTime() {
+        try {
+            queryBuilder.selectRaw("min(extract(epoch from \"serverTime\"))");
+            GenericRawResults<String[]> rawResults = orm.queryRaw(queryBuilder.prepareStatementString());
+
+            List<String[]> results = rawResults.getResults();
+            String[] resultArray = results.get(0);
+            if(resultArray[0] == null) return null;
+
+            return DateFormatter.secondsToDate(Double.parseDouble(resultArray[0]));
         } catch (SQLException e) {
             throw new DbException(e);
         }

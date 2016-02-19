@@ -33,6 +33,7 @@ public class SnapshotCsvEntityConverter implements CsvEntityConverter<Snapshot> 
                 "playerGender",
                 "playerExternalId",
                 "playerCustomData",
+                "type",
                 "section"
         };
 

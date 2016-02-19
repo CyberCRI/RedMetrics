@@ -15,9 +15,6 @@ import org.cri.redmetrics.db.IntegerArrayPersister;
 @EqualsAndHashCode(callSuper = true)
 public class Event extends ProgressData {
 
-    @DatabaseField(canBeNull = false)
-    private String type;
-
     @DatabaseField(persisterClass = IntegerArrayPersister.class, columnDefinition = "integer[]")
     private Integer[] coordinates;
 
