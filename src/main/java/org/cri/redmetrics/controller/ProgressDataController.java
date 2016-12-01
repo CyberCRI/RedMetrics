@@ -55,6 +55,7 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         long totalResultCount = search.countResults();
 
         search.paginate(page, perPage);
+        setSearchOrder(request, search);
 
         List<E> results = search.execute();
 
@@ -179,6 +180,18 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
             sectionParam = sectionParam.trim();
             search.section(sectionParam);
         }
+    }
+
+    private void setSearchOrder(Request request, SearchQuery search) {
+        String orderByParam = request.queryParams("orderBy");
+        if (orderByParam == null || orderByParam.isEmpty()) return;
+
+        // split the parameter into columnName(:(asc|desc))? (defaults to asc)
+        String[] split = orderByParam.split(":", 2);
+
+        boolean ascending = !(split.length == 2 && split[1].equals("desc"));
+
+        search.orderBy(split[0], ascending);
     }
 
     private Date getMinDate(Request request) {

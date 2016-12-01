@@ -2,7 +2,6 @@ package org.cri.redmetrics.dao;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.stmt.ArgumentHolder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import org.cri.redmetrics.model.BinCount;
@@ -213,6 +212,11 @@ public class SearchQuery<E extends ProgressData> {
         } catch (SQLException e) {
             throw new DbException(e);
         }
+    }
+
+    public SearchQuery orderBy(String attribute, boolean ascending) {
+        queryBuilder.orderBy(attribute, ascending);
+        return this;
     }
 
 }
