@@ -319,6 +319,19 @@ Since a large number of values can be returned via GET requests for lists (such 
 To request a given page of data, use the `page` and `perPage` parameters. The `page` is the (1-based) number of the page requested. The `perPage` parameter is number of results desired per page. 
 
 
+## Sorting
+
+Events and snapshots can be sorted by any of the following fields:
+
+    * `serverTime`
+    * `userTime`
+    * `type`
+
+The sorting can be in ascending or descending order. To specify a sorting, use the query parameter `orderBy` with a value of the field above. You can add a colon followed by either `asc` or `desc` to make the order ascending or descending, respectively. By default the order is ascending.
+
+For example, the query `orderBy=serverTime:desc` would provide the latest results first, according to the server.
+
+
 ## Data Formats
 
 By default, all data is returned by the server in JSON. To request data in another format, the client can send the Accepts header along with the request, use the "format" query parameter with the format shortcode, or end their request with a dot followed the shortcode, such as `/v1/games.csv`. The following formats are provided:
