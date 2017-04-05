@@ -184,14 +184,17 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
 
     private void setSearchOrder(Request request, SearchQuery search) {
         String orderByParam = request.queryParams("orderBy");
-        if (orderByParam == null || orderByParam.isEmpty()) return;
+        if (orderByParam == null || orderByParam.isEmpty()) {
+            // Default ordering by server time
+            search.orderBy("serverTime", true);
+        } else {
+            // split the parameter into columnName(:(asc|desc))? (defaults to asc)
+            String[] split = orderByParam.split(":", 2);
 
-        // split the parameter into columnName(:(asc|desc))? (defaults to asc)
-        String[] split = orderByParam.split(":", 2);
+            boolean ascending = !(split.length == 2 && split[1].equals("desc"));
 
-        boolean ascending = !(split.length == 2 && split[1].equals("desc"));
-
-        search.orderBy(split[0], ascending);
+            search.orderBy(split[0], ascending);
+        }
     }
 
     private Date getMinDate(Request request) {
