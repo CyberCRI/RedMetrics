@@ -58,12 +58,14 @@ public class RouteHelper {
         }
 
         // If the user requests a format in the header
-        List<String> acceptedContentTypes = Arrays.asList(request.headers("Accept").split(","));
-        if(acceptedContentTypes.contains("application/json")) {
-            return ContentType.JSON;
-        }
-        if(acceptedContentTypes.contains("text/csv")) {
-            return ContentType.CSV;
+        if(request.headers("Accept") != null) {
+            List<String> acceptedContentTypes = Arrays.asList(request.headers("Accept").split(","));
+            if(acceptedContentTypes.contains("application/json")) {
+                return ContentType.JSON;
+            }
+            if(acceptedContentTypes.contains("text/csv")) {
+                return ContentType.CSV;
+            }
         }
 
         // No format specified, so default to JSON
