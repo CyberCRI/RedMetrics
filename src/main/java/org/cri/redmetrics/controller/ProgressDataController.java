@@ -38,8 +38,12 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
 
     @Override
     protected void beforeCreation(E progressData, Request request, Response response) {
+        // Required fields
         if (progressData.getGameVersion() == null) throw new IllegalArgumentException("game version required");
         if (progressData.getPlayer() == null) throw new IllegalArgumentException("player required (integer)");
+
+        // Fill default values
+        if (progressData.getType() == null) progressData.setType("default");
     }
 
     @Override
