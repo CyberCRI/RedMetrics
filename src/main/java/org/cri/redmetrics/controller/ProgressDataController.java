@@ -55,6 +55,7 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         searchValues(request, search);
         searchDates(request, search);
         searchSection(request, search);
+        searchPlayerExternalId(request, search);
 
         long totalResultCount = search.countResults();
 
@@ -75,6 +76,7 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         searchValues(request, search);
         searchDates(request, search);
         searchSection(request, search);
+        searchPlayerExternalId(request, search);
 
         return search.execute();
     }
@@ -86,6 +88,7 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
         searchForeignEntities(request, search);
         searchValues(request, search);
         searchSection(request, search);
+        searchPlayerExternalId(request, search);
 
         Date minDate = getMinDate(request);
         if(minDate == null) {
@@ -96,6 +99,7 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
             searchForeignEntities(request, dateSearch);
             searchValues(request, dateSearch);
             searchSection(request, dateSearch);
+            searchPlayerExternalId(request, dateSearch);
 
             minDate = dateSearch.getMinTime();
 
@@ -133,6 +137,13 @@ public abstract class ProgressDataController<E extends ProgressData, DAO extends
             if (params != null) {
                 search.foreignEntity(foreignEntityName, parseIds(params));
             }
+        }
+    }
+
+    private void searchPlayerExternalId(Request request, SearchQuery search) {
+        String params = request.queryParams("playerExternalId");
+        if (params != null) {
+            search.playerExternalId(params);
         }
     }
 

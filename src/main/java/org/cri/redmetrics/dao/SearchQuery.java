@@ -6,6 +6,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import org.cri.redmetrics.model.BinCount;
 import org.cri.redmetrics.model.GameVersion;
+import org.cri.redmetrics.model.Player;
 import org.cri.redmetrics.model.ProgressData;
 import org.cri.redmetrics.util.DateFormatter;
 
@@ -20,15 +21,17 @@ public class SearchQuery<E extends ProgressData> {
     private final Dao<E, UUID> orm;
     private Where where;
     private final Where whereGameVersion;
+    private final QueryBuilder<Player, UUID> playerQueryBuilder;
 
     private boolean hasStatement = false;
     private boolean hasGameFilter = false;
 
-    SearchQuery(Dao<E, UUID> orm, QueryBuilder<E, UUID> queryBuilder, QueryBuilder<GameVersion, UUID> gameVersionQueryBuilder) {
+    SearchQuery(Dao<E, UUID> orm, QueryBuilder<E, UUID> queryBuilder, QueryBuilder<GameVersion, UUID> gameVersionQueryBuilder, QueryBuilder<Player, UUID> playerQueryBuilder) {
         this.orm = orm;
         this.queryBuilder = queryBuilder;
         this.gameVersionQueryBuilder = gameVersionQueryBuilder;
         this.whereGameVersion = gameVersionQueryBuilder.where();
+        this.playerQueryBuilder = playerQueryBuilder;
     }
 
     public List<E> execute() {
@@ -152,6 +155,16 @@ public class SearchQuery<E extends ProgressData> {
         try {
             addAndIfNecessary();
             where.eq(columnName, value);
+            return this;
+        } catch (SQLException e) {
+            throw new DbException(e);
+        }
+    }
+
+    public SearchQuery playerExternalId(String playerId) {
+        try {
+            playerQueryBuilder.where().eq("externalId", playerId);
+            queryBuilder.join(playerQueryBuilder);
             return this;
         } catch (SQLException e) {
             throw new DbException(e);

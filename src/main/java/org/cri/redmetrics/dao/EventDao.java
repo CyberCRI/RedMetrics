@@ -9,8 +9,8 @@ import java.sql.SQLException;
 public class EventDao extends ProgressDataDao<Event> {
 
     @Inject
-    public EventDao(ConnectionSource connectionSource, GameVersionDao gameVersionDao) throws SQLException {
-        super(connectionSource, gameVersionDao, Event.class);
+    public EventDao(ConnectionSource connectionSource, GameVersionDao gameVersionDao, PlayerDao playerDao) throws SQLException {
+        super(connectionSource, gameVersionDao, playerDao, Event.class);
     }
 
 }
