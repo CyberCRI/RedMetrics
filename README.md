@@ -2,7 +2,7 @@
 
 RedMetrics offers open source game analytics. It is made up of a RESTful web service and a [web app](https://github.com/CyberCRI/RedMetrics-Web) that allows teachers and researchers to track game metrics, then download the raw data for offline analysis. Limited support for groups is also available.
 
-Check it out at [redmetrics.io](http://redmetrics.io). 
+Check it out at [redmetrics.crigamelab.org](http://redmetrics.crigamelab.org). 
 
 To use it for your game, check out the [RESTful web service API](API.md). If your game works in Unity, check out [RedMetrics-Unity](https://github.com/CyberCRI/RedMetrics-Unity). If your game runs in a browser, you can use [RedMetrics.js](https://github.com/CyberCRI/RedMetrics.js) to connect it.
 
